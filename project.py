@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 
 TIME = 60
 
-# data_file  = open(os.path.expanduser('~/Desktop/DEAP/data_preprocessed_python/s01.dat'), 'rb')
-# s01 = pickle.load(data_file, encoding='latin1')
-# pickle.dump(s01, open('test.txt', 'wb'))
+data_file  = open(os.path.expanduser('~/Desktop/DEAP/data_preprocessed_python/s01.dat'), 'rb')
+s01 = pickle.load(data_file, encoding='latin1')
+pickle.dump(s01, open('test.txt', 'wb'))
 
 # write to file
 f = open('test.txt', 'rb')
