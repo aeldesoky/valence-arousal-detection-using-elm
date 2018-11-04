@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 numpy = "*"
 matplotlib = "*"
+"pyqt5" = "*"
+tqdm = "*"
 
 [dev-packages]
 
