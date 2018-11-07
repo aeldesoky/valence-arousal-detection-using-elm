@@ -27,7 +27,9 @@ for file in sorted(os.listdir('data')):
    liking_labels      = all_labels_values[:, 3].reshape(VIDEOS_NUM, 1)
 
    time = np.arange(0, VIDEO_LENGTH_SECONDS, VIDEO_LENGTH_SECONDS/CHANNEL_DATA_POINTS)
-   frequency = np.linspace(0, 128, CHANNEL_DATA_POINTS)
+   time_step = 1/128
+   samples_num = CHANNEL_DATA_POINTS
+   frequency = np.linspace(0.0, 1.0/(2.0*time_step), samples_num//2)
 
    print(np.shape(frequency))
 
@@ -35,10 +37,10 @@ for file in sorted(os.listdir('data')):
       for channel_num in range(0, CHANNELS_NUM):
          channel_data = all_channels_data[video_num][channel_num].reshape(CHANNEL_DATA_POINTS, 1)
          channel_data_fft = fft(channel_data)
-         plt.plot(frequency, abs(channel_data_fft))
+         plt.plot(frequency, 2.0/samples_num * np.abs(channel_data_fft[0:samples_num//2]))
          plt.plot()
       
-         plt.title('Video number ' + str(video_num))
-         plt.ylabel('EEG Amplitude')
-         plt.xlabel('Time in Seconds')   
-         plt.show()
+      plt.title('Video number ' + str(video_num))
+      plt.ylabel('EEG Amplitude')
+      plt.xlabel('Time in Seconds')   
+      plt.show()
