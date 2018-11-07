@@ -9,6 +9,7 @@ matplotlib = "*"
 "pyqt5" = "*"
 tqdm = "*"
 tensorflow = "*"
+scipy = "*"
 
 [dev-packages]
 
