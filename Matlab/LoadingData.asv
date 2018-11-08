@@ -98,4 +98,5 @@ labels         = [valence_labels' arousal_labels' dominance_labels' liking_label
 %% Visualizing Features
 figure(1);
 varnames = {'Delta' 'Theta' 'Slow Alpha' 'Alpha' 'Beta' 'Gamma'};
-gplotmatrix(features_array(:,[1 6]),[],labels(:,1:2),'rgbk',[],[],'on','grpbars',varnames([1 6]), varnames([1 6]));
+gplotmatrix(features_array,[],labels,'ymcrgbwk',[],[],'on','grpbars',varnames([1 2 3]), varnames([1 2 3]);
+
