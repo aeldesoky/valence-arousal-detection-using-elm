@@ -31,7 +31,7 @@ for participant = 1:PARTICIPANTS_NUM
         %extracting GSR features
         [features(participant,epoch).GSR_feats, features(participant,epoch).GSR_feats_names] = GSR_feat_extr(bulk(epoch));
         %extracting BVP features
-        [features(participant,epoch).BVP_feats, features(participant,epoch).BVP_feats_names] = BVP_feat_extr(bulk(epoch));
+        %[features(participant,epoch).BVP_feats, features(participant,epoch).BVP_feats_names] = BVP_feat_extr(bulk(epoch));
         %extracting respiration features
         [features(participant,epoch).RES_feats, features(participant,epoch).RES_feats_names] = RES_feat_extr(bulk(epoch));
         
@@ -63,7 +63,7 @@ liking_labels    = [];
 participant = 1;
 video       = 1;
 
-for participant = 1:1:PARTICIPANTS_NUM
+for participant = 1:PARTICIPANTS_NUM
     for video = 1:VIDEOS_NUM
         delta      = [delta, features(participant,video).EEG_feats(1, :)];
         theta      = [theta, features(participant,video).EEG_feats(2, :)];
@@ -93,9 +93,22 @@ for participant = 1:1:PARTICIPANTS_NUM
 end
 
 features_array = [delta' theta' slow_alpha' alpha' beta' gamma'];
+features_array = zscore(features_array);
 labels         = [valence_labels' arousal_labels' dominance_labels' liking_labels'];
 
+for i = 1:size(valence_labels,2)
+    if(valence_labels(i) == 1 && arousal_labels(i) == 1)
+        labels_2(i) = "HVHA";
+    elseif (valence_labels(i) == 1 && arousal_labels(i) == 0)
+        labels_2(i) = "HVLA";
+    elseif (valence_labels(i) == 0 && arousal_labels(i) == 1)
+        labels_2(i) = "LVHA";
+    else
+        labels_2(i) = "LVLA";
+    end        
+end
 %% Visualizing Features
 figure(1);
 varnames = {'Delta' 'Theta' 'Slow Alpha' 'Alpha' 'Beta' 'Gamma'};
-gplotmatrix(features_array(:,[1 6]),[],labels(:,1:2),'rgbk',[],[],'on','grpbars',varnames([1 6]), varnames([1 6]));
+%gplotmatrix(features_array,[],labels_2',['b' 'r' 'g' 'k'],[],[],'on','grpbars',varnames, varnames);
+gplotmatrix(features_array,[],labels(:,2),['k' 'r'],[],[],'on','grpbars',varnames, varnames);
