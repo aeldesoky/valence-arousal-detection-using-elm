@@ -9,13 +9,16 @@ VIDEOS_NUM       = 40;
 %% Load Data
 addpath(genpath('Matlab/TEAP-master'));
 
-data_path = 'C:\Users\mjad9\Desktop\DEAP\MATLAB_data_preprocessed\';
+matt_data_path = 'C:\Users\mjad9\Desktop\DEAP\MATLAB_data_preprocessed\';
+amir_data_path = '~/Desktop/DEAP/MATLAB_data_preprocessed/';
 
-if ~exist([data_path '\s30_eeglab.mat'],'file')
+data_path = amir_data_path;
+
+if ~exist([data_path '/s30_eeglab.mat'],'file')
     loading_DEAP(data_path);
 end 
 
-feedbacks = readtable('C:\Users\mjad9\Desktop\DEAP\participant_ratings.csv');
+feedbacks = readtable('~/Desktop/DEAP/participant_ratings.csv');
 
 %% Extracting Features
 for participant = 1:PARTICIPANTS_NUM
@@ -23,6 +26,11 @@ for participant = 1:PARTICIPANTS_NUM
     disp(eeglab_file)
     bulk = Bulk_load(eeglab_file);
     
+    means_array = [];
+    std_array   = [];
+    kurtosis_array = [];
+    skewness_array = [];
+    entropy_array =[];
     for epoch = 1:VIDEOS_NUM
         %extracting EMG features
         [features(participant,epoch).EMG_feats, features(participant,epoch).EMG_feats_names] = EMG_feat_extr(bulk(epoch));
@@ -42,8 +50,24 @@ for participant = 1:PARTICIPANTS_NUM
         features(participant,epoch).feedback.felt_dominance   = feedback.Dominance;
         features(participant,epoch).feedback.felt_liking      = feedback.Liking;
         features(participant,epoch).feedback.felt_familiarity = feedback.Familiarity;
+        
+        video_signal   = Bulk_get_signal(bulk(epoch), 'EEG');
+        video_raw_data = cell2mat(struct2cell(video_signal.raw));
+        [mean, std, kurtosis, skewness] = Signal_feat_stat_moments(video_raw_data, 'Skip');
+        means_array = [means_array, mean];
+        std_array = [std_array, std];
+        kurtosis_array = [kurtosis_array, kurtosis];
+        skewness_array = [skewness_array, skewness];
+        entropy_array = [entropy_array, entropy(video_raw_data)'];
+       
         fprintf('extracted all the features for subject %d epoch %d\n',participant, epoch);
     end
+    
+    means_matrix{participant} = means_array;
+    std_matrix{participant} = std_array;
+    kurtosis_matrix{participant} = kurtosis_array;
+    skewness_matrix{participant} = skewness_array;
+    entropy_matrix{participant} =  entropy_array';
 end
 
 save([data_path 'deap_features.mat'],'features');
@@ -81,19 +105,24 @@ for participant = 1:PARTICIPANTS_NUM
         arousal_labels   = [arousal_labels, repmat(arousal > 5, 1, 32)];
         dominance_labels = [dominance_labels, repmat(dominance > 5, 1, 32)];
         liking_labels    = [liking_labels, repmat(liking > 5, 1, 32)];
-        
-        delta_array(participant,video) = mean(features(participant,video).EEG_feats(1,:)); 
-        theta_array(participant,video) = mean(features(participant,video).EEG_feats(2,:)); 
-        slowalpha_array(participant,video) = mean(features(participant,video).EEG_feats(3,:)); 
-        alpha_array(participant,video) = mean(features(participant,video).EEG_feats(4,:)); 
-        beta_array(participant,video) = mean(features(participant,video).EEG_feats(5,:)); 
-        gamma_array(participant,video) = mean(features(participant,video).EEG_feats(6,:)); 
+
+%         delta_array(participant,video) = mean(features(participant,video).EEG_feats(1,:)); 
+%         theta_array(participant,video) = mean(features(participant,video).EEG_feats(2,:)); 
+%         slowalpha_array(participant,video) = mean(features(participant,video).EEG_feats(3,:)); 
+%         alpha_array(participant,video) = mean(features(participant,video).EEG_feats(4,:)); 
+%         beta_array(participant,video) = mean(features(participant,video).EEG_feats(5,:)); 
+%         gamma_array(participant,video) = mean(features(participant,video).EEG_feats(6,:)); 
         
     end
 end
 
-features_array = [delta' theta' slow_alpha' alpha' beta' gamma'];
-features_array = zscore(features_array);
+means_features = cell2mat(means_matrix');
+std_features = cell2mat(std_matrix');
+kurtosis_features = cell2mat(kurtosis_matrix');
+skewness_features = cell2mat(skewness_matrix');
+entropy_features = cell2mat(entropy_matrix');
+
+features_array = [delta' theta' slow_alpha' alpha' beta' gamma' means_features(:) std_features(:) kurtosis_features(:) skewness_features(:) entropy_features(:)];
 labels         = [valence_labels' arousal_labels' dominance_labels' liking_labels'];
 
 for i = 1:size(valence_labels,2)
@@ -107,8 +136,19 @@ for i = 1:size(valence_labels,2)
         labels_2(i) = "LVLA";
     end        
 end
+
 %% Visualizing Features
 figure(1);
-varnames = {'Delta' 'Theta' 'Slow Alpha' 'Alpha' 'Beta' 'Gamma'};
+varnames = {'Delta' 'Theta' 'Slow Alpha' 'Alpha' 'Beta' 'Gamma' 'mean' 'std' 'kurtosis' 'skewness' 'entropy'};
 %gplotmatrix(features_array,[],labels_2',['b' 'r' 'g' 'k'],[],[],'on','grpbars',varnames, varnames);
 gplotmatrix(features_array,[],labels(:,2),['k' 'r'],[],[],'on','grpbars',varnames, varnames);
+
+%% Feature Selection
+delta = features_array(:,1);
+mean  = features_array(:,10);
+theta = features_array(:,11);
+
+scatter3(delta(labels(:, 2)==1), mean(labels(:,2) == 1), theta(labels(:,2)==1)); 
+hold on;
+scatter3(delta(labels(:, 2)==0), mean(labels(:,2) ==0), theta(labels(:,2)==0)); 
+
