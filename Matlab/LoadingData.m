@@ -31,6 +31,8 @@ for participant = 1:PARTICIPANTS_NUM
     kurtosis_array = [];
     skewness_array = [];
     entropy_array =[];
+    energy_array =[];
+    
     for epoch = 1:VIDEOS_NUM
         %extracting EMG features
         [features(participant,epoch).EMG_feats, features(participant,epoch).EMG_feats_names] = EMG_feat_extr(bulk(epoch));
@@ -54,12 +56,14 @@ for participant = 1:PARTICIPANTS_NUM
         video_signal   = Bulk_get_signal(bulk(epoch), 'EEG');
         video_raw_data = cell2mat(struct2cell(video_signal.raw));
         [mean, std, kurtosis, skewness] = Signal_feat_stat_moments(video_raw_data, 'Skip');
+        energy = Signal_feat_energy(video_raw_data, 'Skip');
+
         means_array = [means_array, mean];
         std_array = [std_array, std];
         kurtosis_array = [kurtosis_array, kurtosis];
         skewness_array = [skewness_array, skewness];
         entropy_array = [entropy_array, entropy(video_raw_data)'];
-       
+        energy_array = [energy_array, energy'];
         fprintf('extracted all the features for subject %d epoch %d\n',participant, epoch);
     end
     
@@ -67,7 +71,8 @@ for participant = 1:PARTICIPANTS_NUM
     std_matrix{participant} = std_array;
     kurtosis_matrix{participant} = kurtosis_array;
     skewness_matrix{participant} = skewness_array;
-    entropy_matrix{participant} =  entropy_array';
+    entropy_matrix{participant} =  entropy_array;
+    energy_matrix{participant} = energy_array;
 end
 
 save([data_path 'deap_features.mat'],'features');
@@ -121,8 +126,9 @@ std_features = cell2mat(std_matrix');
 kurtosis_features = cell2mat(kurtosis_matrix');
 skewness_features = cell2mat(skewness_matrix');
 entropy_features = cell2mat(entropy_matrix');
-
-features_array = [delta' theta' slow_alpha' alpha' beta' gamma' means_features(:) std_features(:) kurtosis_features(:) skewness_features(:) entropy_features(:)];
+energy_features = cell2mat(energy_matrix');
+features_array = [delta' theta' slow_alpha' alpha' beta' gamma' means_features(:) std_features(:) kurtosis_features(:) skewness_features(:) entropy_features(:) energy_features(:)];
+fetures_array = zscore(features_array);
 labels         = [valence_labels' arousal_labels' dominance_labels' liking_labels'];
 
 for i = 1:size(valence_labels,2)
@@ -139,16 +145,15 @@ end
 
 %% Visualizing Features
 figure(1);
-varnames = {'Delta' 'Theta' 'Slow Alpha' 'Alpha' 'Beta' 'Gamma' 'mean' 'std' 'kurtosis' 'skewness' 'entropy'};
-%gplotmatrix(features_array,[],labels_2',['b' 'r' 'g' 'k'],[],[],'on','grpbars',varnames, varnames);
-gplotmatrix(features_array,[],labels(:,2),['k' 'r'],[],[],'on','grpbars',varnames, varnames);
+varnames = {'Delta' 'Theta' 'Slow Alpha' 'Alpha' 'Beta' 'Gamma' 'mean' 'std' 'kurtosis' 'skewness' 'entropy' 'energy'};
+gplotmatrix(features_array,[],labels_2',['b' 'r' 'g' 'k'],[],[],'on','grpbars',varnames, varnames);
+%gplotmatrix(features_array,[],labels(:,2),['k' 'r'],[],[],'on','grpbars',varnames, varnames);
 
 %% Feature Selection
-delta = features_array(:,1);
-mean  = features_array(:,10);
-theta = features_array(:,11);
+partition = cvpartition(labels(:,1), 'KFold', 10);
+options   = statset('display', 'iter');
 
-scatter3(delta(labels(:, 2)==1), mean(labels(:,2) == 1), theta(labels(:,2)==1)); 
-hold on;
-scatter3(delta(labels(:, 2)==0), mean(labels(:,2) ==0), theta(labels(:,2)==0)); 
+criterion = @(XT,yT,Xt,yt) ...
+      (sum(yt ~= classify(Xt,XT,yT, 'quadratic')));
 
+[fs,history] = sequentialfs(criterion,features_array,labels(:,1),'direction', 'backward', 'cv',partition,'options',options);
