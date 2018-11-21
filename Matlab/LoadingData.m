@@ -128,32 +128,43 @@ skewness_features = cell2mat(skewness_matrix');
 entropy_features = cell2mat(entropy_matrix');
 energy_features = cell2mat(energy_matrix');
 features_array = [delta' theta' slow_alpha' alpha' beta' gamma' means_features(:) std_features(:) kurtosis_features(:) skewness_features(:) entropy_features(:) energy_features(:)];
-fetures_array = zscore(features_array);
+features_array = zscore(features_array);
 labels         = [valence_labels' arousal_labels' dominance_labels' liking_labels'];
 
 for i = 1:size(valence_labels,2)
     if(valence_labels(i) == 1 && arousal_labels(i) == 1)
-        labels_2(i) = "HVHA";
+        labels_2(i) = 1;
     elseif (valence_labels(i) == 1 && arousal_labels(i) == 0)
-        labels_2(i) = "HVLA";
+        labels_2(i) = 2;
     elseif (valence_labels(i) == 0 && arousal_labels(i) == 1)
-        labels_2(i) = "LVHA";
+        labels_2(i) = 3;
     else
-        labels_2(i) = "LVLA";
+        labels_2(i) = 4;
     end        
 end
 
 %% Visualizing Features
-figure(1);
+figure(5);
 varnames = {'Delta' 'Theta' 'Slow Alpha' 'Alpha' 'Beta' 'Gamma' 'mean' 'std' 'kurtosis' 'skewness' 'entropy' 'energy'};
 gplotmatrix(features_array,[],labels_2',['b' 'r' 'g' 'k'],[],[],'on','grpbars',varnames, varnames);
 %gplotmatrix(features_array,[],labels(:,2),['k' 'r'],[],[],'on','grpbars',varnames, varnames);
 
 %% Feature Selection
-partition = cvpartition(labels(:,1), 'KFold', 10);
+partition = cvpartition(labels_2', 'KFold', 10);
 options   = statset('display', 'iter');
 
 criterion = @(XT,yT,Xt,yt) ...
       (sum(yt ~= classify(Xt,XT,yT, 'quadratic')));
 
-[fs,history] = sequentialfs(criterion,features_array,labels(:,1),'direction', 'backward', 'cv',partition,'options',options);
+[fs,history] = sequentialfs(criterion,features_array,labels_2','direction', 'backward', 'cv',partition,'options',options);
+
+%% Training ELM
+training_indices = training(partition,1);
+testing_indices  = test(partition,1);
+elm_features = [labels_2' features_array];
+testing_set = elm_features(testing_indices,:);
+training_set = elm_features(training_indices,:);
+
+dlmwrite('training_set.txt', training_set);
+dlmwrite('testing_set.txt', testing_set);
+[TrainingTime, TestingTime, TrainingAccuracy, TestingAccuracy] = ELM('training_set.txt', 'testing_set.txt', 0, 20, 'sig')
