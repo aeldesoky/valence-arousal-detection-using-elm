@@ -12,16 +12,24 @@ addpath(genpath('Matlab/TEAP-master'));
 matt_data_path = 'C:\Users\mjad9\Desktop\DEAP\MATLAB_data_preprocessed\';
 amir_data_path = '~/Desktop/DEAP/MATLAB_data_preprocessed/';
 
-data_path = amir_data_path;
+data_path = matt_data_path;
 
 if ~exist([data_path '/s30_eeglab.mat'],'file')
     loading_DEAP(data_path);
 end 
 
+<<<<<<< HEAD
 feedbacks = readtable('~/Desktop/DEAP/participant_ratings.csv');
 nn_features = [];
 
 %% Extracting Features
+good_channels = [1 3 8 11 17 20 26 29];
+
+=======
+feedbacks = readtable('C:\Users\mjad9\Desktop\DEAP\participant_ratings.csv');
+
+%% Extracting Features
+>>>>>>> fc8e2a3cf5fbdad25639459195faf949c2bfd7ab
 for participant = 1:PARTICIPANTS_NUM
     eeglab_file = sprintf('%ss%0.2d_eeglab.mat', data_path, participant);
     disp(eeglab_file)
@@ -57,19 +65,30 @@ for participant = 1:PARTICIPANTS_NUM
         
         video_signal   = Bulk_get_signal(bulk(epoch), 'EEG');
         video_raw_data = cell2mat(struct2cell(video_signal.raw));
+<<<<<<< HEAD
+
+=======
+>>>>>>> fc8e2a3cf5fbdad25639459195faf949c2bfd7ab
         [mean, std, kurtosis, skewness] = Signal_feat_stat_moments(video_raw_data, 'Skip');
         energy = Signal_feat_energy(video_raw_data, 'Skip');
-%         for i=1:32
-%             katz(i) = Katz_FD(video_raw_data(i,:));
-%         end
+        for i=1:32
+            katz(i) = Katz_FD(video_raw_data(i,:));
+        end
         means_array = [means_array, mean];
         std_array = [std_array, std];
         kurtosis_array = [kurtosis_array, kurtosis];
         skewness_array = [skewness_array, skewness];
+<<<<<<< HEAD
         energy_array = [energy_array, energy'];
         nn_features = [nn_features;video_raw_data];
         entropy_array = [entropy_array, entropy(video_raw_data)'];
         %katz_array = [katz_array, katz];
+=======
+        entropy_array = [entropy_array, entropy(video_raw_data)'];
+        energy_array = [energy_array, energy'];       
+        katz_array = [katz_array, katz];
+        
+>>>>>>> fc8e2a3cf5fbdad25639459195faf949c2bfd7ab
         
         fprintf('extracted all the features for subject %d epoch %d\n',participant, epoch);
     end
@@ -159,15 +178,25 @@ gplotmatrix(features_array,[],labels_2',['b' 'r' 'g' 'k'],[],[],'on','grpbars',v
 %gplotmatrix(features_array,[],labels(:,2),['k' 'r'],[],[],'on','grpbars',varnames, varnames);
 
 %% Feature Selection
+<<<<<<< HEAD
 partition = cvpartition(labels(:,1), 'KFold', 10);
+=======
+partition = cvpartition(labels_2', 'KFold', 10);
+>>>>>>> fc8e2a3cf5fbdad25639459195faf949c2bfd7ab
 options   = statset('display', 'iter');
 
 criterion = @(XT,yT,Xt,yt) ...
       (sum(yt ~= classify(Xt,XT,yT, 'quadratic')));
 
+<<<<<<< HEAD
 [fs,history] = sequentialfs(criterion,features_array,labels(:,1),'direction', 'forward', 'cv',partition,'options',options);
 
 %% ELM
+=======
+[fs,history] = sequentialfs(criterion,features_array,labels_2','direction', 'backward', 'cv',partition,'options',options);
+
+%% Training ELM
+>>>>>>> fc8e2a3cf5fbdad25639459195faf949c2bfd7ab
 training_indices = training(partition,1);
 testing_indices  = test(partition,1);
 elm_features = [labels(:,1) features_array];
