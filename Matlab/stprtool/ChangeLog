@@ -1,0 +1,21 @@
+2011-08-15 Vojtech Franc
+	* Added #include<float.h> to svm2_mex.c, gnpp_mex.c and gmnp_mex.c to allow
+	make it compile under Windows. Bug reported by Roland J. Graf <roland.graf@fh-salzburg.ac.at>
+2009-10-22 Vojtech Franc
+	* Bug fixed in the function bayeserr. The function was returening zero risk when 
+	the first Gaussion completely dominated the second one. Bug reported by
+	krejci.filip@gmail.com. 	 
+2009-08-14 Vojtech Franc
+	* DBL_MAX and INT_MAX removed from bsvm2.c; it caused problems during compile on
+	some Windows machines.
+2008-12-18  Vojtech Franc
+	* fixed problem with Init_centers in cmeans.m; this argument was ignored; now
+	it is used as the initial solution; pointed out by Sauptik Dhar <dharx007@umn.edu>
+2008-10-21  Vojtech Franc
+	* bsvm2_mec.c and bsvm2.m made more readable. There was a mismatch
+	in the formula for computing Alphas compared to what we have in our paper.
+	Now, it the fomulas in c-code and the paper corespond.
+2008-07-24  Vojtech Franc 
+	* fixed problem with computing radius in minball.m; the bug
+	was pointed out by Daewon Lee <daewon@tuebingen.mpg.de>
+	

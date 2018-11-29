@@ -1,0 +1,106 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">BSVM2</b>
+<td valign="baseline" align="right" class="function"><a href="../svm/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Multi-class BSVM with L2-soft margin.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;bsvm2(&nbsp;data,&nbsp;options&nbsp;)&nbsp;</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;function&nbsp;trains&nbsp;the&nbsp;multi-class&nbsp;SVM&nbsp;classifier&nbsp;based</span><br>
+<span class=help>&nbsp;&nbsp;on&nbsp;BSVM&nbsp;formulation&nbsp;(bias&nbsp;added&nbsp;to&nbsp;the&nbsp;objective&nbsp;function)&nbsp;and</span><br>
+<span class=help>&nbsp;&nbsp;L2-soft&nbsp;margin&nbsp;penalization&nbsp;of&nbsp;misclassifications.</span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;quadratic&nbsp;programming&nbsp;task&nbsp;is&nbsp;optimized&nbsp;by&nbsp;one&nbsp;of&nbsp;the</span><br>
+<span class=help>&nbsp;&nbsp;following&nbsp;algorithms:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;mdm&nbsp;&nbsp;...&nbsp;Mitchell-Demyanov-Malozemov</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;imdm&nbsp;&nbsp;...&nbsp;Mitchell-Demyanov-Malozemov&nbsp;Improved&nbsp;1.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;iimdm&nbsp;&nbsp;...&nbsp;Mitchell-Demyanov-Malozemov&nbsp;Improved&nbsp;2.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;kozinec&nbsp;...&nbsp;Kozinec&nbsp;algorithm.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;keerthi&nbsp;...&nbsp;NPA&nbsp;algorithm&nbsp;by&nbsp;Keerthi&nbsp;et&nbsp;al.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;kowalczyk&nbsp;...&nbsp;Based&nbsp;on&nbsp;Kowalczyk's&nbsp;maximal&nbsp;margin&nbsp;perceptron.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;For&nbsp;more&nbsp;info&nbsp;refer&nbsp;to&nbsp;V.Franc:&nbsp;Optimization&nbsp;Algorithms&nbsp;for&nbsp;Kernel&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;Methods.&nbsp;Research&nbsp;report.&nbsp;CTU-CMP-2005-22.&nbsp;CTU&nbsp;FEL&nbsp;Prague.&nbsp;2005.</span><br>
+<span class=help>&nbsp;&nbsp;ftp://cmp.felk.cvut.cz/pub/cmp/articles/franc/Franc-PhD.pdf&nbsp;.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Training&nbsp;data:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;(1,2,...,nclass).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Control&nbsp;parameters:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.ker&nbsp;[string]&nbsp;Kernel&nbsp;identifier.&nbsp;See&nbsp;'help&nbsp;kernel'.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.arg&nbsp;[1&nbsp;x&nbsp;nargs]&nbsp;Kernel&nbsp;argument(s).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.C&nbsp;[1x1]&nbsp;Regularization&nbsp;constant.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.solver&nbsp;[string]&nbsp;Solver&nbsp;to&nbsp;be&nbsp;used:&nbsp;'mdm',&nbsp;'imdm'&nbsp;(default),&nbsp;'iimdm',&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'kozinec',&nbsp;'kowalczyk','keerthi'.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;(default&nbsp;inf).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.tolabs&nbsp;[1x1]&nbsp;Absolute&nbsp;tolerance&nbsp;stopping&nbsp;condition&nbsp;(default&nbsp;0.0).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.tolrel&nbsp;[1x1]&nbsp;Relative&nbsp;tolerance&nbsp;stopping&nbsp;condition&nbsp;(default&nbsp;0.001).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.thlb&nbsp;[1x1]&nbsp;Thereshold&nbsp;on&nbsp;the&nbsp;lower&nbsp;bound&nbsp;(default&nbsp;inf).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.cache&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;columns&nbsp;of&nbsp;kernel&nbsp;matrix&nbsp;to&nbsp;be&nbsp;cached&nbsp;(default&nbsp;1000).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.verb&nbsp;[1x1]&nbsp;If&nbsp;&gt;&nbsp;0&nbsp;then&nbsp;some&nbsp;info&nbsp;is&nbsp;printed&nbsp;(default&nbsp;0).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Multi-class&nbsp;SVM&nbsp;classifier:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;nclass]&nbsp;Weights.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.b&nbsp;[nclass&nbsp;x&nbsp;1]&nbsp;Biases.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;nsv]&nbsp;Support&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.nsv&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;support&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.options&nbsp;[struct]&nbsp;Copy&nbsp;of&nbsp;input&nbsp;options.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.UB&nbsp;[1x1]&nbsp;Upper&nbsp;bound&nbsp;on&nbsp;the&nbsp;optimal&nbsp;solution.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.LB&nbsp;[1x1]&nbsp;Lower&nbsp;bound&nbsp;on&nbsp;the&nbsp;optimal&nbsp;solution.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.History&nbsp;[2&nbsp;x&nbsp;(t+1)]&nbsp;UB&nbsp;and&nbsp;LB&nbsp;with&nbsp;respect&nbsp;to&nbsp;t.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.trnerr&nbsp;[1x1]&nbsp;Training&nbsp;classification&nbsp;error.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.kercnt&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;kernel&nbsp;evaluations.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.cputime&nbsp;[1x1]&nbsp;CPU&nbsp;time&nbsp;(measured&nbsp;by&nbsp;tic-toc).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.stat&nbsp;[struct]&nbsp;Statistics&nbsp;about&nbsp;optimization:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.access&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;requested&nbsp;columns&nbsp;of&nbsp;matrix&nbsp;H.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.UB&nbsp;[1x1]&nbsp;Upper&nbsp;bound&nbsp;on&nbsp;the&nbsp;optimal&nbsp;value&nbsp;of&nbsp;criterion.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.LB&nbsp;[1x1]&nbsp;Lower&nbsp;bound&nbsp;on&nbsp;the&nbsp;optimal&nbsp;value&nbsp;of&nbsp;criterion.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.LB_History&nbsp;[1x(t+1)]&nbsp;LB&nbsp;with&nbsp;respect&nbsp;to&nbsp;t.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.UB_History&nbsp;[1x(t+1)]&nbsp;UB&nbsp;with&nbsp;respect&nbsp;to&nbsp;t.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.NA&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;non-zero&nbsp;elements&nbsp;in&nbsp;solution.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;=&nbsp;load('pentagon');</span><br>
+<span class=help>&nbsp;&nbsp;options&nbsp;=&nbsp;struct('ker','rbf','arg',1,'C',10);</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;bsvm2(data,options&nbsp;)</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;ppatterns(data);&nbsp;ppatterns(model.sv.X,'ok',12);</span><br>
+<span class=help>&nbsp;&nbsp;pboundary(model);</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../svm/svmclass.html" target="mdsbody">SVMCLASS</a>,&nbsp;<a href = "../svm/oaasvm.html" target="mdsbody">OAASVM</a>,&nbsp;<a href = "../svm/oaosvm.html" target="mdsbody">OAOSVM</a>,&nbsp;GMNP.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../svm/list/bsvm2.html">bsvm2.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2005, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 09-sep-2005, VF<br>
+ 24-jan-2005, VF<br>
+ 29-nov-2004, VF<br>
+ 26-nov-2004, VF<br>
+ 16-Nov-2004, VF<br>
+ 31-may-2004, VF<br>
+ 23-jan-2003, VF<br>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>gsamp.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>X</span>=<span class=defun_name>gsamp</span>(<span class=defun_in>varargin</span>)<br>
+<span class=h1>%&nbsp;GSAMP&nbsp;Generates&nbsp;sample&nbsp;from&nbsp;Gaussian&nbsp;distribution.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;=&nbsp;gsamp(&nbsp;Mean,&nbsp;Cov,&nbsp;num_data&nbsp;)</span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;=&nbsp;gsamp(&nbsp;model,&nbsp;num_data&nbsp;)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;=&nbsp;gsamp(Mean,Cov,num_data)&nbsp;generates&nbsp;num_data&nbsp;samples&nbsp;from&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;a&nbsp;multi-variate&nbsp;Gassian&nbsp;distribution&nbsp;given&nbsp;by&nbsp;mean&nbsp;vector&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;Mean&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;and&nbsp;covariance&nbsp;matrix&nbsp;Cov&nbsp;[dim&nbsp;x&nbsp;dim].&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;=&nbsp;gsamp(model,num_data)&nbsp;assumes&nbsp;that&nbsp;parameters&nbsp;of&nbsp;Gaussian</span><br>
+<span class=help>%&nbsp;&nbsp;are&nbsp;given&nbsp;in&nbsp;structure&nbsp;with&nbsp;fields&nbsp;model.Mean&nbsp;a&nbsp;model.Cov.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;struct('Mean',1,'Cov',2);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;hold&nbsp;on;</span><br>
+<span class=help>%&nbsp;&nbsp;plot([-4:0.1:5],pdfgauss([-4:0.1:5],model),'r');</span><br>
+<span class=help>%&nbsp;&nbsp;[Y,X]&nbsp;=&nbsp;hist(gsamp(model,500),10);</span><br>
+<span class=help>%&nbsp;&nbsp;bar(X,Y/500);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;PDFGAUSS,&nbsp;GMMSAMP.</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;28-apr-2004,&nbsp;VF,&nbsp;adopted&nbsp;from&nbsp;P.Krizek&nbsp;</span><br>
+<br>
+<hr>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&gt;&nbsp;2,<br>
+&nbsp;&nbsp;Mean&nbsp;=&nbsp;<span class=stack>varargin</span>{1};<br>
+&nbsp;&nbsp;Cov&nbsp;=&nbsp;<span class=stack>varargin</span>{2};<br>
+&nbsp;&nbsp;num_data&nbsp;=&nbsp;<span class=stack>varargin</span>{3};<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;Mean&nbsp;=&nbsp;<span class=stack>varargin</span>{1}.Mean;<br>
+&nbsp;&nbsp;Cov&nbsp;=&nbsp;<span class=stack>varargin</span>{1}.Cov;<br>
+&nbsp;&nbsp;num_data&nbsp;=&nbsp;<span class=stack>varargin</span>{2};<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;get&nbsp;dimension</span><br>
+dim&nbsp;=&nbsp;length(Mean);<br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;eigen&nbsp;values&nbsp;and&nbsp;vectors</span><br>
+[U,L]&nbsp;=&nbsp;eig(Cov);<br>
+<br>
+<span class=comment>%&nbsp;dewhitening&nbsp;transform</span><br>
+X&nbsp;=&nbsp;inv(U')*sqrt(L)*randn(dim,num_data)+repmat(Mean,1,num_data);<br>
+<br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+</code>

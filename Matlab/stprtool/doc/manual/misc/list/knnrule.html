@@ -1,0 +1,53 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>knnrule.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model</span>=<span class=defun_name>knnrule</span>(<span class=defun_in>data,K</span>)<br>
+<span class=h1>%&nbsp;KNNRULE&nbsp;Creates&nbsp;K-nearest&nbsp;neighbours&nbsp;classifier.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model=knnrule(data)</span><br>
+<span class=help>%&nbsp;&nbsp;model=knnrule(data,K)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;It&nbsp;creates&nbsp;model&nbsp;of&nbsp;the&nbsp;K-nearest&nbsp;neighbour&nbsp;classifier.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Prototypes&nbsp;(training)&nbsp;data.</span><br>
+<span class=help>%&nbsp;&nbsp;data.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;of&nbsp;training&nbsp;data.</span><br>
+<span class=help>%&nbsp;&nbsp;K&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;the&nbsp;nerest&nbsp;neighbours&nbsp;(default&nbsp;1).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Model&nbsp;of&nbsp;K-NN&nbsp;classifier.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.X&nbsp;=&nbsp;data.X.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;=&nbsp;data.y.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.K&nbsp;=&nbsp;K.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.num_data&nbsp;[1x1]&nbsp;number&nbsp;of&nbsp;prototypes.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.fun&nbsp;[string]&nbsp;Contains&nbsp;'knnclass'.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data=load('riply_trn');</span><br>
+<span class=help>%&nbsp;&nbsp;model=knnrule(data,1);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;ppatterns(data);&nbsp;pboundary(model);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;KNNCLASS.</span><br>
+<span class=help>%</span><br>
+<hr>
+data=c2s(data);<br>
+<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;2,&nbsp;K=1;&nbsp;<span class=keyword>end</span><br>
+<br>
+model=data;<br>
+model.fun=<span class=quotes>'knnclass'</span>;<br>
+model.K=K;<br>
+model.num_data&nbsp;=&nbsp;size(data.X,2);<br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+<br>
+</code>

@@ -1,0 +1,74 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">SVM1D</b>
+<td valign="baseline" align="right" class="function"><a href="../svm/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Linear SVM for 1-dimensional input data.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;svm1d(&nbsp;data&nbsp;)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;svm1d(&nbsp;data,&nbsp;options&nbsp;)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;svm1d(&nbsp;data&nbsp;)&nbsp;trains&nbsp;the&nbsp;linear&nbsp;SVM&nbsp;binary</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;classifier&nbsp;for&nbsp;the&nbsp;1-dimensional&nbsp;training&nbsp;data.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;optimizer&nbsp;is&nbsp;based&nbsp;on&nbsp;a&nbsp;modification&nbsp;of&nbsp;the&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;Sequential&nbsp;Minimal&nbsp;Optimizer&nbsp;(SMO)&nbsp;[<a href="../references.html#Platt98" title = "J.C.Platt. Sequential minimal optimizer: A fast algorithm for training support vector machines. Technical Report MSR-TR-98-14, Microsoft Research, Redmond, 1998. http://www.research.microsoft.com/~jplatt/smo.html." >Platt98</a>].&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;trainined&nbsp;classfier&nbsp;is&nbsp;defined&nbsp;as</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;q(x)&nbsp;=&nbsp;1&nbsp;if&nbsp;W*x&nbsp;+&nbsp;b&nbsp;&gt;=&nbsp;0</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;2&nbsp;if&nbsp;W*x&nbsp;+&nbsp;b&nbsp;&lt;&nbsp;0</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;svm1d(&nbsp;data,&nbsp;options&nbsp;)&nbsp;use&nbsp;to&nbsp;set&nbsp;up&nbsp;control</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;parameters&nbsp;for&nbsp;the&nbsp;SVM&nbsp;and&nbsp;the&nbsp;SMO&nbsp;algorithm.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Input&nbsp;1-dimensional&nbsp;binary&nbsp;labeled&nbsp;training&nbsp;data:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.X&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;numbers.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Control&nbsp;parameters:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.C&nbsp;[1x1]&nbsp;SVM&nbsp;regularization&nbsp;constant&nbsp;(default&nbsp;C=inf).&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.eps&nbsp;[1x1]&nbsp;Tolerance&nbsp;of&nbsp;KKT-conditions&nbsp;(default&nbsp;eps=0.001).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.tol&nbsp;[1x1]&nbsp;Minimal&nbsp;change&nbsp;of&nbsp;variables&nbsp;(default&nbsp;tol=0.001).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Found&nbsp;SVM&nbsp;model:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;1]&nbsp;Weights.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;decision&nbsp;function.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[1&nbsp;x&nbsp;nsv]&nbsp;Support&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.W&nbsp;[1x1]&nbsp;Explicit&nbsp;value&nbsp;of&nbsp;the&nbsp;normal&nbsp;vector&nbsp;(scalar).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.nsv&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;Support&nbsp;Vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.kercnt&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;kernel&nbsp;evaluations&nbsp;(multiplications&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;this&nbsp;1-d&nbsp;linear&nbsp;case)&nbsp;used&nbsp;by&nbsp;the&nbsp;SMO.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.trnerr&nbsp;[1x1]&nbsp;Training&nbsp;classification&nbsp;error.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.margin&nbsp;[1x1]&nbsp;Margin&nbsp;of&nbsp;found&nbsp;classifier.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.cputime&nbsp;[1x1]&nbsp;Used&nbsp;CPU&nbsp;time&nbsp;in&nbsp;seconds.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.options&nbsp;[struct]&nbsp;Copy&nbsp;of&nbsp;used&nbsp;options.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../svm/smo.html" target="mdsbody">SMO</a>,&nbsp;<a href = "../svm/svmclass.html" target="mdsbody">SVMCLASS</a>,&nbsp;<a href = "../kernels/kfd.html" target="mdsbody">KFD</a>,&nbsp;KFDQP.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../svm/list/svm1d.html">svm1d.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 17-may-2004, VF<br>
+ 14-may-2004, VF<br>
+ 15-july-2003, VF<br>
+
+</body>
+</html>

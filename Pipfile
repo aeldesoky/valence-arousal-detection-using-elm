@@ -11,6 +11,9 @@ tqdm = "*"
 tensorflow = "*"
 scipy = "*"
 mne = "*"
+sklearn = "*"
+ipykernel = "*"
+elm = "*"
 
 [dev-packages]
 

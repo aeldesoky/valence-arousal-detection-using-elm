@@ -1,0 +1,193 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>bayeserr.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[risk,eps1,eps2,inter1]</span>=<span class=defun_name>bayeserr</span>(<span class=defun_in>model</span>)<br>
+<span class=h1>%&nbsp;BAYESERR&nbsp;Bayesian&nbsp;risk&nbsp;for&nbsp;1D&nbsp;Gaussians&nbsp;and&nbsp;0/1-loss.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;[risk,eps1,eps2,inter1]&nbsp;=&nbsp;bayeserr(model)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;computes&nbsp;Bayesian&nbsp;risk&nbsp;of&nbsp;a&nbsp;classifier&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;with&nbsp;the&nbsp;following&nbsp;assumptions:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;-&nbsp;1/0&nbsp;loss&nbsp;function&nbsp;(risk&nbsp;=&nbsp;expectation&nbsp;of&nbsp;misclassification).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;-&nbsp;Binary&nbsp;classification.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;-&nbsp;Class&nbsp;conditional&nbsp;probabilities&nbsp;are&nbsp;univariate&nbsp;Gaussians.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Mixture&nbsp;of&nbsp;two&nbsp;univariate&nbsp;Gaussians.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Mean&nbsp;[1x2]&nbsp;Mean&nbsp;values&nbsp;[Mean1&nbsp;Mean2].</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Cov&nbsp;[1x2]&nbsp;Covariances&nbsp;[Cov1&nbsp;Cov2].</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Prior&nbsp;[1x2]&nbsp;A&nbsp;priory&nbsp;probabilities.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;risk&nbsp;[1x1]&nbsp;Bayesian&nbsp;risk&nbsp;for&nbsp;an&nbsp;optimal&nbsp;classifier.</span><br>
+<span class=help>%&nbsp;&nbsp;eps1&nbsp;[1x1]&nbsp;Integral&nbsp;of&nbsp;p(x|k=1)&nbsp;over&nbsp;x&nbsp;in&nbsp;L2,&nbsp;where</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;L2&nbsp;is&nbsp;the&nbsp;area&nbsp;where&nbsp;x&nbsp;is&nbsp;classified&nbsp;to&nbsp;the&nbsp;2nd&nbsp;class.</span><br>
+<span class=help>%&nbsp;&nbsp;eps2&nbsp;[1x1]&nbsp;Integral&nbsp;of&nbsp;p(x|k=2)&nbsp;over&nbsp;x&nbsp;in&nbsp;L1,&nbsp;where</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;L1&nbsp;is&nbsp;the&nbsp;area&nbsp;where&nbsp;x&nbsp;is&nbsp;classified&nbsp;to&nbsp;the&nbsp;1st&nbsp;class.</span><br>
+<span class=help>%&nbsp;&nbsp;inter1&nbsp;[1x2]&nbsp;or&nbsp;[1x4]&nbsp;One&nbsp;or&nbsp;two&nbsp;intervals&nbsp;describing&nbsp;L1.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;struct('Mean',[0&nbsp;0],'Cov',[1&nbsp;0.4],'Prior',[0.4&nbsp;0.6]);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;hold&nbsp;on;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;h&nbsp;=&nbsp;pgmm(model,struct('comp_color',['r'&nbsp;'g']));&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;legend(h,'P(x)','P(x|y=1)*P(y=1)','P(x|y=2)*P(y=2)');</span><br>
+<span class=help>%&nbsp;&nbsp;[risk,eps1,eps2,interval]&nbsp;=&nbsp;bayeserr(model)</span><br>
+<span class=help>%&nbsp;&nbsp;a&nbsp;=&nbsp;axis;</span><br>
+<span class=help>%&nbsp;&nbsp;plot([interval(2)&nbsp;interval(2)],[a(3)&nbsp;a(4)],'k');</span><br>
+<span class=help>%&nbsp;&nbsp;plot([interval(3)&nbsp;interval(3)],[a(3)&nbsp;a(4)],'k');</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;BAYESDF,&nbsp;BAYESCLS</span><br>
+<span class=help>%</span><br>
+<hr>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;22-oct-2009,&nbsp;VF,&nbsp;fixed&nbsp;bug&nbsp;on&nbsp;line&nbsp;157;&nbsp;bug&nbsp;reported&nbsp;2009-10-08&nbsp;by&nbsp;krejci.filip@gmail.com</span><br>
+<span class=help1>%&nbsp;20-mar-2006,&nbsp;VF,&nbsp;A&nbsp;mistake&nbsp;in&nbsp;help&nbsp;removed;&nbsp;bug&nbsp;reported&nbsp;by&nbsp;O.&nbsp;Sychrovksy.</span><br>
+<span class=help1>%&nbsp;02-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;19-sep-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;27-Oct-2001,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;allow&nbsp;input&nbsp;to&nbsp;be&nbsp;a&nbsp;cell</span><br>
+model&nbsp;=&nbsp;c2s(model);<br>
+<br>
+<span class=comment>%&nbsp;univariate&nbsp;variances&nbsp;can&nbsp;be&nbsp;given&nbsp;as&nbsp;a&nbsp;vector</span><br>
+<span class=keyword>if</span>&nbsp;size(model.Cov,1)&nbsp;~=&nbsp;size(model.Cov,2),&nbsp;<br>
+&nbsp;&nbsp;model.Cov&nbsp;=&nbsp;reshape(model.Cov,1,1,2);&nbsp;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;finds&nbsp;out&nbsp;decision&nbsp;function&nbsp;which&nbsp;is&nbsp;generaly&nbsp;quadratic</span><br>
+quad_model=bayesdf(model);<br>
+a&nbsp;=&nbsp;quad_model.A;<br>
+b&nbsp;=&nbsp;quad_model.B;<br>
+c&nbsp;=&nbsp;quad_model.C;<br>
+<br>
+<span class=comment>%&nbsp;get&nbsp;parameters</span><br>
+p1=model.Prior(1);&nbsp;p2=model.Prior(2);<br>
+c1=model.Cov(:,:,1);&nbsp;c2=model.Cov(:,:,2);<br>
+m1=model.Mean(1);&nbsp;m2=model.Mean(2);<br>
+<br>
+<span class=comment>%&nbsp;Split&nbsp;X&nbsp;into&nbsp;X1&nbsp;and&nbsp;X2&nbsp;according&nbsp;to&nbsp;the&nbsp;computed&nbsp;quadratic&nbsp;</span><br>
+<span class=comment>%&nbsp;discriminat&nbsp;function&nbsp;ax^2&nbsp;+&nbsp;bx&nbsp;+&nbsp;c&nbsp;=&nbsp;0&nbsp;and&nbsp;computes&nbsp;</span><br>
+<span class=comment>%&nbsp;eps1&nbsp;and&nbsp;eps2.</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;a==0,<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;The&nbsp;decision&nbsp;function&nbsp;is&nbsp;linear,&nbsp;i.e.&nbsp;in&nbsp;1D&nbsp;it&nbsp;is&nbsp;a</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;single&nbsp;threshold.</span><br>
+&nbsp;&nbsp;&nbsp;th=-c/b;<br>
+&nbsp;&nbsp;&nbsp;inter1=[th,inf];<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;gets&nbsp;label&nbsp;for&nbsp;the&nbsp;interval&nbsp;(th,inf)</span><br>
+&nbsp;&nbsp;&nbsp;class=classify(th+1,p1,p2,m1,m2,c1,c2);<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;abs(c)==inf,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;risk=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;class==1,,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps1=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps2=1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inter1=[-inf,inf];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=jump>return</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps1=1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps2=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inter1=[];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;eps1=1-erfc2(th,m1,sqrt(c1));<br>
+&nbsp;&nbsp;&nbsp;eps2=erfc2(th,m2,sqrt(c2));&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;class==2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;swap&nbsp;eps1&nbsp;and&nbsp;eps2</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmp=eps2;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps2=eps1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps1=tmp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;The&nbsp;decision&nbsp;function&nbsp;is&nbsp;quadratic,&nbsp;i.e.&nbsp;in&nbsp;2d</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;there&nbsp;exis&nbsp;two&nbsp;thresholds&nbsp;which&nbsp;determine&nbsp;three&nbsp;intervals.</span><br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;D=b^2-4*a*c;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;D&nbsp;&gt;&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th1=(-b-sqrt(D))/(2*a);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th2=(-b+sqrt(D))/(2*a);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;th1&nbsp;&gt;&nbsp;th2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmp=th1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th1=th2;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th2=tmp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;finds&nbsp;out&nbsp;label&nbsp;for&nbsp;the&nbsp;interval&nbsp;[th1,th2].</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class=classify((th2+th1)/2,p1,p2,m1,m2,c1,c2);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;class==2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;integral&nbsp;eps2&nbsp;=&nbsp;int_th2^inf&nbsp;+&nbsp;int_{-inf}^th1</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps2&nbsp;=&nbsp;1&nbsp;+&nbsp;erfc2(th2,m2,sqrt(c2))&nbsp;-&nbsp;erfc2(th1,m2,sqrt(c2));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;integral&nbsp;eps1=&nbsp;int_th1^th2</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps1&nbsp;=&nbsp;erfc2(th1,m1,sqrt(c1))&nbsp;-&nbsp;erfc2(th2,m1,sqrt(c1));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inter1=[-inf,th1,th2,inf];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;integral&nbsp;eps1&nbsp;=&nbsp;int_th2^inf&nbsp;+&nbsp;int_{-inf}^th1</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps1&nbsp;=&nbsp;1&nbsp;+&nbsp;erfc2(th2,m1,sqrt(c1))&nbsp;-&nbsp;erfc2(th1,m1,sqrt(c1));&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;integral&nbsp;eps2=&nbsp;int_th1^th2</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps2=erfc2(th1,m2,sqrt(c2))-erfc2(th2,m2,sqrt(c2));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inter1=[th1,th2];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;finds&nbsp;out&nbsp;label&nbsp;for&nbsp;the&nbsp;interval&nbsp;[-inf,inf].</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class=classify(0,p1,p2,m1,m2,c1,c2);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;class&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps1=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps2=1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inter1=[-inf,inf];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps1=1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps2=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inter1=[];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;risk=0;&nbsp;%&nbsp;bug&nbsp;reported&nbsp;2009-10-08&nbsp;by&nbsp;krejci.filip@gmail.com</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;computes&nbsp;the&nbsp;Bayesian&nbsp;risk&nbsp;</span><br>
+risk&nbsp;=&nbsp;p1*(&nbsp;eps1&nbsp;-&nbsp;eps2&nbsp;)&nbsp;+&nbsp;eps2;<br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+<span class=comment>%-----------------------------------------------</span><br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>class&nbsp;</span>=&nbsp;<span class=defun_name>classify</span>(<span class=defun_in>x,p1,p2,m1,m2,c1,c2</span>)<br>
+<span class=comment>%&nbsp;finds&nbsp;out&nbsp;to&nbsp;which&nbsp;class&nbsp;the&nbsp;given&nbsp;x&nbsp;belongs</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;p1==1,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;only&nbsp;the&nbsp;1st&nbsp;class&nbsp;is&nbsp;possible</span><br>
+&nbsp;&nbsp;&nbsp;class=1;<br>
+<span class=keyword>elseif</span>&nbsp;p2==1,&nbsp;<span class=comment>%&nbsp;only&nbsp;the&nbsp;2nd&nbsp;class&nbsp;is&nbsp;possible</span><br>
+&nbsp;&nbsp;&nbsp;class=2;<br>
+<span class=keyword>elseif</span>&nbsp;pdfn(x,m1,c1)*p1&nbsp;&gt;&nbsp;pdfn(x,m2,c2)*p2,<br>
+&nbsp;&nbsp;&nbsp;class&nbsp;=1;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;class=2;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>p</span>=<span class=defun_name>pdfn</span>(<span class=defun_in>x,m,c</span>)<br>
+&nbsp;p=exp(-1/2*mahalan(x,m,c))/((2*pi)^(1/2)&nbsp;*&nbsp;sqrt(det(c)));<br>
+</code>

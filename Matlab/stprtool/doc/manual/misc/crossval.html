@@ -1,0 +1,49 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">CROSSVAL</b>
+<td valign="baseline" align="right" class="function"><a href="../misc/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Partitions data for cross-validation.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;[itrn,itst]&nbsp;=&nbsp;crossval(num_data,num_folds)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;function&nbsp;randomly&nbsp;partitions&nbsp;data&nbsp;into&nbsp;the&nbsp;training</span><br>
+<span class=help>&nbsp;&nbsp;and&nbsp;testing&nbsp;parts.&nbsp;The&nbsp;number&nbsp;of&nbsp;partitionings&nbsp;is&nbsp;determined</span><br>
+<span class=help>&nbsp;&nbsp;by&nbsp;the&nbsp;num_folds.&nbsp;If&nbsp;num_folds==1&nbsp;then&nbsp;makes&nbsp;only&nbsp;one&nbsp;random</span><br>
+<span class=help>&nbsp;&nbsp;partitioning&nbsp;of&nbsp;data&nbsp;into&nbsp;training&nbsp;and&nbsp;testing&nbsp;in&nbsp;ratio&nbsp;50:50.</span><br>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;num_data&nbsp;[1x1]&nbsp;number&nbsp;of&nbsp;data.</span><br>
+<span class=help>&nbsp;&nbsp;num_folds&nbsp;[1x1]&nbsp;number&nbsp;of&nbsp;folders.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;itrn{i}&nbsp;Indices&nbsp;of&nbsp;training&nbsp;data&nbsp;of&nbsp;i-th&nbsp;folder.</span><br>
+<span class=help>&nbsp;&nbsp;itst{i}&nbsp;Indices&nbsp;of&nbsp;testing&nbsp;data&nbsp;i-th&nbsp;folder.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../misc/list/crossval.html">crossval.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 19-aug-2004, VF, comments repared<br>
+ 17-may-2004, VF<br>
+ 21-Jan-2003, VF<br>
+ 14-Jan-2003, VF<br>
+ 7-jan-2003, VF, created<br>
+
+</body>
+</html>

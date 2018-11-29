@@ -1,0 +1,785 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>demo_svm.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>result&nbsp;</span>=&nbsp;<span class=defun_name>demo_svm</span>(<span class=defun_in>action,hfigure,varargin</span>)<br>
+<span class=h1>%&nbsp;DEMO_SVM&nbsp;Demo&nbsp;on&nbsp;Support&nbsp;Vector&nbsp;Machines.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;demo_svm</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;DEMO_SVM&nbsp;demonstrates&nbsp;algorithms&nbsp;training&nbsp;the&nbsp;binary&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;SVM&nbsp;classifier&nbsp;L1-soft&nbsp;and&nbsp;L2-soft&nbsp;margin&nbsp;[Vapnik95]</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;[Cris00].&nbsp;The&nbsp;input&nbsp;training&nbsp;vectors&nbsp;must&nbsp;be&nbsp;2-dimensional&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;and&nbsp;can&nbsp;be&nbsp;interactively&nbsp;created&nbsp;by&nbsp;the&nbsp;user.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;Following&nbsp;algorithms&nbsp;can&nbsp;be&nbsp;tested:</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;-&nbsp;Sequential&nbsp;Minimal&nbsp;Optimizer&nbsp;(SMO)&nbsp;for&nbsp;L1-norm&nbsp;soft&nbsp;margin.</span><br>
+<span class=help>%&nbsp;&nbsp;-&nbsp;QP&nbsp;solver&nbsp;(quadprog)&nbsp;used&nbsp;to&nbsp;train&nbsp;SVM&nbsp;with&nbsp;L2-norm&nbsp;soft&nbsp;margin.</span><br>
+<span class=help>%&nbsp;&nbsp;-&nbsp;Kernel&nbsp;Perceptron&nbsp;for&nbsp;separable&nbsp;hyperplane.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Control:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Algorithm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;algorithm&nbsp;for&nbsp;testing.</span><br>
+<span class=help>%&nbsp;&nbsp;Kernel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;non-linear&nbsp;kernel.</span><br>
+<span class=help>%&nbsp;&nbsp;Kernel&nbsp;argument&nbsp;-&nbsp;argument&nbsp;of&nbsp;the&nbsp;non-linear&nbsp;kernel.</span><br>
+<span class=help>%&nbsp;&nbsp;C-constant&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;trade-off&nbsp;(regularization)&nbsp;constant.</span><br>
+<span class=help>%&nbsp;&nbsp;parameters&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;parameters&nbsp;of&nbsp;the&nbsp;selected&nbsp;algorithm.</span><br>
+<span class=help>%&nbsp;&nbsp;background&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;if&nbsp;selected&nbsp;then&nbsp;the&nbsp;background&nbsp;color</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;denotes&nbsp;the&nbsp;sign&nbsp;and&nbsp;the&nbsp;intenzity&nbsp;denotes&nbsp;the&nbsp;value&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;the&nbsp;found&nbsp;decision&nbsp;function.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;FIG2EPS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;exports&nbsp;screen&nbsp;to&nbsp;the&nbsp;PostScript&nbsp;file.</span><br>
+<span class=help>%&nbsp;&nbsp;Load&nbsp;data&nbsp;&nbsp;&nbsp;-&nbsp;loads&nbsp;input&nbsp;training&nbsp;sets&nbsp;from&nbsp;file.</span><br>
+<span class=help>%&nbsp;&nbsp;Create&nbsp;data&nbsp;-&nbsp;calls&nbsp;program&nbsp;for&nbsp;creating&nbsp;point&nbsp;sets.</span><br>
+<span class=help>%&nbsp;&nbsp;Reset&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;clears&nbsp;the&nbsp;screen.</span><br>
+<span class=help>%&nbsp;&nbsp;Train&nbsp;SVM&nbsp;&nbsp;&nbsp;-&nbsp;trains&nbsp;and&nbsp;displays&nbsp;the&nbsp;SVM&nbsp;classifer.</span><br>
+<span class=help>%&nbsp;&nbsp;Info&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;calls&nbsp;the&nbsp;info&nbsp;box.</span><br>
+<span class=help>%&nbsp;&nbsp;Close&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;close&nbsp;the&nbsp;program.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;SMO,&nbsp;SVMQUADPROG,&nbsp;KPERCEPTR.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;2-june-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;18-July-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;6-march-2002,&nbsp;V.Franc</span><br>
+<span class=help1>%&nbsp;23-oct-2001,&nbsp;V.Franc</span><br>
+<br>
+<hr>
+BORDER=0.2;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;minimal&nbsp;space&nbsp;between&nbsp;axis&nbsp;and&nbsp;points</span><br>
+DATA_IDENT=<span class=quotes>'Finite&nbsp;sets,&nbsp;Enumeration'</span>;&nbsp;&nbsp;<span class=comment>%&nbsp;file&nbsp;identifier</span><br>
+ALGOS=[<span class=quotes>'SMO&nbsp;(L1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'</span>;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'QUADPROG&nbsp;(L2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'</span>;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Kernel-Perceptron&nbsp;'</span>];<br>
+KERNELS=[<span class=quotes>'Linear&nbsp;&nbsp;&nbsp;&nbsp;'</span>;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Polynomial'</span>;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'RBF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'</span>];<br>
+<br>
+SMO_PARAM&nbsp;=&nbsp;<span class=quotes>'epsilon,tolerance'</span>;<br>
+DEF_SMO_PARAM&nbsp;=&nbsp;<span class=quotes>'1e-3,1e-3'</span>;<br>
+KERNELSK_PARAM&nbsp;=&nbsp;<span class=quotes>'epsilon,iter_limit'</span>;<br>
+DEF_KERNELSK_PARAM&nbsp;=&nbsp;<span class=quotes>'1e-3,inf'</span>;<br>
+KPERCEPTR_PARAM&nbsp;=&nbsp;<span class=quotes>'tmax'</span>;<br>
+DEF_KPERCEPTR_PARAM&nbsp;=&nbsp;<span class=quotes>'inf'</span>;<br>
+<br>
+<span class=comment>%&nbsp;if&nbsp;number&nbsp;of&nbsp;arguments&nbsp;is&nbsp;less&nbsp;then&nbsp;1,&nbsp;that&nbsp;means&nbsp;first&nbsp;call&nbsp;of&nbsp;this</span><br>
+<span class=comment>%&nbsp;function.&nbsp;Every&nbsp;other&nbsp;calls&nbsp;set&nbsp;up&nbsp;at&nbsp;least&nbsp;argument&nbsp;action</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;action&nbsp;=&nbsp;<span class=quotes>'initialize'</span>;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;what&nbsp;action&nbsp;is&nbsp;required&nbsp;?</span><br>
+<span class=keyword>switch</span>&nbsp;lower(action)<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'initialize'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Initialize&nbsp;user&nbsp;interface&nbsp;control&nbsp;and&nbsp;figure&nbsp;=======</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Figure&nbsp;=============================================</span><br>
+&nbsp;&nbsp;&nbsp;left=0.1;<br>
+&nbsp;&nbsp;&nbsp;width=0.8;<br>
+&nbsp;&nbsp;&nbsp;bottom=0.1;<br>
+&nbsp;&nbsp;&nbsp;height=0.8;<br>
+&nbsp;&nbsp;&nbsp;hfigure=<span class=graph>figure</span>(<span class=quotes>'Name'</span>,<span class=quotes>'Support&nbsp;Vector&nbsp;Machines'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'NumberTitle'</span>,<span class=quotes>'off'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'tag'</span>,<span class=quotes>'demo_svm'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Axes&nbsp;=========================================</span><br>
+&nbsp;&nbsp;&nbsp;left=0.1;<br>
+&nbsp;&nbsp;&nbsp;width=0.65;<br>
+&nbsp;&nbsp;&nbsp;bottom=0.35;<br>
+&nbsp;&nbsp;&nbsp;height=0.60;<br>
+&nbsp;&nbsp;&nbsp;haxes=<span class=graph>axes</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'UserData'</span>,[],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height]);<br>
+&nbsp;&nbsp;&nbsp;xlabel(<span class=quotes>'feature&nbsp;x'</span>);<br>
+&nbsp;&nbsp;&nbsp;ylabel(<span class=quotes>'feature&nbsp;y'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Comment&nbsp;window&nbsp;=================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Comment&nbsp;Window&nbsp;frame</span><br>
+&nbsp;&nbsp;&nbsp;bottom=0.05;<br>
+&nbsp;&nbsp;&nbsp;height=0.2;<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'frame'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'BackgroundColor'</span>,[0.5&nbsp;0.5&nbsp;0.5]);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Text&nbsp;label</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'text'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;height-0.01&nbsp;width&nbsp;0.05],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'BackgroundColor'</span>,[0.5&nbsp;0.5&nbsp;0.5],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ForegroundColor'</span>,[1&nbsp;1&nbsp;1],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Comment&nbsp;Window'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Edit&nbsp;window</span><br>
+&nbsp;&nbsp;&nbsp;border=0.01;<br>
+&nbsp;&nbsp;&nbsp;hconsole=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'edit'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'HorizontalAlignment'</span>,<span class=quotes>'left'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Max'</span>,10,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'BackgroundColor'</span>,[1&nbsp;1&nbsp;1],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left+border&nbsp;bottom&nbsp;width-2*border&nbsp;height-0.05],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Enable'</span>,<span class=quotes>'inactive'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>''</span>);<br>
+<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Buttons&nbsp;===========================================</span><br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Export&nbsp;to&nbsp;EPS&nbsp;</span><br>
+&nbsp;&nbsp;&nbsp;width=0.1;<br>
+&nbsp;&nbsp;&nbsp;left=0.75-width;<br>
+&nbsp;&nbsp;&nbsp;bottom=0.95;<br>
+&nbsp;&nbsp;&nbsp;height=0.04;<br>
+&nbsp;&nbsp;&nbsp;hbt_close&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'fig2eps(gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'FIG2EPS'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Close&nbsp;button</span><br>
+&nbsp;&nbsp;&nbsp;left=0.8;<br>
+&nbsp;&nbsp;&nbsp;bottom=0.05;<br>
+&nbsp;&nbsp;&nbsp;height=0.045;<br>
+&nbsp;&nbsp;&nbsp;width=0.15;<br>
+&nbsp;&nbsp;&nbsp;hbt_close&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'close(gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Close'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Info&nbsp;button:&nbsp;call&nbsp;stanard&nbsp;info&nbsp;box</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+1.5*height;<br>
+&nbsp;&nbsp;&nbsp;hbt_info&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_svm('</span><span class=quotes>'info'</span><span class=quotes>',gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Info'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Train&nbsp;SVM&nbsp;button</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+1.5*height;<br>
+&nbsp;&nbsp;&nbsp;hbt_train&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Train&nbsp;SVM'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_svm('</span><span class=quotes>'train'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Reset&nbsp;button</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+height;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hbt_reset&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Reset'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_svm('</span><span class=quotes>'reset'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Creat&nbsp;data</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+1.5*height;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hbt_creat&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Create&nbsp;data'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_svm('</span><span class=quotes>'creatdata'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Load&nbsp;data</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+1*height;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hbt_load&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Load&nbsp;data'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_svm('</span><span class=quotes>'getfile'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Popup&nbsp;menus&nbsp;======================================</span><br>
+&nbsp;&nbsp;&nbsp;bottom=0.95-height;<br>
+&nbsp;&nbsp;&nbsp;htx_algo=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'text'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Algorithm'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;popup&nbsp;menu</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-height*0.8;<br>
+&nbsp;&nbsp;&nbsp;hpu_algo=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'popup'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'CallBack'</span>,<span class=quotes>'demo_svm('</span><span class=quotes>'algo_handler'</span><span class=quotes>',gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,ALGOS);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;pop&nbsp;menu&nbsp;-&nbsp;kernel</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-height*1.2;<br>
+&nbsp;&nbsp;&nbsp;htx_kernel=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'text'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Kernel'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;popup&nbsp;menu</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-height*.8;<br>
+&nbsp;&nbsp;&nbsp;hpu_kernel=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'popup'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'CallBack'</span>,<span class=quotes>'demo_svm('</span><span class=quotes>'kernel_handler'</span><span class=quotes>',gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,KERNELS);<br>
+<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Edit&nbsp;line&nbsp;========================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;kernel&nbsp;argument</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-1.2*height;<br>
+&nbsp;&nbsp;&nbsp;htx_arg=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'text'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;0.9*height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Kernel&nbsp;argument'</span>);<br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-height*.8;<br>
+&nbsp;&nbsp;&nbsp;hed_arg&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'edit'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'CallBack'</span>,<span class=quotes>'demo_svm('</span><span class=quotes>'arg_handler'</span><span class=quotes>',gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'1'</span>);<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;C&nbsp;const</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-1.2*height;<br>
+&nbsp;&nbsp;&nbsp;htx_cconst=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'text'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;0.9*height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'C-constant'</span>);<br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-height*.8;<br>
+&nbsp;&nbsp;&nbsp;hed_cconst&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'edit'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'CallBack'</span>,<span class=quotes>'demo_svm('</span><span class=quotes>'cconst_handler'</span><span class=quotes>',gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'100'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;parameters&nbsp;of&nbsp;the&nbsp;algortihm</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-1.2*height;<br>
+&nbsp;&nbsp;&nbsp;htx_param=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'text'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;0.9*height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,SMO_PARAM);<br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-height*.8;<br>
+&nbsp;&nbsp;&nbsp;hed_param&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'edit'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'CallBack'</span>,<span class=quotes>'demo_svm('</span><span class=quotes>'param_handler'</span><span class=quotes>',gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,DEF_SMO_PARAM);<br>
+&nbsp;&nbsp;&nbsp;<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Check&nbsp;boxes&nbsp;==============================================</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-height*1.2;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hxb_background&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'checkbox'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Background'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;============================================================</span><br>
+&nbsp;&nbsp;&nbsp;data=struct(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'bt_close'</span>,hbt_close,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'bt_train'</span>,hbt_train,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'bt_reset'</span>,hbt_reset,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'bt_info'</span>,hbt_info,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'bt_load'</span>,hbt_load,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'bt_creat'</span>,hbt_creat,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'pu_algo'</span>,hpu_algo,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'pu_kernel'</span>,&nbsp;hpu_kernel,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ed_arg'</span>,&nbsp;hed_arg,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'tx_arg'</span>,&nbsp;htx_arg,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'tx_cconst'</span>,&nbsp;htx_cconst,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ed_cconst'</span>,&nbsp;hed_cconst,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'tx_param'</span>,&nbsp;htx_param,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ed_param'</span>,&nbsp;hed_param,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'console'</span>,hconsole,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'axes'</span>,haxes,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'xb_background'</span>,hxb_background);<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'UserData'</span>,data&nbsp;);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Reset</span><br>
+&nbsp;&nbsp;&nbsp;demo_svm(<span class=quotes>'reset'</span>,hfigure);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Put&nbsp;figure&nbsp;on&nbsp;desktop</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'Visible'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;drawnow;<br>
+&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%==&nbsp;Trains&nbsp;SVM&nbsp;and&nbsp;displays&nbsp;result&nbsp;================================</span><br>
+<span class=label>case</span>&nbsp;<span class=quotes>'train'</span><br>
+&nbsp;&nbsp;&nbsp;data&nbsp;=&nbsp;<span class=graph>get</span>(&nbsp;hfigure,&nbsp;<span class=quotes>'UserData'</span>);<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;trn&nbsp;=&nbsp;<span class=graph>get</span>(&nbsp;data.<span class=graph>axes</span>,&nbsp;<span class=quotes>'UserData'</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isempty(&nbsp;trn&nbsp;),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=jump>return</span>;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;C&nbsp;=&nbsp;str2num(<span class=graph>get</span>(&nbsp;data.ed_cconst,&nbsp;<span class=quotes>'String'</span>&nbsp;));<br>
+&nbsp;&nbsp;&nbsp;ker_inx&nbsp;=&nbsp;<span class=graph>get</span>(&nbsp;data.pu_kernel,&nbsp;<span class=quotes>'Value'</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;ker_inx&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ker&nbsp;=&nbsp;<span class=quotes>'linear'</span>;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>elseif</span>&nbsp;ker_inx&nbsp;==&nbsp;2;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ker&nbsp;=&nbsp;<span class=quotes>'poly'</span>;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ker&nbsp;=&nbsp;<span class=quotes>'rbf'</span>;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;arg&nbsp;=&nbsp;str2num(<span class=graph>get</span>(&nbsp;data.ed_arg,&nbsp;<span class=quotes>'String'</span>&nbsp;));<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;[Alpha,bias]&nbsp;=&nbsp;svm_train(&nbsp;data,&nbsp;trn,&nbsp;ker,&nbsp;arg,&nbsp;C&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;focus&nbsp;on&nbsp;the&nbsp;axes</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>axes</span>(&nbsp;data.<span class=graph>axes</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Clear&nbsp;axes</span><br>
+&nbsp;&nbsp;&nbsp;clrchild(&nbsp;data.<span class=graph>axes</span>);<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;options</span><br>
+&nbsp;&nbsp;&nbsp;options.background&nbsp;=&nbsp;<span class=graph>get</span>(&nbsp;data.xb_background,&nbsp;<span class=quotes>'Value'</span>);&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;plot&nbsp;decision&nbsp;function</span><br>
+&nbsp;&nbsp;&nbsp;model.sv.X&nbsp;=&nbsp;trn.X;<br>
+&nbsp;&nbsp;&nbsp;model.sv.y&nbsp;=&nbsp;trn.I;<br>
+&nbsp;&nbsp;&nbsp;ppatterns(model.sv);&nbsp;<br>
+&nbsp;&nbsp;&nbsp;inx=find(&nbsp;Alpha&nbsp;~=&nbsp;0&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;model.sv.X&nbsp;=&nbsp;trn.X(:,inx);<br>
+&nbsp;&nbsp;&nbsp;model.sv.y&nbsp;=&nbsp;trn.I(:,inx);<br>
+&nbsp;&nbsp;&nbsp;model.Alpha&nbsp;=&nbsp;Alpha(:,inx)';<br>
+&nbsp;&nbsp;&nbsp;model.b&nbsp;=&nbsp;bias;<br>
+&nbsp;&nbsp;&nbsp;model.options.ker&nbsp;=&nbsp;ker;<br>
+&nbsp;&nbsp;&nbsp;model.options.arg&nbsp;=&nbsp;arg;<br>
+&nbsp;&nbsp;&nbsp;psvm(&nbsp;model,&nbsp;options&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%==&nbsp;Handler&nbsp;for&nbsp;Algorithm&nbsp;popup&nbsp;menu&nbsp;==========================</span><br>
+<span class=label>case</span>&nbsp;<span class=quotes>'algo_handler'</span><br>
+&nbsp;&nbsp;&nbsp;data=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;which&nbsp;algorithm&nbsp;?</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>switch</span>&nbsp;<span class=graph>get</span>(data.pu_algo,&nbsp;<span class=quotes>'Value'</span>&nbsp;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=label>case</span>&nbsp;1&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;SMO</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.tx_cconst,<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.ed_cconst,<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.tx_param,<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.tx_param,<span class=quotes>'String'</span>,SMO_PARAM);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.ed_param,<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.ed_param,<span class=quotes>'String'</span>,DEF_SMO_PARAM);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;%&nbsp;Matlab&nbsp;toolbox</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set(data.tx_cconst,'Enable','on');</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set(data.ed_cconst,'Enable','on');</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set(data.tx_param,'Enable','off');</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set(data.ed_param,'Enable','off');</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;3&nbsp;&nbsp;&nbsp;%&nbsp;Kernel-SK</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=label>case</span>&nbsp;2&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Kernel-SK</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.tx_cconst,<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.ed_cconst,<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.tx_param,<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.ed_param,<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.tx_param,<span class=quotes>'String'</span>,KERNELSK_PARAM);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.ed_param,<span class=quotes>'String'</span>,DEF_KERNELSK_PARAM);<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp;%&nbsp;Matlab&nbsp;toolbox</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set(data.tx_cconst,'Enable','on');</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set(data.ed_cconst,'Enable','on');</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set(data.tx_param,'Enable','off');</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set(data.ed_param,'Enable','off');</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp;%&nbsp;Kernel&nbsp;Perceptron</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=label>case</span>&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Kernel&nbsp;Perceptron</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.tx_cconst,<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.ed_cconst,<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.tx_param,<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.ed_param,<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.tx_param,<span class=quotes>'String'</span>,KPERCEPTR_PARAM);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.ed_param,<span class=quotes>'String'</span>,DEF_KPERCEPTR_PARAM);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%==&nbsp;Handler&nbsp;for&nbsp;C-const&nbsp;edit&nbsp;line&nbsp;===========================</span><br>
+<span class=label>case</span>&nbsp;<span class=quotes>'cconst_handler'</span><br>
+&nbsp;&nbsp;&nbsp;data=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;C&nbsp;=&nbsp;str2num(<span class=graph>get</span>(data.ed_cconst,<span class=quotes>'String'</span>));<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;C&nbsp;&lt;=&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C&nbsp;=&nbsp;100;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;data.ed_cconst,<span class=quotes>'String'</span>,num2str(C));<br>
+&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%==&nbsp;Handle&nbsp;for&nbsp;arg&nbsp;edit&nbsp;line&nbsp;===========================</span><br>
+<span class=label>case</span>&nbsp;<span class=quotes>'arg_handler'</span><br>
+&nbsp;&nbsp;&nbsp;data=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;arg&nbsp;=&nbsp;str2num(<span class=graph>get</span>(data.ed_arg,<span class=quotes>'String'</span>));<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;arg&nbsp;&lt;&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arg&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;data.ed_arg,&nbsp;<span class=quotes>'String'</span>,num2str(&nbsp;arg));<br>
+<br>
+&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%==&nbsp;Handle&nbsp;for&nbsp;kernel&nbsp;pop&nbsp;up&nbsp;menu&nbsp;===========================</span><br>
+<span class=label>case</span>&nbsp;<span class=quotes>'kernel_handler'</span><br>
+&nbsp;&nbsp;&nbsp;data=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;ker_inx&nbsp;=&nbsp;<span class=graph>get</span>(&nbsp;data.pu_kernel,<span class=quotes>'Value'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;ker_inx&nbsp;&gt;=&nbsp;2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;data.ed_arg,<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;data.tx_arg,<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;data.ed_arg,<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;data.tx_arg,<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%==&nbsp;Calls&nbsp;data&nbsp;creator&nbsp;==========================================</span><br>
+<span class=label>case</span>&nbsp;<span class=quotes>'creatdata'</span><br>
+&nbsp;&nbsp;&nbsp;createdata(<span class=quotes>'finite'</span>,2,<span class=quotes>'demo_svm'</span>,<span class=quotes>'created'</span>,hfigure);<br>
+&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;==&nbsp;Loads&nbsp;recently&nbsp;created&nbsp;data&nbsp;================================</span><br>
+<span class=label>case</span>&nbsp;<span class=quotes>'created'</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;handler&nbsp;and&nbsp;make&nbsp;this&nbsp;figure&nbsp;active</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>figure</span>(hfigure);<br>
+&nbsp;&nbsp;&nbsp;data&nbsp;=&nbsp;<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;file&nbsp;name</span><br>
+&nbsp;&nbsp;&nbsp;path=<span class=stack>varargin</span>{1};<br>
+&nbsp;&nbsp;&nbsp;name=<span class=stack>varargin</span>{2};<br>
+&nbsp;&nbsp;&nbsp;pathname=strcat(path,name);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;check2ddata(pathname),&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.pathname=pathname;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.path=path;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.name=name;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.bt_load,<span class=quotes>'UserData'</span>,file);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_svm(<span class=quotes>'loadsets'</span>,hfigure);&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_svm(<span class=quotes>'reset'</span>,hfigure);&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;errordlg(<span class=quotes>'This&nbsp;file&nbsp;does&nbsp;not&nbsp;contain&nbsp;required&nbsp;data.'</span>,<span class=quotes>'Bad&nbsp;file'</span>,<span class=quotes>'modal'</span>);&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<br>
+<span class=comment>%&nbsp;==&nbsp;Calls&nbsp;standard&nbsp;open&nbsp;file&nbsp;dialog&nbsp;==========================</span><br>
+<span class=label>case</span>&nbsp;<span class=quotes>'getfile'</span><br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;data=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;[name,path]=uigetfile(<span class=quotes>'*.mat'</span>,<span class=quotes>'Open&nbsp;file'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;name~=0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.pathname=strcat(path,name);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.path=path;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.name=name;<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;checkdat(file.pathname,DATA_IDENT,2,[0&nbsp;0])==1,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;check2ddata(&nbsp;file.pathname&nbsp;),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(data.bt_load,<span class=quotes>'UserData'</span>,file);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_svm(<span class=quotes>'loadsets'</span>,hfigure);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_svm(<span class=quotes>'reset'</span>,hfigure);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;errordlg(<span class=quotes>'This&nbsp;file&nbsp;does&nbsp;not&nbsp;contain&nbsp;required&nbsp;data.'</span>,<span class=quotes>'Bad&nbsp;file'</span>,<span class=quotes>'modal'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'loadsets'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Load&nbsp;data&nbsp;from&nbsp;file&nbsp;==========================================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;data&nbsp;=&nbsp;<span class=graph>get</span>(&nbsp;hfigure,<span class=quotes>'UserData'</span>&nbsp;);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Clear&nbsp;axes</span><br>
+&nbsp;&nbsp;&nbsp;clrchild(&nbsp;data.<span class=graph>axes</span>);<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;set&nbsp;x&nbsp;and&nbsp;y&nbsp;axes&nbsp;labels</span><br>
+&nbsp;&nbsp;&nbsp;xlabel(<span class=quotes>'feature&nbsp;x'</span>);<br>
+&nbsp;&nbsp;&nbsp;ylabel(<span class=quotes>'feature&nbsp;y'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Get&nbsp;file&nbsp;name&nbsp;with&nbsp;sets</span><br>
+&nbsp;&nbsp;&nbsp;file=<span class=graph>get</span>(&nbsp;data.bt_load,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Load&nbsp;sets</span><br>
+&nbsp;&nbsp;&nbsp;trn&nbsp;=&nbsp;load(file.pathname&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;trn.I=trn.y;<br>
+&nbsp;&nbsp;&nbsp;trn.N=&nbsp;2;<br>
+&nbsp;&nbsp;&nbsp;trn.K&nbsp;=&nbsp;[length(&nbsp;find(trn.y==1)),length(find(trn.y==2))];<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;store&nbsp;loaded&nbsp;sets</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;data.<span class=graph>axes</span>,<span class=quotes>'UserData'</span>,&nbsp;trn);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;focus&nbsp;on&nbsp;axes</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>axes</span>(&nbsp;data.<span class=graph>axes</span>&nbsp;);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;plots&nbsp;points</span><br>
+&nbsp;&nbsp;&nbsp;ppatterns(&nbsp;trn&nbsp;);<br>
+<br>
+&nbsp;&nbsp;&nbsp;drawnow;<br>
+&nbsp;&nbsp;<br>
+<br>
+<span class=comment>%&nbsp;==&nbsp;Reset&nbsp;==========================================================</span><br>
+<span class=label>case</span>&nbsp;<span class=quotes>'reset'</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;data&nbsp;=&nbsp;<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Clear&nbsp;axes</span><br>
+&nbsp;&nbsp;&nbsp;clrchild(&nbsp;data.<span class=graph>axes</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;data&nbsp;set</span><br>
+&nbsp;&nbsp;&nbsp;trn&nbsp;=&nbsp;<span class=graph>get</span>(&nbsp;data.<span class=graph>axes</span>,&nbsp;<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;file</span><br>
+&nbsp;&nbsp;&nbsp;file&nbsp;=&nbsp;<span class=graph>get</span>(&nbsp;data.bt_load,<span class=quotes>'UserData'</span>);<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;create&nbsp;comment</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isempty(&nbsp;trn&nbsp;)&nbsp;==&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;consoletext=<span class=io>sprintf</span>(<span class=quotes>'Data&nbsp;loaded.\nSelect&nbsp;algorithm&nbsp;and&nbsp;press&nbsp;Train&nbsp;SVM&nbsp;button.\n'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;titletext=<span class=io>sprintf</span>(<span class=quotes>'File:&nbsp;%s,&nbsp;#&nbsp;of&nbsp;points&nbsp;K&nbsp;=&nbsp;%d'</span>,&nbsp;file.name&nbsp;,&nbsp;size(trn.X,2));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;data.<span class=graph>axes</span>,&nbsp;<span class=quotes>'XLimMode'</span>,<span class=quotes>'auto'</span>,&nbsp;<span class=quotes>'YLimMode'</span>,<span class=quotes>'auto'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ppatterns(&nbsp;trn);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;consoletext=<span class=io>sprintf</span>([<span class=quotes>'No&nbsp;data&nbsp;loaded.\n'</span>&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Press&nbsp;Create&nbsp;data&nbsp;button&nbsp;to&nbsp;create&nbsp;your&nbsp;own&nbsp;data.\n'</span>...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Press&nbsp;Load&nbsp;data&nbsp;button&nbsp;to&nbsp;load&nbsp;data.\n'</span>&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Load&nbsp;sample&nbsp;data&nbsp;from&nbsp;../data/binary/'</span>]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;titletext=<span class=quotes>''</span>;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pos=<span class=graph>get</span>(&nbsp;data.<span class=graph>axes</span>,<span class=quotes>'Position'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fsize=min(pos(3),pos(4))/10;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setaxis(&nbsp;data.<span class=graph>axes</span>,[-1&nbsp;1&nbsp;-1&nbsp;1]);<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;axis([-1&nbsp;1&nbsp;-1&nbsp;1]);</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=eval>builtin</span>(<span class=quotes>'text'</span>,0,0,<span class=quotes>'Press&nbsp;'</span><span class=quotes>'Load&nbsp;data'</span><span class=quotes>'&nbsp;button.'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'HorizontalAlignment'</span>,<span class=quotes>'center'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'FontUnits'</span>,<span class=quotes>'normalized'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Clipping'</span>,<span class=quotes>'on'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'FontSize'</span>,fsize);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;show&nbsp;comment</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;data.console,<span class=quotes>'String'</span>,consoletext&nbsp;);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;print&nbsp;title</span><br>
+&nbsp;&nbsp;&nbsp;pos=<span class=graph>get</span>(&nbsp;data.<span class=graph>axes</span>,<span class=quotes>'Position'</span>);<br>
+&nbsp;&nbsp;&nbsp;fsize=(1-pos(2)-pos(4))*1;<br>
+&nbsp;&nbsp;&nbsp;title(titletext,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Parent'</span>,&nbsp;data.<span class=graph>axes</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'VerticalAlignment'</span>,<span class=quotes>'bottom'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'HorizontalAlignment'</span>,<span class=quotes>'left'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'FontUnits'</span>,<span class=quotes>'normalized'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[0&nbsp;1&nbsp;0],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'FontSize'</span>,fsize);<br>
+<br>
+<br>
+<span class=comment>%&nbsp;==&nbsp;Calls&nbsp;Matlab`s&nbsp;info&nbsp;box&nbsp;==================================</span><br>
+<span class=label>case</span>&nbsp;<span class=quotes>'info'</span><br>
+&nbsp;&nbsp;&nbsp;helpwin(mfilename);<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+<span class=comment>%===============================================================</span><br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[Alpha,bias]&nbsp;</span>=&nbsp;<span class=defun_name>svm_train</span>(<span class=defun_in>&nbsp;data,&nbsp;trn,&nbsp;ker,&nbsp;arg,&nbsp;C&nbsp;</span>)<br>
+<br>
+<span class=keyword>if</span>&nbsp;strcmpi(&nbsp;ker,&nbsp;<span class=quotes>'linear'</span>),<br>
+&nbsp;&nbsp;strarg&nbsp;=&nbsp;<span class=quotes>'-'</span>;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;strarg&nbsp;=&nbsp;num2str(&nbsp;arg);<br>
+<span class=keyword>end</span><br>
+<br>
+param&nbsp;=&nbsp;str2num(&nbsp;<span class=graph>get</span>(&nbsp;data.ed_param,<span class=quotes>'String'</span>));<br>
+<br>
+<span class=keyword>switch</span>&nbsp;<span class=graph>get</span>(&nbsp;data.pu_algo,&nbsp;<span class=quotes>'Value'</span>&nbsp;),<br>
+&nbsp;&nbsp;<span class=label>case</span>&nbsp;1&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Sequential&nbsp;Minimal&nbsp;Optimizer</span><br>
+<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;if&nbsp;length(param)&nbsp;~=&nbsp;length(&nbsp;str2num(DEF_SMO_PARAM)),</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;param&nbsp;=&nbsp;str2num(DEF_SMO_PARAM);</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;end</span><br>
+&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;[Alpha,bias,nsv,kercnt,trn_err,margin]=...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;smo(trn.X,trn.I,ker,arg,C,&nbsp;param(1),param(2)&nbsp;);</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options.ker&nbsp;=&nbsp;ker;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options.arg&nbsp;=&nbsp;arg;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options.C&nbsp;=&nbsp;C;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options.eps&nbsp;=&nbsp;param(1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options.tol&nbsp;=&nbsp;param(2);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model&nbsp;=&nbsp;smo(&nbsp;trn,&nbsp;options);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha&nbsp;=&nbsp;zeros(1,size(trn.X,2));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha(model.sv.inx)&nbsp;=&nbsp;model.Alpha(:)';<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bias&nbsp;=&nbsp;model.b;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nsv&nbsp;=&nbsp;model.nsv;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kercnt=model.kercnt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;trn_err&nbsp;=&nbsp;model.trnerr;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;margin&nbsp;=&nbsp;model.margin;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;=&nbsp;<span class=io>sprintf</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<span class=quotes>'SVM&nbsp;(L1)&nbsp;by&nbsp;Sequential&nbsp;Minimal&nbsp;Optimizer\n'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Kernel:&nbsp;%s&nbsp;(%s),&nbsp;C:&nbsp;%.4f\n'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Kernel&nbsp;evaluations:&nbsp;%d\n'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Number&nbsp;of&nbsp;Support&nbsp;Vectors:&nbsp;%d\n'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Margin:&nbsp;%.4f\n'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Training&nbsp;error:&nbsp;%.2f%%'</span>],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ker,&nbsp;strarg,&nbsp;C,&nbsp;kercnt,&nbsp;nsv,&nbsp;margin,&nbsp;100*trn_err&nbsp;);<br>
+<br>
+<span class=comment>%&nbsp;&nbsp;case&nbsp;2&nbsp;&nbsp;&nbsp;%&nbsp;Matlab&nbsp;Optimization&nbsp;toolbox&nbsp;(L1)</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model=svmmot(trn,&nbsp;{'ker',ker,'arg',arg,'C',C,'norm',1});</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha&nbsp;=&nbsp;zeros(1,size(trn.X,2));</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha(model.sv.inx)&nbsp;=&nbsp;model.Alpha;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bias&nbsp;=&nbsp;model.b;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nsv&nbsp;=&nbsp;model.nsv;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kercnt=model.kercnt;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;trn_err&nbsp;=&nbsp;model.trnerr;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;margin&nbsp;=&nbsp;model.margin;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exitflag=model.exitflag;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;=&nbsp;sprintf(...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;['SVM&nbsp;(L1)&nbsp;using&nbsp;QUADPROG&nbsp;of&nbsp;the&nbsp;Optimization&nbsp;Toolbox\n',...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Kernel:&nbsp;%s&nbsp;(%s),&nbsp;C:&nbsp;%.4f\n',...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Exitflag:&nbsp;%d\n',...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Kernel&nbsp;evaluations:&nbsp;%d\n',...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Number&nbsp;of&nbsp;Support&nbsp;Vectors:&nbsp;%d\n',...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Margin:&nbsp;%.4f\n',...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Training&nbsp;error:&nbsp;%.2f%%'],...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ker,&nbsp;strarg,&nbsp;C,&nbsp;exitflag,&nbsp;kercnt,&nbsp;nsv,&nbsp;margin,100*trn_err);</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;case&nbsp;3&nbsp;%&nbsp;Kernel&nbsp;Schlesinger-Kozinec's&nbsp;algorithm&nbsp;(L2)</span><br>
+&nbsp;&nbsp;<span class=label>case</span>&nbsp;2&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Kernel&nbsp;Schlesinger-Kozinec's&nbsp;algorithm&nbsp;(L2)</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model=svmquadprog(trn,&nbsp;{<span class=quotes>'ker'</span>,ker,<span class=quotes>'arg'</span>,arg,<span class=quotes>'C'</span>,C,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'tolabs'</span>,param(1),<span class=quotes>'tolrel'</span>,0,<span class=quotes>'tmax'</span>,param(2)&nbsp;});<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha&nbsp;=&nbsp;zeros(1,size(trn.X,2));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha(model.sv.inx)&nbsp;=&nbsp;model.Alpha(:)';<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bias&nbsp;=&nbsp;model.b;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nsv&nbsp;=&nbsp;model.nsv;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kercnt=model.kercnt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;trn_err&nbsp;=&nbsp;model.trnerr;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;margin&nbsp;=&nbsp;model.margin;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exitflag=model.exitflag;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>(&nbsp;exitflag&nbsp;==&nbsp;1),&nbsp;exitflag&nbsp;=&nbsp;<span class=quotes>'found'</span>;&nbsp;<span class=keyword>else</span>&nbsp;exitflag&nbsp;=&nbsp;<span class=quotes>'not&nbsp;found'</span>;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;=&nbsp;<span class=io>sprintf</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<span class=quotes>'SVM&nbsp;(L2)&nbsp;by&nbsp;Kernel&nbsp;Schlesinger-Kozinec`s&nbsp;algorithm\n'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Kernel:&nbsp;%s&nbsp;(%s),&nbsp;C:&nbsp;%.4f\n'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Solution:&nbsp;%s\n'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Number&nbsp;of&nbsp;Support&nbsp;Vectors:&nbsp;%d\n'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Kernel&nbsp;evaluations:&nbsp;%d\n'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Margin:&nbsp;%.4f\n'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Training&nbsp;error:&nbsp;%.2f%%'</span>],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ker,&nbsp;strarg,&nbsp;C,&nbsp;exitflag,&nbsp;nsv,&nbsp;kercnt,&nbsp;margin,&nbsp;trn_err*100&nbsp;);<br>
+<br>
+<span class=comment>%&nbsp;&nbsp;case&nbsp;4&nbsp;&nbsp;&nbsp;%&nbsp;Matlab&nbsp;Optimization&nbsp;toolbox&nbsp;(L2)</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Alpha,bias,nsv,exitflag,flps,margin,trn_err]=...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;svm2mot(trn.X,trn.I,ker,arg,C);</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model=svmmot(trn,&nbsp;{'ker',ker,'arg',arg,'C',C,'norm',2});</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha&nbsp;=&nbsp;zeros(1,size(trn.X,2));</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha(model.sv.inx)&nbsp;=&nbsp;model.Alpha;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bias&nbsp;=&nbsp;model.b;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nsv&nbsp;=&nbsp;model.nsv;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kercnt=model.kercnt;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;trn_err&nbsp;=&nbsp;model.trnerr;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;margin&nbsp;=&nbsp;model.margin;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exitflag=model.exitflag;</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;=&nbsp;sprintf(...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;['SVM&nbsp;(L2)&nbsp;using&nbsp;QUADPROG&nbsp;of&nbsp;the&nbsp;Optimization&nbsp;Toolbox\n',...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Kernel:&nbsp;%s&nbsp;(%s),&nbsp;C:&nbsp;%.4f\n',...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Exitflag:&nbsp;%d\n',...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Kernel&nbsp;evaluations:&nbsp;%d\n',...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Number&nbsp;of&nbsp;Support&nbsp;Vectors:&nbsp;%d\n',...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Margin:&nbsp;%.4f\n',...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Training&nbsp;error:&nbsp;%.2f%%'],...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ker,&nbsp;strarg,&nbsp;C,&nbsp;exitflag,&nbsp;kercnt,&nbsp;nsv,&nbsp;margin,100*trn_err);</span><br>
+&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;&nbsp;case&nbsp;5&nbsp;&nbsp;&nbsp;%&nbsp;Kernel&nbsp;Perceptron</span><br>
+&nbsp;&nbsp;<span class=label>case</span>&nbsp;3&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Kernel&nbsp;Perceptron</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model=kperceptr(trn,&nbsp;{<span class=quotes>'ker'</span>,ker,<span class=quotes>'arg'</span>,arg,<span class=quotes>'tmax'</span>,param(1)});<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha&nbsp;=&nbsp;zeros(1,size(trn.X,2));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha(model.sv.inx)&nbsp;=&nbsp;model.Alpha;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bias&nbsp;=&nbsp;model.b;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nsv&nbsp;=&nbsp;model.nsv;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kercnt=model.kercnt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;trn_err&nbsp;=&nbsp;model.trnerr;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exitflag=model.exitflag;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;=&nbsp;<span class=io>sprintf</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<span class=quotes>'Kernel&nbsp;Perceptron\n'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Kernel:&nbsp;%s&nbsp;(%s)\n'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Exitflag:&nbsp;%d\n'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Kernel&nbsp;evaluations:&nbsp;%d\n'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Number&nbsp;of&nbsp;Support&nbsp;Vectors:&nbsp;%d\n'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Training&nbsp;error:&nbsp;%.2f%%'</span>],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ker,&nbsp;strarg,&nbsp;exitflag,&nbsp;kercnt,&nbsp;nsv,&nbsp;100*trn_err);<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;show&nbsp;comment</span><br>
+<span class=graph>set</span>(&nbsp;data.console,<span class=quotes>'String'</span>,&nbsp;text&nbsp;);<br>
+<br>
+<span class=jump>return</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[]</span>=<span class=defun_name>clrchild</span>(<span class=defun_in>handle</span>)<br>
+<span class=comment>%&nbsp;function&nbsp;[]=clraxis(handle)</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;CLRCHILD&nbsp;clears&nbsp;children&nbsp;of&nbsp;an&nbsp;object&nbsp;with&nbsp;the&nbsp;given&nbsp;handle.</span><br>
+<br>
+delete(<span class=graph>get</span>(handle,<span class=quotes>'Children'</span>));<br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[]</span>=<span class=defun_name>setaxis</span>(<span class=defun_in>handle,rect</span>)<br>
+<span class=comment>%&nbsp;function&nbsp;[]=setaxis(handle,rect)</span><br>
+<span class=comment>%</span><br>
+<br>
+<span class=graph>set</span>(handle,<span class=quotes>'XLim'</span>,rect(1:2));<br>
+<span class=graph>set</span>(handle,<span class=quotes>'YLim'</span>,rect(3:4));<br>
+<br>
+<span class=keyword>if</span>&nbsp;size(rect,2)&gt;=6,<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(handle,<span class=quotes>'ZLim'</span>,rect(5:6));<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

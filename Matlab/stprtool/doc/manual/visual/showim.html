@@ -1,0 +1,47 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">SHOWIM</b>
+<td valign="baseline" align="right" class="function"><a href="../visual/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Displays given image(s).</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;h&nbsp;=&nbsp;showimg(img)</span><br>
+<span class=help>&nbsp;&nbsp;h&nbsp;=&nbsp;showimg(img,img_size)</span><br>
+<span class=help>&nbsp;&nbsp;h&nbsp;=&nbsp;showimg(img,img_size,placement)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;It&nbsp;displays&nbsp;images&nbsp;to&nbsp;the&nbsp;current&nbsp;figure.&nbsp;It&nbsp;assumes&nbsp;that&nbsp;the&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;images&nbsp;are&nbsp;represented&nbsp;as&nbsp;column&nbsp;vectors&nbsp;stored&nbsp;in&nbsp;the&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;img&nbsp;[dim&nbsp;x&nbsp;num_img]&nbsp;where&nbsp;dim=height*width.&nbsp;</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;img&nbsp;[dim&nbsp;x&nbsp;num_img]&nbsp;Images&nbsp;store&nbsp;as&nbsp;column&nbsp;vectors&nbsp;of&nbsp;size</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;dim&nbsp;=&nbsp;width*height.</span><br>
+<span class=help>&nbsp;&nbsp;img_size&nbsp;[2&nbsp;1]&nbsp;Image&nbsp;size&nbsp;img_size&nbsp;=&nbsp;[height,&nbsp;width].&nbsp;The&nbsp;image</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;size&nbsp;does&nbsp;have&nbsp;to&nbsp;be&nbsp;geving&nbsp;for&nbsp;rectangular&nbsp;images.</span><br>
+<span class=help>&nbsp;&nbsp;placement&nbsp;[2&nbsp;1]&nbsp;Determines&nbsp;the&nbsp;number&nbsp;of&nbsp;rows&nbsp;and&nbsp;columns</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;wich&nbsp;the&nbsp;images&nbsp;are&nbsp;displayed,&nbsp;palecement&nbsp;=&nbsp;[rows,columns].</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;not&nbsp;given&nbsp;then&nbsp;the&nbsp;placement&nbsp;is&nbsp;determined&nbsp;automatically.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;h&nbsp;[1&nbsp;x&nbsp;num_img]&nbsp;Handles&nbsp;of&nbsp;individual&nbsp;axes.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../visual/list/showim.html">showim.m</a>
+  <p><b class="info_field">(c) </b> Statistical Pattern Recognition Toolbox, (C) 1999-2003,<br>
+ Written by Vojtech Franc and Vaclav Hlavac,<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a>,<br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical engineering</a>,<br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+</body>
+</html>

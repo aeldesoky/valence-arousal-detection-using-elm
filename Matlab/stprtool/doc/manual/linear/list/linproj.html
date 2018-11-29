@@ -1,0 +1,62 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>linproj.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>out1</span>=<span class=defun_name>linproj</span>(<span class=defun_in>arg1,&nbsp;model</span>)<br>
+<span class=h1>%&nbsp;LINPROJ&nbsp;Linear&nbsp;data&nbsp;projection.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Y&nbsp;=&nbsp;linproj(X,&nbsp;model)</span><br>
+<span class=help>%&nbsp;&nbsp;out_data&nbsp;=&nbsp;linproj(in_data,&nbsp;model)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Y&nbsp;=&nbsp;linproj(X,&nbsp;model)&nbsp;linearly&nbsp;projects&nbsp;data&nbsp;in&nbsp;X&nbsp;such&nbsp;that</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;Y&nbsp;=&nbsp;model.W'*X&nbsp;+&nbsp;model.b</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;out_data&nbsp;=&nbsp;linproj(in_data,&nbsp;model)&nbsp;projects&nbsp;in_data.X&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;out_data.X&nbsp;=&nbsp;model.W'*in_data.X&nbsp;+&nbsp;model.b</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;out_data.y&nbsp;=&nbsp;in_data.y</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;linear&nbsp;projection:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;ncomp]&nbsp;Projection&nbsp;matrix.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[ncomp&nbsp;x&nbsp;1]&nbsp;Bias.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;help&nbsp;pca;</span><br>
+<span class=help>%&nbsp;&nbsp;help&nbsp;lda;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;PCA,&nbsp;LDA,&nbsp;KERNELPROJ.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;3-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;21-jan-03,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;16-Jun-2002,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=keyword>if</span>&nbsp;isstruct(arg1),<br>
+&nbsp;&nbsp;[dim,num_data]=size(arg1.X);<br>
+<br>
+&nbsp;&nbsp;out1.X&nbsp;=&nbsp;model.W'*arg1.X&nbsp;+&nbsp;model.b(:)*ones(1,num_data);<br>
+&nbsp;&nbsp;out1.y&nbsp;=&nbsp;arg1.y;<br>
+&nbsp;&nbsp;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;[dim,num_data]=size(arg1);<br>
+<br>
+&nbsp;&nbsp;out1&nbsp;=&nbsp;model.W'*arg1&nbsp;+&nbsp;model.b(:)*ones(1,num_data);<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

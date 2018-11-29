@@ -1,0 +1,251 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>greedyappx.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[sel_inx,Alpha,Z,kercnt,MsErr,MaxErr]</span>=...<br>
+&nbsp;&nbsp;greedyappx(X,ker,arg,m,p,mserr,maxerr,verb)&nbsp;<br>
+<span class=h1>%&nbsp;GREEDYAPPX&nbsp;Kernel&nbsp;greedy&nbsp;data&nbsp;approximation.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;[Sel_inx,Alpha,Z,Kercnt,MsErrors,MaxErrors]&nbsp;=&nbsp;...</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;greedyappx(X,Ker,Arg,M,P,MsErr,Maxerr,Verb)&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;input&nbsp;column&nbsp;vectors&nbsp;are&nbsp;assumed&nbsp;to&nbsp;be&nbsp;represented</span><br>
+<span class=help>%&nbsp;&nbsp;in&nbsp;a&nbsp;kernel&nbsp;feature&nbsp;space&nbsp;given&nbsp;by&nbsp;(ker,arg)&nbsp;(see&nbsp;help&nbsp;kernel).</span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;aims&nbsp;to&nbsp;select&nbsp;a&nbsp;subset&nbsp;X(:,Sel_inx)&nbsp;such</span><br>
+<span class=help>%&nbsp;&nbsp;that&nbsp;linear&nbsp;span&nbsp;of&nbsp;X(:,Sel_inx)&nbsp;in&nbsp;the&nbsp;feature&nbsp;space&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;approximates&nbsp;well&nbsp;the&nbsp;linear&nbsp;span&nbsp;of&nbsp;X&nbsp;in&nbsp;the&nbsp;feature&nbsp;space.</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;vectors&nbsp;are&nbsp;selected&nbsp;such&nbsp;that&nbsp;the&nbsp;mean&nbsp;square&nbsp;reconstruction</span><br>
+<span class=help>%&nbsp;&nbsp;error&nbsp;in&nbsp;the&nbsp;feature&nbsp;space&nbsp;(the&nbsp;same&nbsp;objective&nbsp;as&nbsp;has&nbsp;Kernel&nbsp;PCA)&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;is&nbsp;minimized&nbsp;by&nbsp;greedy&nbsp;algorithm.&nbsp;The&nbsp;algorithm&nbsp;selects&nbsp;vectors</span><br>
+<span class=help>%&nbsp;&nbsp;until&nbsp;on&nbsp;of&nbsp;the&nbsp;following&nbsp;stopping&nbsp;&nbsp;conditions&nbsp;is&nbsp;achieved:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;number&nbsp;of&nbsp;vectors&nbsp;achieves&nbsp;m&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;maximal&nbsp;reconstruction&nbsp;error&nbsp;drops&nbsp;below&nbsp;maxerr&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;mean&nbsp;squared&nbsp;sum&nbsp;of&nbsp;reconstruction&nbsp;errors&nbsp;less&nbsp;than&nbsp;mserr.&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;images&nbsp;of&nbsp;X(:,Inx_sel)&nbsp;in&nbsp;the&nbsp;features&nbsp;form&nbsp;a&nbsp;basis.</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;projection&nbsp;of&nbsp;input&nbsp;vector&nbsp;x&nbsp;into&nbsp;the&nbsp;basis&nbsp;is&nbsp;done&nbsp;by</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;z&nbsp;=&nbsp;Alpha*kernel(x,X(:,Sel_inx),Ker,Arg)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;For&nbsp;more&nbsp;info&nbsp;refer&nbsp;to&nbsp;V.Franc:&nbsp;Optimization&nbsp;Algorithms&nbsp;for&nbsp;Kernel&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;Methods.&nbsp;Research&nbsp;report.&nbsp;CTU-CMP-2005-22.&nbsp;CTU&nbsp;FEL&nbsp;Prague.&nbsp;2005.</span><br>
+<span class=help>%&nbsp;&nbsp;ftp://cmp.felk.cvut.cz/pub/cmp/articles/franc/Franc-PhD.pdf&nbsp;.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;[Dim&nbsp;x&nbsp;Num_data]&nbsp;Input&nbsp;data.</span><br>
+<span class=help>%&nbsp;&nbsp;Ker&nbsp;[string]&nbsp;Kernel&nbsp;identifier.&nbsp;See&nbsp;help&nbsp;of&nbsp;KERNEL&nbsp;for&nbsp;more&nbsp;info.</span><br>
+<span class=help>%&nbsp;&nbsp;Arg&nbsp;[...]&nbsp;Argument&nbsp;of&nbsp;selected&nbsp;kernel.</span><br>
+<span class=help>%&nbsp;&nbsp;M&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;vector&nbsp;used&nbsp;for&nbsp;approximation.</span><br>
+<span class=help>%&nbsp;&nbsp;P&nbsp;[1x1]&nbsp;Depth&nbsp;of&nbsp;search&nbsp;for&nbsp;each&nbsp;basis&nbsp;vector.</span><br>
+<span class=help>%&nbsp;&nbsp;MsErr&nbsp;[1x1]&nbsp;Desired&nbsp;mean&nbsp;sum&nbsp;of&nbsp;squared&nbsp;reconstruction&nbsp;errors.</span><br>
+<span class=help>%&nbsp;&nbsp;MaxErr&nbsp;[1x1]&nbsp;Desired&nbsp;maximal&nbsp;reconstruction&nbsp;error.</span><br>
+<span class=help>%&nbsp;&nbsp;Verb&nbsp;[1x1]&nbsp;If&nbsp;1&nbsp;then&nbsp;infor&nbsp;about&nbsp;process&nbsp;is&nbsp;displayed.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Sel_inx&nbsp;[1&nbsp;x&nbsp;M]&nbsp;Indices&nbsp;of&nbsp;selected&nbsp;vector,&nbsp;i.e.,&nbsp;S&nbsp;=&nbsp;X(:,Sel_inx).</span><br>
+<span class=help>%&nbsp;&nbsp;Alpha&nbsp;[M&nbsp;x&nbsp;M]&nbsp;Defines&nbsp;projection&nbsp;into&nbsp;the&nbsp;found&nbsp;basis&nbsp;(see&nbsp;above).</span><br>
+<span class=help>%&nbsp;&nbsp;Z&nbsp;[M&nbsp;x&nbsp;Num_data]&nbsp;Training&nbsp;data&nbsp;projected&nbsp;into&nbsp;the&nbsp;found&nbsp;basis.</span><br>
+<span class=help>%&nbsp;&nbsp;Kercnt&nbsp;[1&nbsp;x&nbsp;1]&nbsp;Number&nbsp;of&nbsp;used&nbsp;kernel&nbsp;evaluations.</span><br>
+<span class=help>%&nbsp;&nbsp;MsErrors&nbsp;[1&nbsp;x&nbsp;M]&nbsp;Mean&nbsp;square&nbsp;reconstruction&nbsp;error&nbsp;wrt&nbsp;to&nbsp;selected&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;basis&nbsp;vectors.&nbsp;MsErr(end)&nbsp;is&nbsp;the&nbsp;resulting&nbsp;error.</span><br>
+<span class=help>%&nbsp;&nbsp;MaxErrors&nbsp;[1&nbsp;x&nbsp;M]&nbsp;Maximal&nbsp;squared&nbsp;reconstruction&nbsp;error&nbsp;(of&nbsp;the&nbsp;worst</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;input&nbsp;example)&nbsp;wrt.&nbsp;selcetd&nbsp;basis&nbsp;vectors.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;type&nbsp;greedykpca</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;GREEDYKPCA.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;09-sep-2005,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;12-feb-2005,&nbsp;VF,&nbsp;New&nbsp;help&nbsp;made</span><br>
+<span class=help1>%&nbsp;10-dec-2004,&nbsp;VF,&nbsp;tmp(find(Errors&lt;=0))&nbsp;=&nbsp;-inf;&nbsp;added&nbsp;to&nbsp;evoid&nbsp;num&nbsp;errors.</span><br>
+<span class=help1>%&nbsp;5-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;13-mar-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;10-mar-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;9-mar-2004,&nbsp;addopted&nbsp;from&nbsp;greedyappx</span><br>
+<br>
+<hr>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;5,&nbsp;mserr=1e-6;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;6,&nbsp;maxerr=1e-6;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;7,&nbsp;verb=0;&nbsp;<span class=keyword>end</span><br>
+<br>
+[dim,num_data]=size(X);<br>
+<br>
+<span class=keyword>if</span>&nbsp;verb,&nbsp;<br>
+&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'Greedy&nbsp;data&nbsp;approximation.\n'</span>);<br>
+&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'Setting:&nbsp;ker=%s,&nbsp;arg=%f,&nbsp;m=%d,&nbsp;eps=%f\n'</span>,&nbsp;ker,arg,m,maxerr);&nbsp;<br>
+<span class=keyword>end</span><br>
+<br>
+kercnt=0;<br>
+Errors&nbsp;=&nbsp;diagker(X,ker,arg)';&nbsp;&nbsp;kercnt&nbsp;=&nbsp;kercnt+num_data;<br>
+Z&nbsp;=&nbsp;zeros(m,num_data);<br>
+<br>
+MsErr&nbsp;=&nbsp;[];<br>
+MaxErr&nbsp;=&nbsp;[];<br>
+Alpha=zeros(m,m);<br>
+SV&nbsp;=&nbsp;zeros(dim,m);<br>
+sel_inx=[];<br>
+work_inx&nbsp;=&nbsp;[1:num_data];<br>
+<br>
+<span class=keyword>for</span>&nbsp;i=1:m,<br>
+<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;i&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[tmp_sel_inx,tmp_Alpha,tmp_Z,tmp_kercnt,tmp_MsErr,tmp_MaxErr]=...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;upperbound_greedyappx(X,ker,arg,p,0,1e-12,verb);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;kercnt&nbsp;=&nbsp;kercnt+tmp_kercnt;<br>
+&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;init_model.Alpha&nbsp;=&nbsp;Alpha(1:i-1,1:i-1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;init_model.Z&nbsp;=&nbsp;Z(1:i-1,:);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;init_model.Errors&nbsp;=&nbsp;Errors;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[tmp_sel_inx,tmp_Alpha,tmp_Z,tmp_kercnt,tmp_MsErr,tmp_MaxErr]=...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;upperbound_greedyappx(X,ker,arg,p,0,1e-12,verb,init_model);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;kercnt&nbsp;=&nbsp;kercnt+tmp_kercnt;<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;tmp_Z&nbsp;=&nbsp;tmp_Z(i:size(tmp_Z,1),:);<br>
+&nbsp;&nbsp;A&nbsp;=&nbsp;tmp_Z*tmp_Z';<br>
+<br>
+&nbsp;&nbsp;tmp1&nbsp;=&nbsp;sum(tmp_Z.^2,1);<br>
+&nbsp;&nbsp;tmp1(find(tmp1==0))=inf;<br>
+&nbsp;&nbsp;tmp&nbsp;=&nbsp;sum((A*tmp_Z).*tmp_Z,1)./tmp1;<br>
+&nbsp;&nbsp;tmp(sel_inx)&nbsp;=&nbsp;-inf;&nbsp;tmp(find(Errors&lt;=0))&nbsp;=&nbsp;-inf;<br>
+&nbsp;&nbsp;[dummy,new_inx]=max(tmp);<br>
+&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;orthonormalization</span><br>
+&nbsp;&nbsp;sel_inx&nbsp;=&nbsp;[sel_inx&nbsp;new_inx];<br>
+&nbsp;&nbsp;tmp&nbsp;=&nbsp;kernel(&nbsp;X(:,new_inx),&nbsp;X(:,work_inx),&nbsp;ker,&nbsp;arg&nbsp;);<br>
+&nbsp;&nbsp;kercnt=kercnt+num_data-i;<br>
+<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;i&nbsp;&gt;&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Z(i,work_inx)&nbsp;=&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(tmp&nbsp;-&nbsp;Z(1:i-1,new_inx)'*Z(1:i-1,work_inx))/sqrt(Errors(new_inx));<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha(i,:)&nbsp;=&nbsp;-&nbsp;Z(1:i-1,new_inx)'*Alpha(1:i-1,:);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha(i,i)&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha(i,:)&nbsp;=&nbsp;Alpha(i,:)/sqrt(Errors(new_inx));<br>
+&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Z(1,:)&nbsp;=&nbsp;tmp/sqrt(Errors(new_inx));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha(1,1)&nbsp;=&nbsp;1/sqrt(Errors(new_inx));<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;Error(i)&nbsp;=&nbsp;k(i,i)-k'(i,i)</span><br>
+&nbsp;&nbsp;Errors(work_inx)&nbsp;=&nbsp;Errors(work_inx)&nbsp;-&nbsp;Z(i,work_inx).^2;<br>
+&nbsp;&nbsp;Errors(find(Errors&lt;0))&nbsp;=&nbsp;0;<br>
+&nbsp;&nbsp;work_inx(find(work_inx==new_inx))&nbsp;=&nbsp;[];<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;store&nbsp;errors</span><br>
+&nbsp;&nbsp;MsErr&nbsp;=&nbsp;[MsErr,&nbsp;sum(Errors)/num_data];<br>
+&nbsp;&nbsp;MaxErr&nbsp;=&nbsp;[MaxErr,&nbsp;max(Errors)];<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;verb,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'%d:&nbsp;maxerr=%f,&nbsp;mserr=%f,&nbsp;inx=%d\n'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i,MaxErr(<span class=keyword>end</span>),&nbsp;MsErr(<span class=keyword>end</span>),&nbsp;new_inx);<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;evaluate&nbsp;stopping&nbsp;conditions:</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;maxerr&nbsp;&gt;=&nbsp;MaxErr(<span class=keyword>end</span>)&nbsp;|&nbsp;mserr&nbsp;&gt;=&nbsp;MsErr(<span class=keyword>end</span>),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=jump>break</span>;<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>end</span><br>
+<br>
+<br>
+<span class=comment>%&nbsp;cut&nbsp;off&nbsp;non-used&nbsp;memory&nbsp;if&nbsp;number&nbsp;of&nbsp;used&nbsp;base&nbsp;vector&nbsp;is&nbsp;less&nbsp;than&nbsp;m</span><br>
+Alpha=Alpha(1:i,1:i);<br>
+Z&nbsp;=&nbsp;Z(1:i,:);<br>
+<span class=jump>return</span>;<br>
+<br>
+<span class=comment>%=================================================</span><br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[sel_inx,Alpha,Z,kercnt,MsErr,MaxErr]</span>=...<br>
+&nbsp;&nbsp;upperbound_greedyappx(X,ker,arg,m,mserr,maxerr,verb,init_model)&nbsp;<br>
+<br>
+[dim,num_data]=size(X);<br>
+<br>
+kercnt=0;<br>
+sel_inx=[];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;indices&nbsp;of&nbsp;seleted&nbsp;base&nbsp;vectors</span><br>
+work_inx&nbsp;=&nbsp;[1:num_data];&nbsp;<span class=comment>%&nbsp;indices&nbsp;of&nbsp;the&nbsp;rest&nbsp;</span><br>
+MsErr&nbsp;=&nbsp;[];<br>
+MaxErr&nbsp;=&nbsp;[];<br>
+<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;8,<br>
+&nbsp;&nbsp;Errors&nbsp;=&nbsp;diagker(X,ker,arg)';<br>
+&nbsp;&nbsp;Z&nbsp;=&nbsp;zeros(m,num_data);<br>
+&nbsp;&nbsp;Alpha=zeros(m,m);<br>
+&nbsp;&nbsp;curr_m&nbsp;=&nbsp;0;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;Errors&nbsp;=&nbsp;init_model.Errors;<br>
+&nbsp;&nbsp;curr_m&nbsp;=&nbsp;size(init_model.Z,1);<br>
+&nbsp;&nbsp;m&nbsp;=&nbsp;m&nbsp;+&nbsp;curr_m;<br>
+&nbsp;&nbsp;Z&nbsp;=&nbsp;zeros(m,num_data);<br>
+&nbsp;&nbsp;Alpha=zeros(m,m);<br>
+<br>
+&nbsp;&nbsp;Z(1:curr_m,:)&nbsp;=&nbsp;init_model.Z;<br>
+&nbsp;&nbsp;Alpha(1:curr_m,1:curr_m)&nbsp;=&nbsp;init_model.Alpha;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;verb,&nbsp;<span class=io>fprintf</span>(<span class=quotes>'('</span>);&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=keyword>for</span>&nbsp;i=curr_m+1:m,<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;find&nbsp;vector&nbsp;with&nbsp;highest&nbsp;reconstruction&nbsp;error</span><br>
+&nbsp;&nbsp;[curr_maxerr,new_inx]&nbsp;=&nbsp;max(&nbsp;Errors&nbsp;);<br>
+&nbsp;&nbsp;sel_inx&nbsp;=&nbsp;[sel_inx,new_inx];<br>
+<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;orthonormalization</span><br>
+&nbsp;&nbsp;tmp&nbsp;=&nbsp;kernel(&nbsp;X(:,new_inx),&nbsp;X(:,work_inx),&nbsp;ker,&nbsp;arg&nbsp;);&nbsp;<br>
+&nbsp;&nbsp;kercnt&nbsp;=&nbsp;kercnt&nbsp;+&nbsp;num_data&nbsp;-&nbsp;i;<br>
+<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;i&nbsp;&gt;&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Z(i,work_inx)&nbsp;=&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(tmp&nbsp;-&nbsp;Z(1:i-1,new_inx)'*Z(1:i-1,work_inx))/sqrt(Errors(new_inx));&nbsp;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha(i,:)&nbsp;=&nbsp;-&nbsp;Z(1:i-1,new_inx)'*Alpha(1:i-1,:);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha(i,i)&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha(i,:)&nbsp;=&nbsp;Alpha(i,:)/sqrt(Errors(new_inx));<br>
+&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Z(1,:)&nbsp;=&nbsp;tmp/sqrt(Errors(new_inx));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha(1,1)&nbsp;=&nbsp;1/sqrt(Errors(new_inx));<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;Error(i)&nbsp;=&nbsp;k(i,i)-k'(i,i)</span><br>
+&nbsp;&nbsp;Errors(work_inx)&nbsp;=&nbsp;Errors(work_inx)&nbsp;-&nbsp;Z(i,work_inx).^2;&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;&nbsp;Errors(sel_inx)=zeros(1,length(sel_inx));</span><br>
+&nbsp;&nbsp;work_inx(find(work_inx==new_inx))&nbsp;=&nbsp;[];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;store&nbsp;errors</span><br>
+&nbsp;&nbsp;MsErr&nbsp;=&nbsp;[MsErr,&nbsp;sum(Errors)/num_data];<br>
+&nbsp;&nbsp;MaxErr&nbsp;=&nbsp;[MaxErr,&nbsp;max(Errors)];<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;verb,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'.'</span>,&nbsp;i,&nbsp;MsErr(<span class=keyword>end</span>)&nbsp;);<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;evaluate&nbsp;stopping&nbsp;conditions:</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;maxerr&nbsp;&gt;=&nbsp;MaxErr(<span class=keyword>end</span>)&nbsp;|&nbsp;mserr&nbsp;&gt;=&nbsp;MsErr(<span class=keyword>end</span>),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=jump>break</span>;<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>end</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;verb,&nbsp;<span class=io>fprintf</span>(<span class=quotes>')\n'</span>);&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;cut&nbsp;off&nbsp;non-used&nbsp;memory&nbsp;if&nbsp;number&nbsp;of&nbsp;used&nbsp;base&nbsp;vector&nbsp;is&nbsp;less&nbsp;than&nbsp;m</span><br>
+Alpha=Alpha(1:i,1:i);<br>
+Z&nbsp;=&nbsp;Z(1:i,:);<br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

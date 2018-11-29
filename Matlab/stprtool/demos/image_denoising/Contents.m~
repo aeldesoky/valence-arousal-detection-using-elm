@@ -1,0 +1,34 @@
+% Kernel machines.
+%
+% cvkfd       - Computes cross validation error for given KFD model.
+% diagker     - Returns diagonal of kernel matrix of given data.
+% dualcov     - Dual representation of covariance matrix.
+% dualmean    - Computes dual representation of mean vector.
+% gda         - Generalized Discriminant Analysis.
+% greedyappx  - Greedy data approximation.
+% greedyappx2 - Extended greedy data approximation.
+% greedykls   - Greedy Kernel Least-Squares algorithm.
+% greedykpca  - Greedy algorithm to Kernel Principal Component Analysis.
+% greedykpca2 - Extended greedy algorithm to KPCA.
+% kdist       - Computes distance between vectors in kernel space.
+% kernelid    - Returns kernel identifier and adjusted arguments.
+% kernelproj  - Kernel projection of data.
+% kfd         - Kernel Fisher Discriminat.
+% kfdqp       - Kernel Fisher Discriminat using QP.
+% kls         - Kernel Least-Squares approximation.
+% kpca        - Kernel Principal Component Analysis.
+% kperceptr   - Kernel Perceptron.
+% lin2svm     - Linear SVM changes to non-linear SVM.
+% minball     - Computes minimal ball around data in kernel space. 
+% minball2    - Computes minimal ball arround data with L2 penalization.
+% rbfpreimg   - Finds pre-image of RBF kernel expansion.
+%
+
+% About: Statistical Pattern Recognition Toolbox
+% (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac
+% <a href="http://www.cvut.cz">Czech Technical University Prague</a>
+% <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a>
+% <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a>
+
+% Modifications:
+% 20-sep-03, VF

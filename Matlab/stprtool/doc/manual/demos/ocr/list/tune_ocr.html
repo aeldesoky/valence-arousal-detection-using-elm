@@ -1,0 +1,75 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>tune_ocr.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=h1>%&nbsp;TUNE_OCR&nbsp;Tunes&nbsp;SVM&nbsp;classifier&nbsp;for&nbsp;OCR&nbsp;problem.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;following&nbsp;steps&nbsp;are&nbsp;performed:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;-&nbsp;Training&nbsp;set&nbsp;is&nbsp;created&nbsp;from&nbsp;data&nbsp;in&nbsp;directory&nbsp;ExamplesDir.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;-&nbsp;Multi-class&nbsp;SVM&nbsp;is&nbsp;trained&nbsp;for&nbsp;a&nbsp;set&nbsp;of&nbsp;arguments&nbsp;and&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;regularization&nbsp;constants.&nbsp;The&nbsp;best&nbsp;model&nbsp;is&nbsp;selected&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;based&nbsp;on&nbsp;the&nbsp;cross-validation&nbsp;error.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<hr>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>(c)</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox,&nbsp;(C)&nbsp;1999-2003,</span><br>
+<span class=help1>%&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;engineering&lt;/a&gt;,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;04-jun-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;09-sep-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+cd&nbsp;/home.dokt/xfrancv/work/new_stprtool/;<br>
+stprpath;<br>
+cd&nbsp;/home.dokt/xfrancv/work/new_stprtool/demos/ocr;<br>
+<br>
+<span class=comment>%&nbsp;Setting&nbsp;</span><br>
+<span class=comment>%===================================</span><br>
+ExamplesDir&nbsp;=&nbsp;<span class=quotes>'../../data/ocr_numerals/'</span>;&nbsp;&nbsp;<span class=comment>%&nbsp;input&nbsp;directory&nbsp;with&nbsp;exmaples</span><br>
+OCRTuningFileName&nbsp;=&nbsp;<span class=quotes>'ocrtuning'</span>;&nbsp;&nbsp;<span class=comment>%&nbsp;output&nbsp;file&nbsp;with&nbsp;result&nbsp;of&nbsp;tuning</span><br>
+<br>
+<span class=comment>%&nbsp;Model&nbsp;setting&nbsp;for&nbsp;multi-class&nbsp;SVM</span><br>
+options.ker&nbsp;=&nbsp;<span class=quotes>'rbf'</span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;kernel&nbsp;type</span><br>
+options.arg&nbsp;=&nbsp;[1&nbsp;2.5&nbsp;5&nbsp;7.5&nbsp;10]&nbsp;;&nbsp;&nbsp;<span class=comment>%&nbsp;kernel&nbsp;argument</span><br>
+options.C&nbsp;=&nbsp;[inf];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;regularization&nbsp;constant</span><br>
+options.verb&nbsp;=&nbsp;1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;display&nbsp;progress&nbsp;info</span><br>
+options.solver&nbsp;=<span class=quotes>'oaosvm'</span>;<br>
+options.num_fold&nbsp;=&nbsp;5;<br>
+options.svm_options.solver&nbsp;=&nbsp;<span class=quotes>'svmlight'</span>;<br>
+<br>
+<span class=comment>%&nbsp;Create&nbsp;training&nbsp;set&nbsp;</span><br>
+<span class=comment>%====================================</span><br>
+<span class=io>fprintf</span>(<span class=quotes>'Creating&nbsp;training&nbsp;set:\n'</span>);<br>
+TrainingDataFile&nbsp;=&nbsp;[ExamplesDir&nbsp;<span class=quotes>'OcrTrndata.mat'</span>];<br>
+mergesets(&nbsp;ExamplesDir,&nbsp;TrainingDataFile&nbsp;);<br>
+data&nbsp;=&nbsp;load(TrainingDataFile&nbsp;);<br>
+<br>
+<span class=comment>%&nbsp;Tuning&nbsp;SVM&nbsp;model</span><br>
+<span class=comment>%====================================</span><br>
+<br>
+<span class=io>fprintf</span>(<span class=quotes>'Tuning&nbsp;multi-class&nbsp;SVM&nbsp;classifier.\n'</span>);<br>
+[model,Error]&nbsp;=&nbsp;evalsvm(data,options);<br>
+<br>
+<span class=io>fprintf</span>(<span class=quotes>'\nSaving&nbsp;results&nbsp;to:&nbsp;%s\n'</span>,OCRTuningFileName);<br>
+save(OCRTuningFileName,<span class=quotes>'model'</span>,<span class=quotes>'Error'</span>,<span class=quotes>'options'</span>);<br>
+<br>
+<span class=comment>%&nbsp;Visualization</span><br>
+<span class=comment>%====================================</span><br>
+<span class=comment>%figure;&nbsp;</span><br>
+<span class=comment>%load(OCRTuningFileName)</span><br>
+<span class=comment>%figure;&nbsp;mesh(options.arg,options.C,Errors);</span><br>
+<span class=comment>%hold&nbsp;on;&nbsp;xlabel('arg');&nbsp;ylabel('C');</span><br>
+<span class=comment>%figure;&nbsp;contour(options.arg,options.C,Errors);</span><br>
+<span class=comment>%hold&nbsp;on;&nbsp;xlabel('arg');&nbsp;ylabel('C');</span><br>
+<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

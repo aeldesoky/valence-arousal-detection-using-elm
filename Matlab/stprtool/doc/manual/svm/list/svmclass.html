@@ -1,0 +1,96 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>svmclass.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[y,dfce]&nbsp;</span>=&nbsp;<span class=defun_name>svmclass</span>(<span class=defun_in>X,model</span>)<br>
+<span class=h1>%&nbsp;SVMCLASS&nbsp;Support&nbsp;Vector&nbsp;Machines&nbsp;Classifier.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;[y,dfce]&nbsp;=&nbsp;svmclass(&nbsp;X,&nbsp;model&nbsp;)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;[y,dfce]&nbsp;=&nbsp;svmclass(&nbsp;X,&nbsp;model&nbsp;)&nbsp;classifies&nbsp;input&nbsp;vectors&nbsp;X</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;into&nbsp;classes&nbsp;using&nbsp;the&nbsp;multi-class&nbsp;SVM&nbsp;classifier</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y(i)&nbsp;=&nbsp;argmax&nbsp;f_j(X(:,i))</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;j=1..nfun</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;where&nbsp;f_j&nbsp;are&nbsp;linear&nbsp;functions&nbsp;in&nbsp;the&nbsp;feature&nbsp;space&nbsp;given&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;by&nbsp;the&nbsp;prescribed&nbsp;kernel&nbsp;function&nbsp;(options.ker,&nbsp;options.arg).&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;discriminant&nbsp;functions&nbsp;f_j&nbsp;are&nbsp;determined&nbsp;by&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;nfun]&nbsp;...&nbsp;multipliers&nbsp;associated&nbsp;to&nbsp;SV</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.b&nbsp;[nclass]&nbsp;...&nbsp;biases&nbsp;of&nbsp;discriminant&nbsp;functions.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;nsv]&nbsp;...&nbsp;support&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;See&nbsp;'help&nbsp;kernelproj'&nbsp;for&nbsp;more&nbsp;info&nbsp;about&nbsp;valuation&nbsp;of&nbsp;the&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;discriminant&nbsp;functions&nbsp;f_j.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;In&nbsp;the&nbsp;binary&nbsp;case&nbsp;nfun=1&nbsp;the&nbsp;binary&nbsp;SVM&nbsp;classifier&nbsp;is&nbsp;used</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y(i)&nbsp;=&nbsp;1&nbsp;if&nbsp;f(X(:,i)&nbsp;&gt;=&nbsp;0</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;2&nbsp;if&nbsp;f(X(:,i)&nbsp;&lt;&nbsp;0</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;where&nbsp;f&nbsp;is&nbsp;the&nbsp;disrimiant&nbsp;function&nbsp;given&nbsp;by&nbsp;Alpha&nbsp;[nsv&nbsp;x&nbsp;1],</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;b&nbsp;[1x1]&nbsp;and&nbsp;support&nbsp;vectors&nbsp;sv.X.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Input&nbsp;vectors&nbsp;to&nbsp;be&nbsp;classified.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;SVM&nbsp;classifier:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;nfun]&nbsp;Multipliers&nbsp;associated&nbsp;to&nbsp;suport&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[nfun&nbsp;x&nbsp;1]&nbsp;Biases.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;nsv]&nbsp;Support&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options.ker&nbsp;[string]&nbsp;Kernel&nbsp;identifier.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options.arg&nbsp;[1&nbsp;x&nbsp;nargs]&nbsp;Kernel&nbsp;argument(s).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Predicted&nbsp;labels.</span><br>
+<span class=help>%&nbsp;&nbsp;dfce&nbsp;[nfun&nbsp;x&nbsp;num_data]&nbsp;Values&nbsp;of&nbsp;discriminant&nbsp;functions.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;trn&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;smo(trn,struct('ker','rbf','arg',1,'C',10));</span><br>
+<span class=help>%&nbsp;&nbsp;tst&nbsp;=&nbsp;load('riply_tst');</span><br>
+<span class=help>%&nbsp;&nbsp;ypred&nbsp;=&nbsp;svmclass(&nbsp;tst.X,&nbsp;model&nbsp;);</span><br>
+<span class=help>%&nbsp;&nbsp;cerror(&nbsp;ypred,&nbsp;tst.y&nbsp;)</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;SMO,&nbsp;SVMLIGHT,&nbsp;SVMQUADPROG,&nbsp;KFD,&nbsp;KFDQP,&nbsp;MVSVMCLASS.&nbsp;&nbsp;</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;14-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;09-May-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;14-Jan-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;allows&nbsp;model&nbsp;to&nbsp;be&nbsp;given&nbsp;in&nbsp;cell</span><br>
+model=c2s(model);<br>
+<br>
+dfce&nbsp;=&nbsp;kernelproj(X,&nbsp;model);<br>
+nfun&nbsp;=&nbsp;size(dfce,1);<br>
+<br>
+<span class=keyword>if</span>&nbsp;nfun&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;Binary&nbsp;case</span><br>
+&nbsp;&nbsp;<span class=comment>%-------------------------------</span><br>
+<br>
+&nbsp;&nbsp;y&nbsp;=&nbsp;ones(size(dfce));<br>
+&nbsp;&nbsp;y(&nbsp;find(&nbsp;dfce&nbsp;&lt;&nbsp;0&nbsp;))&nbsp;=&nbsp;2;<br>
+<br>
+<span class=keyword>else</span>&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;Multi-class&nbsp;case</span><br>
+&nbsp;&nbsp;<span class=comment>%-------------------------------</span><br>
+<br>
+&nbsp;&nbsp;[dummy,y]&nbsp;=&nbsp;max(&nbsp;dfce&nbsp;);<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+<br>
+</code>

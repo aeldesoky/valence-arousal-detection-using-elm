@@ -1,0 +1,167 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>ggradandr.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model&nbsp;</span>=&nbsp;<span class=defun_name>ggradandr</span>(<span class=defun_in>&nbsp;distrib,&nbsp;options,&nbsp;init_model</span>)<br>
+<span class=h1>%&nbsp;GGRADANDER&nbsp;Gradient&nbsp;method&nbsp;to&nbsp;solve&nbsp;the&nbsp;Generalized&nbsp;Anderson's&nbsp;task.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;ggradandr(&nbsp;distrib)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;ggradandr(&nbsp;distrib,&nbsp;options)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;ggradandr(&nbsp;distrib,&nbsp;options,&nbsp;init_model)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;is&nbsp;an&nbsp;implementation&nbsp;of&nbsp;the&nbsp;algorithm</span><br>
+<span class=help>%&nbsp;&nbsp;using&nbsp;the&nbsp;generalized&nbsp;gradient&nbsp;optimization&nbsp;to&nbsp;solve</span><br>
+<span class=help>%&nbsp;&nbsp;the&nbsp;the&nbsp;Generalized&nbsp;Anderson's&nbsp;task&nbsp;[SH10].</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;goal&nbsp;of&nbsp;the&nbsp;GAT&nbsp;is&nbsp;find&nbsp;the&nbsp;binary&nbsp;linear&nbsp;classification</span><br>
+<span class=help>%&nbsp;&nbsp;rule&nbsp;(g(x)=sgn(W'*x+b)&nbsp;with&nbsp;minimal&nbsp;probability&nbsp;of&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;misclassification.&nbsp;The&nbsp;conditional&nbsp;probabilities&nbsp;are&nbsp;known&nbsp;to&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;be&nbsp;Gaussians&nbsp;their&nbsp;paramaters&nbsp;belong&nbsp;to&nbsp;a&nbsp;given&nbsp;set&nbsp;of&nbsp;parameters.&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;true&nbsp;parameters&nbsp;are&nbsp;not&nbsp;known.&nbsp;The&nbsp;linear&nbsp;rule&nbsp;which&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;guarantes&nbsp;the&nbsp;minimimal&nbsp;classification&nbsp;error&nbsp;for&nbsp;the&nbsp;worst&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;possible&nbsp;case&nbsp;(the&nbsp;worst&nbsp;configuration&nbsp;of&nbsp;Gaussains)&nbsp;is&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;sought&nbsp;for.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;distrib&nbsp;[struct]&nbsp;Binary&nbsp;labeled&nbsp;Gaussian&nbsp;distributions:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Mean&nbsp;[dim&nbsp;x&nbsp;ncomp]&nbsp;Mean&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Cov&nbsp;[dim&nbsp;x&nbsp;dim&nbsp;x&nbsp;ncomp]&nbsp;Covariance&nbsp;matrices.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;ncomp]&nbsp;labels&nbsp;of&nbsp;Gaussians&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Defines&nbsp;stopping&nbsp;condition:&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;(default&nbsp;1e4&nbsp;).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.eps&nbsp;[1x1]&nbsp;Minimal&nbsp;change&nbsp;in&nbsp;the&nbsp;optimised&nbsp;criterion&nbsp;(default&nbsp;0).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;init_model&nbsp;[struct]&nbsp;Initial&nbsp;model:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.W,&nbsp;.b,&nbsp;.t&nbsp;see&nbsp;below.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Linear&nbsp;classifier:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Normal&nbsp;vector&nbsp;of&nbsp;the&nbsp;found&nbsp;hypeprlane&nbsp;W'*x&nbsp;+&nbsp;b&nbsp;=&nbsp;0.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;the&nbsp;hyperplane.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.r&nbsp;[1x1]&nbsp;Mahalanobis&nbsp;distance&nbsp;for&nbsp;the&nbsp;cloasest&nbsp;Gaussian.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.err&nbsp;[1x1]&nbsp;Probability&nbsp;of&nbsp;misclassification.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.exitflag&nbsp;[1x1]&nbsp;0&nbsp;...&nbsp;maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;exceeded.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;...&nbsp;condition&nbsp;abs(&nbsp;r&nbsp;-&nbsp;old_r)&nbsp;&lt;&nbsp;eps&nbsp;fulfilled.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;distrib&nbsp;=&nbsp;load('mars');</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;ggradandr(&nbsp;distrib&nbsp;);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;pandr(&nbsp;model,&nbsp;distrib&nbsp;);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;ANDRORIG,&nbsp;EANDERS,&nbsp;GANDERS,&nbsp;ANDRERR,&nbsp;LINCLASS.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;17-sep-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;take&nbsp;input&nbsp;arguments</span><br>
+<span class=comment>%-----------------------------</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;options&nbsp;=&nbsp;[];&nbsp;<span class=keyword>else</span>&nbsp;options=c2s(options);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'eps'</span>),&nbsp;options.eps=0.0;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'tmax'</span>),&nbsp;options.tmax=1e4;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;get&nbsp;dimension&nbsp;and&nbsp;number&nbsp;of&nbsp;distributions</span><br>
+[dim,ncomp]=size(distrib.Mean);<br>
+<br>
+<span class=comment>%&nbsp;inicialization</span><br>
+<span class=comment>%-----------------------------</span><br>
+exitflag&nbsp;=&nbsp;0;<br>
+t&nbsp;=&nbsp;0;<br>
+<br>
+<span class=comment>%&nbsp;add&nbsp;one&nbsp;constant&nbsp;coordinate</span><br>
+Mu&nbsp;=&nbsp;[distrib.Mean;ones(1,ncomp)];<br>
+Mu(:,find(distrib.y==2))&nbsp;=&nbsp;-Mu(:,find(distrib.y==2));<br>
+C&nbsp;=&nbsp;zeros(dim+1,dim+1,ncomp);<br>
+C(1:dim,1:dim,:)&nbsp;=&nbsp;distrib.Cov;<br>
+<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;==&nbsp;3,<br>
+&nbsp;&nbsp;W&nbsp;=&nbsp;[&nbsp;init_model.W;&nbsp;init_model.b];&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isfield(&nbsp;init_model,<span class=quotes>'t'</span>),&nbsp;t&nbsp;=&nbsp;init_model.t;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>end</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;t==0,&nbsp;W&nbsp;=&nbsp;mean(Mu,2);&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;find&nbsp;the&nbsp;minimal&nbsp;radius&nbsp;of&nbsp;all&nbsp;the&nbsp;ellipsoids</span><br>
+[minr,inx]&nbsp;=&nbsp;min_radius(W,Mu,C);<br>
+old_minr=minr;<br>
+<br>
+<span class=comment>%&nbsp;main&nbsp;cycle</span><br>
+<span class=comment>%--------------------------</span><br>
+<span class=keyword>while</span>&nbsp;exitflag==0&nbsp;&&nbsp;t&nbsp;&lt;&nbsp;options.tmax,<br>
+&nbsp;&nbsp;t&nbsp;=&nbsp;t&nbsp;+&nbsp;1;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;compute&nbsp;contact&nbsp;point</span><br>
+&nbsp;&nbsp;x0=Mu(:,inx)-(minr/sqrt(W'*C(:,:,inx)*W))*C(:,:,inx)*W;<br>
+<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;update</span><br>
+&nbsp;&nbsp;W&nbsp;=&nbsp;W&nbsp;+&nbsp;x0;<br>
+<br>
+&nbsp;&nbsp;[minr,inx]&nbsp;=&nbsp;min_radius(W,Mu,C);<br>
+<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;abs(minr-old_minr)&nbsp;&lt;&nbsp;options.eps,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;exitflag&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;old_minr&nbsp;=&nbsp;minr;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;setup&nbsp;model</span><br>
+model.W&nbsp;=&nbsp;W(1:<span class=keyword>end</span>-1);<br>
+model.b&nbsp;=&nbsp;W(<span class=keyword>end</span>);<br>
+model.r&nbsp;=&nbsp;minr;<br>
+model.err&nbsp;=&nbsp;1-cdf(<span class=quotes>'norm'</span>,minr,0,1);<br>
+model.t&nbsp;=&nbsp;t;<br>
+model.exitflag&nbsp;=&nbsp;exitflag;<br>
+model.distrib&nbsp;=&nbsp;distrib;<br>
+model.options&nbsp;=&nbsp;options;<br>
+model.classifier&nbsp;=&nbsp;<span class=quotes>'linclass'</span>;<br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+<br>
+<span class=comment>%----------------------------------------------------------</span><br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[W,exitflag]&nbsp;</span>=&nbsp;<span class=defun_name>optimal_hyperplane</span>(<span class=defun_in>X</span>)<br>
+<span class=comment>%&nbsp;finds&nbsp;the&nbsp;optimal&nbsp;hyperplane&nbsp;passing&nbsp;through&nbsp;the&nbsp;origin</span><br>
+<br>
+[dim,num_data]=size(X);<br>
+<br>
+H=eye(dim);<br>
+f=zeros(dim,1);<br>
+b=-ones(num_data,1);<br>
+A=-X';<br>
+<br>
+<span class=comment>%&nbsp;quadratic&nbsp;programming</span><br>
+options=optimset(<span class=quotes>'Display'</span>,<span class=quotes>'off'</span>,<span class=quotes>'Diagnostics'</span>,<span class=quotes>'off'</span>,<span class=quotes>'LargeScale'</span>,<span class=quotes>'off'</span>);<br>
+[W,fval,exitflag]=quadprog(H,f,A,b,[],[],[],[],[],options);<br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+<span class=comment>%----------------------------------------------------------</span><br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[minr,inx]&nbsp;</span>=&nbsp;<span class=defun_name>min_radius</span>(<span class=defun_in>W,Mu,C</span>);<br>
+<span class=comment>%&nbsp;find&nbsp;radius&nbsp;of&nbsp;the&nbsp;miniaml&nbsp;ellipsoids</span><br>
+<br>
+Radius&nbsp;=&nbsp;zeros(size(Mu,2),1);<br>
+<span class=keyword>for</span>&nbsp;i&nbsp;=&nbsp;1:size(Mu,2),<br>
+&nbsp;&nbsp;Radius(i)&nbsp;=&nbsp;W<span class=quotes>'*Mu(:,i)/sqrt(W'</span>*C(:,:,i)*W);<br>
+<span class=keyword>end</span><br>
+[minr,inx]=min(&nbsp;Radius&nbsp;);<br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

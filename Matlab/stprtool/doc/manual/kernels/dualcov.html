@@ -1,0 +1,65 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">DUALCOV</b>
+<td valign="baseline" align="right" class="function"><a href="../kernels/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Dual representation of covariance matrix.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;Z=dualcov(num_data)</span><br>
+<span class=help>&nbsp;&nbsp;Z=dualcov(labels,&nbsp;y)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;function&nbsp;computes&nbsp;a&nbsp;matrix&nbsp;Z&nbsp;[num_data&nbsp;x&nbsp;num_data]&nbsp;which&nbsp;allows&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;to&nbsp;express&nbsp;the&nbsp;sample&nbsp;covariance&nbsp;matrix&nbsp;of&nbsp;data&nbsp;sample&nbsp;X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;in&nbsp;terms&nbsp;of&nbsp;dot&nbsp;products.&nbsp;</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;Z&nbsp;=&nbsp;dualcov(num_data)&nbsp;computes&nbsp;a&nbsp;matrix&nbsp;Z&nbsp;[num_data&nbsp;x&nbsp;num_data]&nbsp;such&nbsp;that&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;cov(X',1)&nbsp;=&nbsp;X*Z*X'.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;m&nbsp;=&nbsp;dualcov(labels,y)&nbsp;computes&nbsp;a&nbsp;matrix&nbsp;Z&nbsp;[length(y)&nbsp;x&nbsp;length(y)]&nbsp;such&nbsp;that</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;cov(X(:,find(labels==y))',1)&nbsp;=&nbsp;X*Z*X',</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;where&nbsp;labels&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;is&nbsp;a&nbsp;vector&nbsp;of&nbsp;data&nbsp;labels&nbsp;and&nbsp;&nbsp;y&nbsp;[1x1]&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;is&nbsp;a&nbsp;label&nbsp;od&nbsp;class&nbsp;which&nbsp;covariance&nbsp;metrix&nbsp;is&nbsp;to&nbsp;be&nbsp;computed.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;Unlabeled&nbsp;data:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;data&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;ca&nbsp;=&nbsp;cov(&nbsp;data.X',&nbsp;1)</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;cb&nbsp;=&nbsp;data.X*dualcov(size(data.X,2))*data.X'</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;Labeled&nbsp;data:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;data&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;ca1&nbsp;=&nbsp;cov(&nbsp;data.X(:,find(data.y==1))',1)</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;cb1&nbsp;=&nbsp;data.X*dualcov(data.y,1)*data.X'</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;ca2&nbsp;=&nbsp;cov(&nbsp;data.X(:,find(data.y==2))',1)</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;cb2&nbsp;=&nbsp;data.X*dualcov(data.y,2)*data.X'</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../kernels/dualmean.html" target="mdsbody">DUALMEAN</a>.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../kernels/list/dualcov.html">dualcov.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 16-may-2004, VF<br>
+ 14-may-2004, VF<br>
+ 22-Jan-2003, VF<br>
+ 22-May-2001, V. Franc, created<br>
+
+</body>
+</html>

@@ -1,0 +1,203 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>svmquadprog.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model&nbsp;</span>=&nbsp;<span class=defun_name>svmquadprog</span>(<span class=defun_in>data,options</span>)<br>
+<span class=h1>%&nbsp;SVMQUADPROG&nbsp;SVM&nbsp;trained&nbsp;by&nbsp;Matlab&nbsp;Optimization&nbsp;Toolbox.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;svmquadprog(&nbsp;data&nbsp;)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;svmquadprog(&nbsp;data,&nbsp;options&nbsp;)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;trains&nbsp;binary&nbsp;Support&nbsp;Vector&nbsp;Machines&nbsp;classifer&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;with&nbsp;L1&nbsp;or&nbsp;L2-soft&nbsp;margin.&nbsp;The&nbsp;SVM&nbsp;quadratic&nbsp;programming&nbsp;task&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;is&nbsp;solved&nbsp;by&nbsp;the&nbsp;'quadprog.m'&nbsp;of&nbsp;the&nbsp;Matlab&nbsp;Optimization&nbsp;toolbox.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;See&nbsp;'help&nbsp;svmclass'&nbsp;to&nbsp;see&nbsp;how&nbsp;to&nbsp;classify&nbsp;data&nbsp;with&nbsp;found&nbsp;classifier.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Binary&nbsp;labeled&nbsp;training&nbsp;data:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;labels.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Control&nbsp;parameters:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.ker&nbsp;[string]&nbsp;Kernel&nbsp;identifier&nbsp;(default&nbsp;'linear').&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;See&nbsp;'help&nbsp;kernel'&nbsp;for&nbsp;more&nbsp;info.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.arg&nbsp;[1&nbsp;x&nbsp;nargs]&nbsp;Kernel&nbsp;argument(s).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.C&nbsp;SVM&nbsp;regularization&nbsp;constant&nbsp;(default&nbsp;inf):</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1&nbsp;x&nbsp;1]&nbsp;..&nbsp;the&nbsp;same&nbsp;for&nbsp;all&nbsp;training&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1&nbsp;x&nbsp;2]&nbsp;..&nbsp;for&nbsp;each&nbsp;class&nbsp;separately&nbsp;C=[C1,C2],</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;..&nbsp;each&nbsp;training&nbsp;vector&nbsp;separately.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.norm&nbsp;[1x1]&nbsp;1&nbsp;..&nbsp;L1-soft&nbsp;margin&nbsp;penalization&nbsp;(default).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;..&nbsp;L2-soft&nbsp;margin&nbsp;penalization.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Binary&nbsp;SVM&nbsp;classifier:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;1]&nbsp;Weights.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;the&nbsp;decision&nbsp;function.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;nsv]&nbsp;Support&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.nsv&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;support&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.kercnt&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;used&nbsp;kernel&nbsp;evaluations.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.trnerr&nbsp;[1x1]&nbsp;Training&nbsp;classification&nbsp;error.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.margin&nbsp;[1x1]&nbsp;Margin&nbsp;of&nbsp;found&nbsp;classifier.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.cputime&nbsp;[1x1]&nbsp;Used&nbsp;CPU&nbsp;time&nbsp;in&nbsp;seconds.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options&nbsp;[struct]&nbsp;Copy&nbsp;of&nbsp;used&nbsp;options.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.exitflag&nbsp;[1x1]&nbsp;Exitflag&nbsp;of&nbsp;the&nbsp;QUADPROG&nbsp;function.&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(if&nbsp;&gt;&nbsp;0&nbsp;then&nbsp;it&nbsp;has&nbsp;converged&nbsp;to&nbsp;the&nbsp;solution).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;=&nbsp;struct('ker','rbf','arg',1,'C',10);</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;svmquadprog(data,options)</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;ppatterns(data);&nbsp;psvm(model);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;SMO,&nbsp;SVMLIGHT,&nbsp;SVMCLASS.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;31-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;16-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;17-Feb-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;28-Nov-2001,&nbsp;VF,&nbsp;used&nbsp;quadprog&nbsp;instead&nbsp;of&nbsp;qp</span><br>
+<span class=help1>%&nbsp;23-Occt-2001,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;19-September-2001,&nbsp;V.&nbsp;Franc,&nbsp;renamed&nbsp;to&nbsp;svmmot.</span><br>
+<span class=help1>%&nbsp;8-July-2001,&nbsp;V.Franc,&nbsp;comments&nbsp;changed,&nbsp;bias&nbsp;mistake&nbsp;removed.</span><br>
+<span class=help1>%&nbsp;28-April-2001,&nbsp;V.Franc,&nbsp;flps&nbsp;counter&nbsp;added</span><br>
+<span class=help1>%&nbsp;10-April-2001,&nbsp;V.&nbsp;Franc,&nbsp;created</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;timer</span><br>
+tic;<br>
+<br>
+<span class=comment>%&nbsp;input&nbsp;aruments</span><br>
+<span class=comment>%-------------------------------------------</span><br>
+data=c2s(data);<br>
+[dim,num_data]=size(data.X);<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;options=[];&nbsp;<span class=keyword>else</span>&nbsp;options=c2s(options);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'ker'</span>),&nbsp;options.ker&nbsp;=&nbsp;<span class=quotes>'linear'</span>;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'arg'</span>),&nbsp;options.arg&nbsp;=&nbsp;1;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'C'</span>),&nbsp;options.C&nbsp;=&nbsp;inf;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'norm'</span>),&nbsp;options.norm&nbsp;=&nbsp;1;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'mu'</span>),&nbsp;options.mu&nbsp;=&nbsp;1e-12;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'eps'</span>),&nbsp;options.eps&nbsp;=&nbsp;1e-12;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;Set&nbsp;up&nbsp;QP&nbsp;task</span><br>
+<span class=comment>%----------------------------</span><br>
+<br>
+<span class=comment>%&nbsp;labels&nbsp;{1,2}&nbsp;-&gt;&nbsp;{1,-1}</span><br>
+y&nbsp;=&nbsp;data.y(:);<br>
+y(find(y==2))&nbsp;=&nbsp;-1;<br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;kernel&nbsp;matrix</span><br>
+H&nbsp;=&nbsp;kernel(data.X,data.X,options.ker,options.arg).*(y*y');<br>
+<br>
+<span class=comment>%&nbsp;add&nbsp;small&nbsp;numbers&nbsp;to&nbsp;diagonal&nbsp;</span><br>
+H&nbsp;=&nbsp;H&nbsp;+&nbsp;options.mu*eye(size(H));<br>
+<br>
+Aeq&nbsp;=&nbsp;y';<br>
+beq&nbsp;=&nbsp;0;<br>
+<br>
+f&nbsp;=&nbsp;-ones(num_data,1);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Alpha</span><br>
+<br>
+LB&nbsp;=&nbsp;zeros(num_data,1);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;0&nbsp;&lt;=&nbsp;Alpha</span><br>
+x0&nbsp;=&nbsp;zeros(num_data,1);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;starting&nbsp;point</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;options.norm==1,<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;L1-soft&nbsp;margin</span><br>
+&nbsp;&nbsp;<span class=comment>%---------------------</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;length(options.C)&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;UB&nbsp;=&nbsp;options.C*ones(num_data,1);<br>
+&nbsp;&nbsp;<span class=keyword>elseif</span>&nbsp;length(options.C)&nbsp;==&nbsp;2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;UB=zeros(num_data,1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;UB(find(data.y==1))=options.C(1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;UB(find(data.y==2))=options.C(2);<br>
+&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;UB=options.C(:);<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;vectorC=zeros(num_data,1);<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;L2-soft&nbsp;margin</span><br>
+&nbsp;&nbsp;<span class=comment>%---------------------</span><br>
+&nbsp;&nbsp;UB=ones(num_data,1)*inf;<br>
+&nbsp;&nbsp;vectorC&nbsp;=&nbsp;ones(num_data,1);<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;length(options.C)&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vectorC&nbsp;=&nbsp;vectorC*options.C;<br>
+&nbsp;&nbsp;<span class=keyword>elseif</span>&nbsp;length(options.C)&nbsp;==&nbsp;2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;inx1=find(data.y==1);inx2=find(data.y==2);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vectorC(inx1)=options.C(1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vectorC(inx2)=options.C(2);<br>
+&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;vectorC&nbsp;=&nbsp;options.C(:);<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;vectorC&nbsp;=&nbsp;1./(2*vectorC);<br>
+&nbsp;&nbsp;H&nbsp;=&nbsp;H&nbsp;+&nbsp;diag(vectorC);<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;call&nbsp;optimization&nbsp;toolbox&nbsp;</span><br>
+<span class=comment>%&nbsp;----------------------------------</span><br>
+qp_options&nbsp;=&nbsp;optimset(<span class=quotes>'Display'</span>,<span class=quotes>'off'</span>);<br>
+[Alpha,fval,exitflag]&nbsp;=&nbsp;quadprog(H,&nbsp;f,&nbsp;[],[],Aeq,&nbsp;beq,&nbsp;LB,&nbsp;UB,&nbsp;x0,&nbsp;qp_options);<br>
+<br>
+inx_sv&nbsp;=&nbsp;find(&nbsp;Alpha&nbsp;&gt;&nbsp;options.eps);<br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;bias</span><br>
+<span class=comment>%--------------------------</span><br>
+<span class=comment>%&nbsp;take&nbsp;boundary&nbsp;(f(x)=+/-1)&nbsp;support&nbsp;vectors&nbsp;0&nbsp;&lt;&nbsp;Alpha&nbsp;&lt;&nbsp;C</span><br>
+inx_bound&nbsp;=&nbsp;find(&nbsp;Alpha&nbsp;&gt;&nbsp;options.eps&nbsp;&&nbsp;Alpha&nbsp;&lt;&nbsp;(options.C&nbsp;-&nbsp;options.eps));<br>
+<br>
+<span class=keyword>if</span>&nbsp;length(&nbsp;inx_bound&nbsp;)&nbsp;~=&nbsp;0,<br>
+&nbsp;&nbsp;model.b&nbsp;=&nbsp;sum(y(inx_bound)-H(inx_bound,inx_sv)*...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha(inx_sv).*y(inx_bound))/length(&nbsp;inx_bound&nbsp;);<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;<span class=io>disp</span>(<span class=quotes>'Bias&nbsp;cannot&nbsp;be&nbsp;determined.'</span>);<br>
+&nbsp;&nbsp;model.b=0;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;margin</span><br>
+<span class=comment>%------------------------</span><br>
+<span class=keyword>if</span>&nbsp;options.norm&nbsp;==&nbsp;1<br>
+&nbsp;&nbsp;w2&nbsp;=&nbsp;Alpha(inx_sv)'*H(inx_sv,inx_sv)*Alpha(inx_sv);<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;w2&nbsp;=&nbsp;Alpha(inx_sv)'*(H(inx_sv,inx_sv)-diag(vectorC(inx_sv)))*Alpha(inx_sv);<br>
+<span class=keyword>end</span><br>
+<br>
+margin&nbsp;=&nbsp;1/sqrt(w2);<br>
+<br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;training&nbsp;classification&nbsp;error&nbsp;</span><br>
+<span class=comment>%-------------------------------------------</span><br>
+Alpha&nbsp;=&nbsp;Alpha.*y;<br>
+model.Alpha&nbsp;=&nbsp;Alpha(&nbsp;inx_sv&nbsp;);<br>
+model.sv.X&nbsp;=&nbsp;data.X(:,inx_sv&nbsp;);<br>
+model.sv.y&nbsp;=&nbsp;data.y(inx_sv&nbsp;);<br>
+model.sv.inx&nbsp;=&nbsp;inx_sv;<br>
+model.nsv&nbsp;=&nbsp;length(&nbsp;inx_sv&nbsp;);<br>
+model.margin&nbsp;=&nbsp;margin;<br>
+model.exitflag&nbsp;=&nbsp;exitflag;<br>
+model.options&nbsp;=&nbsp;options;<br>
+model.kercnt&nbsp;=&nbsp;num_data*(num_data+1)/2;<br>
+model.trnerr&nbsp;=&nbsp;cerror(data.y,svmclass(data.X,&nbsp;model));<br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'svmclass'</span>;<br>
+<br>
+<span class=keyword>if</span>&nbsp;strcmpi(options.ker,<span class=quotes>'linear'</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;model.W&nbsp;=&nbsp;model.sv.X*model.Alpha;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;used&nbsp;CPU&nbsp;time</span><br>
+model.cputime=toc;<br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

@@ -1,0 +1,161 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>eanders.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model&nbsp;</span>=&nbsp;<span class=defun_name>eanders</span>(<span class=defun_in>distrib,&nbsp;options,&nbsp;init_model</span>)<br>
+<span class=h1>%&nbsp;EANDERS&nbsp;Epsilon-solution&nbsp;of&nbsp;the&nbsp;Generalized&nbsp;Andersson's&nbsp;task.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;eanders(distrib&nbsp;)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;eanders(distrib,&nbsp;options)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;eanders(distrib,&nbsp;options,&nbsp;init_model)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;is&nbsp;an&nbsp;implementation&nbsp;of&nbsp;the&nbsp;Schlesinger's&nbsp;iterative</span><br>
+<span class=help>%&nbsp;&nbsp;algorithm&nbsp;which&nbsp;finds&nbsp;the&nbsp;epsilon-solution&nbsp;of&nbsp;the&nbsp;Generalized&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;Anderson's&nbsp;task&nbsp;using&nbsp;the&nbsp;Kozinec's&nbsp;algorithm&nbsp;[SH10].&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;goal&nbsp;of&nbsp;the&nbsp;GAT&nbsp;is&nbsp;find&nbsp;the&nbsp;binary&nbsp;linear&nbsp;classification</span><br>
+<span class=help>%&nbsp;&nbsp;rule&nbsp;(g(x)=sgn(W'*x+b)&nbsp;with&nbsp;minimal&nbsp;probability&nbsp;of&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;misclassification.&nbsp;The&nbsp;conditional&nbsp;probabilities&nbsp;are&nbsp;known&nbsp;to&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;be&nbsp;Gaussians&nbsp;their&nbsp;paramaters&nbsp;belong&nbsp;to&nbsp;a&nbsp;given&nbsp;set&nbsp;of&nbsp;parameters.&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;true&nbsp;parameters&nbsp;are&nbsp;not&nbsp;known.&nbsp;The&nbsp;linear&nbsp;rule&nbsp;which&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;guarantes&nbsp;the&nbsp;minimimal&nbsp;classification&nbsp;error&nbsp;for&nbsp;the&nbsp;worst&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;possible&nbsp;case&nbsp;(the&nbsp;worst&nbsp;configuration&nbsp;of&nbsp;Gaussains)&nbsp;is&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;sought&nbsp;for.&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;distrib&nbsp;[struct]&nbsp;Input&nbsp;set&nbsp;of&nbsp;labeld&nbsp;(1&nbsp;or&nbsp;2)&nbsp;Gassians:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Mean&nbsp;[dim&nbsp;x&nbsp;ncomp]&nbsp;Mean&nbsp;veactors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Cov&nbsp;&nbsp;[dim&nbsp;x&nbsp;dim&nbsp;x&nbsp;ncomp]&nbsp;Covariance&nbsp;matrices.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;ncomp]&nbsp;Labels&nbsp;of&nbsp;Gaussian&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Determine&nbsp;stopping&nbsp;conditions:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.err&nbsp;[1x1]&nbsp;Desired&nbsp;classification&nbsp;error;&nbsp;must&nbsp;be&nbsp;0&lt;err&lt;0.5;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(default&nbsp;0.05).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;init_model&nbsp;[struct]&nbsp;Initial&nbsp;model:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;W1,&nbsp;W2,&nbsp;t.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Binary&nbsp;linear&nbsp;classifier:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Normal&nbsp;vector&nbsp;of&nbsp;the&nbsp;linear&nbsp;rule&nbsp;(hypeplane).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;the&nbsp;rule&nbsp;(shift&nbsp;from&nbsp;the&nbsp;origin).</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;used&nbsp;iterations.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.exitflag&nbsp;[1x1]&nbsp;1&nbsp;...&nbsp;solution&nbsp;with&nbsp;desired&nbsp;err&nbsp;was&nbsp;found.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;...&nbsp;maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;exceeded.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1&nbsp;...&nbsp;solution&nbsp;does&nbsp;not&nbsp;exist.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.W1,&nbsp;.W2&nbsp;Auxciliary&nbsp;vectors;&nbsp;W=W1-W2.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;distrib&nbsp;=&nbsp;load('mars');</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;eanders(distrib,struct('err',0.06'));</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;pandr(&nbsp;model,&nbsp;distrib&nbsp;);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;ANDRORIG,&nbsp;GANDERS,&nbsp;GGRADANDR,&nbsp;LINCLASS.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;21-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;16-sep-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;options&nbsp;=&nbsp;[];&nbsp;<span class=keyword>else</span>&nbsp;options=c2s(options);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'err'</span>),&nbsp;options.err=0.05;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'tmax'</span>),&nbsp;options.tmax=inf;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'zero_th'</span>),&nbsp;options.zero_th=1e-6;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;computes&nbsp;Mahalanobis&nbsp;distance&nbsp;correponding&nbsp;to&nbsp;the&nbsp;desired&nbsp;</span><br>
+<span class=comment>%&nbsp;misclassification&nbsp;error</span><br>
+desired_r&nbsp;=&nbsp;-icdf(<span class=quotes>'norm'</span>,options.err,0,1);<br>
+<br>
+<span class=comment>%&nbsp;get&nbsp;dimension&nbsp;and&nbsp;number&nbsp;of&nbsp;distributions</span><br>
+[dim,ncomp]=size(distrib.Mean);<br>
+<br>
+t&nbsp;=&nbsp;0;<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;==&nbsp;3,&nbsp;&nbsp;<br>
+&nbsp;&nbsp;t&nbsp;=&nbsp;init_model.t;<br>
+&nbsp;&nbsp;W1&nbsp;=&nbsp;init_model.W1;<br>
+&nbsp;&nbsp;W2&nbsp;=&nbsp;init_model.W2;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;t==0,<br>
+&nbsp;&nbsp;t=1;<br>
+&nbsp;&nbsp;W1&nbsp;=&nbsp;mean(distrib.Mean(:,find(&nbsp;distrib.y==1)),2);<br>
+&nbsp;&nbsp;W2&nbsp;=&nbsp;mean(distrib.Mean(:,find(&nbsp;distrib.y==2)),2);<br>
+<span class=keyword>end</span><br>
+<br>
+exitflag=0;<br>
+<span class=keyword>while</span>&nbsp;exitflag&nbsp;==&nbsp;0&nbsp;&&nbsp;t&nbsp;&lt;&nbsp;options.tmax,<br>
+&nbsp;&nbsp;&nbsp;t=t+1;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;compute&nbsp;f(x)=W'*x&nbsp;+&nbsp;b</span><br>
+&nbsp;&nbsp;&nbsp;W=W1-W2;<br>
+&nbsp;&nbsp;&nbsp;b=0.5*(W2<span class=quotes>'*W2&nbsp;-&nbsp;W1'</span>*W1);<br>
+<br>
+&nbsp;&nbsp;&nbsp;exitflag&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;i=0;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>while</span>&nbsp;exitflag&nbsp;==1&nbsp;&&nbsp;i&nbsp;&lt;&nbsp;ncomp,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i=i+1;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mu_i&nbsp;=&nbsp;distrib.Mean(:,i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C_i&nbsp;=&nbsp;distrib.Cov(:,:,i);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;denominator</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;den&nbsp;=&nbsp;sqrt(&nbsp;W'*C_i*W&nbsp;);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;den&nbsp;&gt;&nbsp;options.zero_th,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;distrib.y(i)&nbsp;==&nbsp;1,&nbsp;&nbsp;<span class=comment>%&nbsp;1st&nbsp;class</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;r_i&nbsp;=&nbsp;(&nbsp;W'*mu_i&nbsp;+&nbsp;b&nbsp;)/den;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;desired_r&nbsp;&gt;=&nbsp;r_i,&nbsp;&nbsp;<span class=comment>%&nbsp;stopping&nbsp;condition</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x0&nbsp;=&nbsp;mu_i&nbsp;-&nbsp;(&nbsp;desired_r/den&nbsp;)*C_i*W;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;overlapping&nbsp;point</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k&nbsp;=&nbsp;min([((W1-W2)<span class=quotes>'*(W1-x0))/(&nbsp;(W1-x0)'</span>*(W1-x0)&nbsp;),&nbsp;1]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;W1&nbsp;=&nbsp;W1*(1-k)&nbsp;+&nbsp;x0*k;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exitflag&nbsp;=&nbsp;0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>elseif</span>&nbsp;distrib.y(i)==2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;r_i=&nbsp;-(&nbsp;W'*mu_i&nbsp;+&nbsp;b)/den;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;desired_r&nbsp;&gt;=&nbsp;r_i,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x0&nbsp;=&nbsp;mu_i&nbsp;+&nbsp;(&nbsp;desired_r/den&nbsp;)*C_i*W;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k&nbsp;=&nbsp;min([((W2-W1)<span class=quotes>'*(W2-x0))/(&nbsp;(W2-x0)'</span>*(W2-x0)),&nbsp;1]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;W2&nbsp;=&nbsp;W2*(1-k)&nbsp;+&nbsp;x0*k;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exitflag&nbsp;=&nbsp;0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span>&nbsp;<span class=comment>%&nbsp;if&nbsp;den&nbsp;~=&nbsp;0,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;solution&nbsp;does&nbsp;not&nbsp;exist&nbsp;-&nbsp;overlapping&nbsp;classes</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exitflag&nbsp;=&nbsp;-1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;<span class=comment>%&nbsp;while&nbsp;exitflag&nbsp;==&nbsp;1,</span><br>
+<br>
+<span class=keyword>end</span>&nbsp;<span class=comment>%&nbsp;while</span><br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;f(x)=W'*x&nbsp;+&nbsp;b</span><br>
+model.W=W1-W2;<br>
+model.b=0.5*(W2<span class=quotes>'*W2&nbsp;-&nbsp;W1'</span>*W1);<br>
+model.t&nbsp;=&nbsp;t;<br>
+model.exitflag&nbsp;=&nbsp;exitflag;<br>
+model.W1&nbsp;=&nbsp;W1;<br>
+model.W2&nbsp;=&nbsp;W2;<br>
+model.options&nbsp;=&nbsp;options;<br>
+<br>
+[model.err,model.r]=andrerr(model,distrib);<br>
+<span class=keyword>if</span>&nbsp;model.err&nbsp;&lt;&nbsp;options.err,&nbsp;model.exitflag&nbsp;=&nbsp;1;&nbsp;<span class=keyword>end</span><br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'linclass'</span>;<br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

@@ -1,0 +1,74 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>train_ocr.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=h1>%&nbsp;TRAIN_OCR&nbsp;Training&nbsp;of&nbsp;OCR&nbsp;classifier&nbsp;based&nbsp;on&nbsp;multiclass&nbsp;SVM.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;following&nbsp;steps&nbsp;are&nbsp;performed:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;-&nbsp;Training&nbsp;set&nbsp;is&nbsp;created&nbsp;from&nbsp;data&nbsp;in&nbsp;directory&nbsp;ExamplesDir.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;-&nbsp;Multi-class&nbsp;SVM&nbsp;is&nbsp;trained.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;-&nbsp;The&nbsp;trained&nbsp;SVM&nbsp;model&nbsp;is&nbsp;saved.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<hr>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>(c)</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox,&nbsp;(C)&nbsp;1999-2003,</span><br>
+<span class=help1>%&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;engineering&lt;/a&gt;,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;4-jun-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;9-sep-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;Setting&nbsp;</span><br>
+<span class=comment>%===================================</span><br>
+ExamplesDir&nbsp;=&nbsp;<span class=quotes>'../../data/ocr_numerals/'</span>;&nbsp;&nbsp;<span class=comment>%&nbsp;input&nbsp;directory&nbsp;with&nbsp;examples</span><br>
+OCRFileName&nbsp;=&nbsp;<span class=quotes>'ocrmodel'</span>;&nbsp;&nbsp;<span class=comment>%&nbsp;output&nbsp;SVM&nbsp;model</span><br>
+<br>
+<span class=comment>%&nbsp;Model&nbsp;setting&nbsp;for&nbsp;multi-class&nbsp;SVM</span><br>
+options.ker&nbsp;=&nbsp;<span class=quotes>'rbf'</span>;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;kernel&nbsp;type</span><br>
+options.arg&nbsp;=&nbsp;5;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;kernel&nbsp;argument</span><br>
+options.C&nbsp;=&nbsp;[inf];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;regularization&nbsp;constant</span><br>
+options.verb&nbsp;=&nbsp;100;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;display&nbsp;progress&nbsp;info</span><br>
+<br>
+<span class=comment>%options.solver&nbsp;='svmlight';&nbsp;&nbsp;</span><br>
+options.solver&nbsp;=<span class=quotes>'smo'</span>;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;use&nbsp;if&nbsp;SVM^{light}&nbsp;is&nbsp;not&nbsp;installed</span><br>
+<br>
+<span class=comment>%&nbsp;Create&nbsp;training&nbsp;set&nbsp;</span><br>
+<span class=comment>%====================================</span><br>
+<span class=io>fprintf</span>(<span class=quotes>'Creating&nbsp;training&nbsp;set:\n'</span>);<br>
+TrainingDataFile&nbsp;=&nbsp;[ExamplesDir&nbsp;<span class=quotes>'OcrTrndata.mat'</span>];<br>
+mergesets(&nbsp;ExamplesDir,&nbsp;TrainingDataFile&nbsp;);<br>
+data&nbsp;=&nbsp;load(TrainingDataFile&nbsp;);<br>
+<br>
+<span class=comment>%&nbsp;Training&nbsp;SVM&nbsp;model</span><br>
+<span class=comment>%====================================</span><br>
+<br>
+<span class=io>fprintf</span>(<span class=quotes>'Training&nbsp;multi-class&nbsp;SVM&nbsp;classifier.\n'</span>);<br>
+<span class=comment>%model&nbsp;=&nbsp;oaosvm(data,options);</span><br>
+<br>
+<span class=comment>%&nbsp;Multi-class&nbsp;BSVM&nbsp;with&nbsp;L2-soft&nbsp;margin&nbsp;can&nbsp;be&nbsp;asls&nbsp;used</span><br>
+options.solver&nbsp;=&nbsp;<span class=quotes>'imdm'</span>;<br>
+model&nbsp;=&nbsp;bsvm2(data,options);<br>
+<br>
+<span class=comment>%&nbsp;One-Against-All&nbsp;decomposition&nbsp;can&nbsp;be&nbsp;also&nbsp;used&nbsp;</span><br>
+<span class=comment>%options.solver&nbsp;=&nbsp;'svmlight';</span><br>
+<span class=comment>%model&nbsp;=&nbsp;oaasvm(data,options);</span><br>
+<br>
+<br>
+<span class=comment>%&nbsp;mapping&nbsp;class&nbsp;label&nbsp;y&nbsp;-&gt;&nbsp;character</span><br>
+model.labels&nbsp;=&nbsp;[<span class=quotes>'1'</span>&nbsp;<span class=quotes>'2'</span>&nbsp;<span class=quotes>'3'</span>&nbsp;<span class=quotes>'4'</span>&nbsp;<span class=quotes>'5'</span>&nbsp;<span class=quotes>'6'</span>&nbsp;<span class=quotes>'7'</span>&nbsp;<span class=quotes>'8'</span>&nbsp;<span class=quotes>'9'</span>&nbsp;<span class=quotes>'0'</span>];<br>
+<br>
+<span class=io>fprintf</span>(<span class=quotes>'Saving&nbsp;found&nbsp;classifier&nbsp;to&nbsp;file&nbsp;%s...'</span>,&nbsp;OCRFileName);<br>
+savestruct(model,OCRFileName);<br>
+<span class=io>fprintf</span>(<span class=quotes>'done.\n'</span>);<br>
+<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

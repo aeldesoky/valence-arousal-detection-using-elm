@@ -1,0 +1,97 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">ANDRORIG</b>
+<td valign="baseline" align="right" class="function"><a href="../../linear/anderson/index.html" target="mdsdir"><img border = 0 src="../../up.gif"></a></table>
+  <p><b>Original method to solve the Anderson-Bahadur's task.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;androrig(distrib)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;androrig(distrib,options)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;androrig(distrib,options,init_model)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;It&nbsp;solves&nbsp;the&nbsp;original&nbsp;Anderson&nbsp;task&nbsp;[<a href="../../references.html#Anderson62" title = "" >Anderson62</a>].&nbsp;The&nbsp;goal&nbsp;is&nbsp;to&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;find&nbsp;binary&nbsp;linear&nbsp;classifier&nbsp;which&nbsp;minimizes&nbsp;probability&nbsp;of&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;misclassification.&nbsp;The&nbsp;class&nbsp;conditional&nbsp;probability&nbsp;distributions&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;are&nbsp;Gaussians.&nbsp;The&nbsp;a&nbsp;prior&nbsp;probabilities&nbsp;is&nbsp;unknown.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;androrig(&nbsp;distrib&nbsp;)&nbsp;solves&nbsp;the&nbsp;original&nbsp;Anderson's&nbsp;task&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;given&nbsp;two&nbsp;Gaussians&nbsp;distributions.&nbsp;The&nbsp;structure&nbsp;distrib&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;<span class=help_field>contains:</span></span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Mean&nbsp;[dim&nbsp;x&nbsp;2]&nbsp;Matrix&nbsp;containing&nbsp;mean&nbsp;vectors&nbsp;of&nbsp;the&nbsp;first&nbsp;and</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;second&nbsp;class&nbsp;distributions.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Cov&nbsp;&nbsp;[dim&nbsp;x&nbsp;dim&nbsp;x&nbsp;2]$&nbsp;Matrix&nbsp;containing&nbsp;covariance&nbsp;matrices&nbsp;of&nbsp;the</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;first&nbsp;and&nbsp;second&nbsp;distribution.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;androrig(&nbsp;distrib,&nbsp;options&nbsp;)&nbsp;allows&nbsp;to&nbsp;specify&nbsp;the&nbsp;maximal&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;number&nbsp;of&nbsp;iterations&nbsp;options.tmax&nbsp;and&nbsp;the&nbsp;distance&nbsp;to&nbsp;the</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;optimal&nbsp;solution&nbsp;options.eps&nbsp;defining&nbsp;the&nbsp;stopping&nbsp;condition.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;androrig(&nbsp;distrib,&nbsp;options,&nbsp;init_model&nbsp;)&nbsp;allows&nbsp;to&nbsp;specify&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;initial&nbsp;point&nbsp;init_model.gamma.&nbsp;The&nbsp;initial&nbsp;value&nbsp;of&nbsp;the</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;counter&nbsp;of&nbsp;iterations&nbsp;can&nbsp;be&nbsp;specified&nbsp;in&nbsp;options.t.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;distrib&nbsp;[struct]&nbsp;Two&nbsp;Gaussians:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Mean&nbsp;[&nbsp;dim&nbsp;x&nbsp;2]&nbsp;Mean&nbsp;veactors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Cov&nbsp;&nbsp;[&nbsp;dim&nbsp;x&nbsp;dim&nbsp;x&nbsp;2]&nbsp;Covariance&nbsp;matrices.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Defines&nbsp;stopping&nbsp;condition:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iteration.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.eps&nbsp;[1x1]&nbsp;Closeness&nbsp;to&nbsp;the&nbsp;optimal&nbsp;solution.&nbsp;If&nbsp;eps=0&nbsp;the</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;algorithm&nbsp;converges&nbsp;to&nbsp;the&nbsp;optimal&nbsp;solution&nbsp;but&nbsp;it&nbsp;does&nbsp;not</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;have&nbsp;to&nbsp;stop&nbsp;(default&nbsp;0.001).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;init_model&nbsp;[struct]&nbsp;Init&nbsp;model:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.gamma&nbsp;[1x1]&nbsp;Auxciliary&nbsp;variable&nbsp;(default&nbsp;1).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;(optional)&nbsp;Counter&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Binary&nbsp;linear&nbsp;classifier:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Normal&nbsp;vector&nbsp;the&nbsp;found&nbsp;hyperplane&nbsp;W'*x+b=0.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;the&nbsp;hyperplane.</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.err&nbsp;[1x1]&nbsp;Probability&nbsp;of&nbsp;misclassification.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.r1&nbsp;[1x1]&nbsp;Mahalanobis&nbsp;distance&nbsp;of&nbsp;the&nbsp;first&nbsp;Gaussian&nbsp;to&nbsp;the</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;found&nbsp;hyperplane.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.r2&nbsp;[1x1]&nbsp;Mahalanobis&nbsp;distance&nbsp;of&nbsp;the&nbsp;second&nbsp;Gaussian&nbsp;to&nbsp;the</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;found&nbsp;hyperplane.&nbsp;In&nbsp;the&nbsp;optimal&nbsp;solution&nbsp;r1&nbsp;=&nbsp;r2.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;.exitflag&nbsp;[1x1]&nbsp;0&nbsp;...&nbsp;maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;tmax&nbsp;exceeded.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;...&nbsp;condition&nbsp;delta&nbsp;&lt;&nbsp;eps&nbsp;satisfied.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.delta&nbsp;[1x1]&nbsp;Indicates&nbsp;distance&nbsp;from&nbsp;the&nbsp;optimal&nbsp;solution.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.gamma&nbsp;[1x1]&nbsp;Auxciliary&nbsp;variable.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>&nbsp;&nbsp;distrib&nbsp;=&nbsp;mlcgmm(data);</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;androrig(distrib);</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;pandr(&nbsp;model,&nbsp;distrib&nbsp;);</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../../linear/anderson/ganders.html" target="mdsbody">GANDERS</a>,&nbsp;<a href = "../../linear/anderson/eanders.html" target="mdsbody">EANDERS</a>,&nbsp;<a href = "../../linear/anderson/ggradandr.html" target="mdsbody">GGRADANDR</a>,&nbsp;<a href = "../../linear/linclass.html" target="mdsbody">LINCLASS</a>.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../../linear/anderson/list/androrig.html">androrig.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 20-may-2004, VF<br>
+ 24-Feb-2003, VF<br>
+
+</body>
+</html>

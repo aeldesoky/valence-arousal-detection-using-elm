@@ -1,0 +1,83 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>demo_svmpout.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=h1>%&nbsp;DEMO_SVMPOUT&nbsp;Fitting&nbsp;a&nbsp;posteriory&nbsp;probability&nbsp;to&nbsp;SVM&nbsp;output.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;A&nbsp;posteriory&nbsp;probability&nbsp;p(y==1|f(x))&nbsp;of&nbsp;the&nbsp;first&nbsp;class</span><br>
+<span class=help>%&nbsp;given&nbsp;SVM&nbsp;output&nbsp;f(x)&nbsp;is&nbsp;assumed&nbsp;to&nbsp;be&nbsp;sigmoid&nbsp;function.&nbsp;</span><br>
+<span class=help>%&nbsp;Parameters&nbsp;A(1)&nbsp;and&nbsp;A(2)&nbsp;of&nbsp;the&nbsp;sigmoid&nbsp;function&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;p(y==1|f(x))&nbsp;=&nbsp;1/(1+exp(A(1)*f(x)+A(2))&nbsp;</span><br>
+<span class=help>%&nbsp;are&nbsp;estimated&nbsp;using&nbsp;Maximum-Likelihood&nbsp;[Platt99a].&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;The&nbsp;Gaussian&nbsp;mixture&nbsp;model&nbsp;(GMM)&nbsp;is&nbsp;fitted&nbsp;to&nbsp;the&nbsp;SVM&nbsp;output</span><br>
+<span class=help>%&nbsp;and&nbsp;the&nbsp;a&nbsp;posteriory&nbsp;probability&nbsp;are&nbsp;computed&nbsp;for&nbsp;</span><br>
+<span class=help>%&nbsp;comparison&nbsp;to&nbsp;the&nbsp;ML&nbsp;estimate.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;The&nbsp;ML&nbsp;estimation&nbsp;of&nbsp;the&nbsp;sigmoid&nbsp;function&nbsp;is&nbsp;imlemented&nbsp;</span><br>
+<span class=help>%&nbsp;in&nbsp;'mlsigmoid'&nbsp;(see&nbsp;'help&nbsp;mlsigmoid'&nbsp;for&nbsp;more&nbsp;info).</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;03-jun-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;6-May-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+help&nbsp;demo_svmpout;<br>
+echo&nbsp;on;<br>
+<br>
+<span class=comment>%&nbsp;load&nbsp;training&nbsp;data</span><br>
+data&nbsp;=&nbsp;load(<span class=quotes>'riply_trn'</span>);<br>
+<br>
+<span class=comment>%&nbsp;train&nbsp;SVM&nbsp;model</span><br>
+svm_model&nbsp;=&nbsp;smo(data,struct(<span class=quotes>'ker'</span>,<span class=quotes>'rbf'</span>,<span class=quotes>'arg'</span>,1,<span class=quotes>'C'</span>,10));<br>
+<br>
+<span class=comment>%&nbsp;plot&nbsp;SVM&nbsp;decision&nbsp;boundary&nbsp;</span><br>
+<span class=graph>figure</span>;&nbsp;ppatterns(data);&nbsp;psvm(svm_model);<br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;SVM&nbsp;output</span><br>
+[dummy,svm_output.X]&nbsp;=&nbsp;svmclass(data.X,svm_model);<br>
+svm_output.y&nbsp;=&nbsp;data.y;<br>
+<br>
+<span class=comment>%&nbsp;ML&nbsp;fitting&nbsp;of&nbsp;sigmod&nbsp;to&nbsp;SVM&nbsp;ouput</span><br>
+<span class=comment>%-------------------------------------------------------</span><br>
+sigmoid_model&nbsp;=&nbsp;mlsigmoid(svm_output);<br>
+<br>
+<span class=comment>%&nbsp;plot&nbsp;fitted&nbsp;probability</span><br>
+fx&nbsp;=&nbsp;linspace(min(svm_output.X),&nbsp;max(svm_output.X),&nbsp;200);<br>
+sigmoid_apost&nbsp;=&nbsp;sigmoid(fx,sigmoid_model);<br>
+<br>
+<span class=graph>figure</span>;&nbsp;hold&nbsp;on;&nbsp;<br>
+xlabel(<span class=quotes>'svm&nbsp;output&nbsp;f(x)'</span>);&nbsp;ylabel(<span class=quotes>'p(y=1|f(x))'</span>);<br>
+hsigmoid&nbsp;=&nbsp;<span class=graph>plot</span>(fx,sigmoid_apost,<span class=quotes>'k'</span>);<br>
+ppatterns(svm_output);<br>
+<br>
+<span class=comment>%&nbsp;ML&nbsp;estimation&nbsp;of&nbsp;GMM&nbsp;model&nbsp;of&nbsp;SVM&nbsp;output</span><br>
+<span class=comment>%-------------------------------------------------------</span><br>
+gmm_model&nbsp;=&nbsp;mlcgmm(&nbsp;svm_output&nbsp;);<br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;a&nbsp;posteriory&nbsp;probability</span><br>
+pcond&nbsp;=&nbsp;pdfgauss(&nbsp;fx,&nbsp;gmm_model);<br>
+gmm_apost&nbsp;=&nbsp;(pcond(1,:)*gmm_model.Prior(1))./...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(pcond(1,:)*gmm_model.Prior(1)+(pcond(2,:)*gmm_model.Prior(2)));<br>
+<br>
+hgmm&nbsp;=&nbsp;<span class=graph>plot</span>(fx,gmm_apost,<span class=quotes>'g'</span>);<br>
+hcomp&nbsp;=&nbsp;pgauss(gmm_model);&nbsp;<br>
+<br>
+legend([hsigmoid,hgmm,hcomp],<span class=quotes>'P(y=1|f(x))&nbsp;ML-Sigmoid'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'P(y=1|f(x))&nbsp;ML-GMM'</span>,<span class=quotes>'P(f(x)|y=1)&nbsp;ML-GMM'</span>,<span class=quotes>'P(f(x)|y=2)&nbsp;ML-GMM'</span>);<br>
+<br>
+echo&nbsp;off;<br>
+<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

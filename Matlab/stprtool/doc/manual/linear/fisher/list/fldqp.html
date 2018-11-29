@@ -1,0 +1,102 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>fldqp.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model&nbsp;</span>=&nbsp;<span class=defun_name>fldqp</span>(<span class=defun_in>data</span>)<br>
+<span class=h1>%&nbsp;FLDQP&nbsp;Fisher&nbsp;Linear&nbsp;Discriminat&nbsp;using&nbsp;Quadratic&nbsp;Programming.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;fldqp(&nbsp;data&nbsp;)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;computes&nbsp;the&nbsp;binary&nbsp;linear&nbsp;classifier&nbsp;based</span><br>
+<span class=help>%&nbsp;&nbsp;on&nbsp;the&nbsp;Fisher&nbsp;Linear&nbsp;Discriminant&nbsp;(FLD)&nbsp;using&nbsp;the&nbsp;Quadratic</span><br>
+<span class=help>%&nbsp;&nbsp;Programming&nbsp;(quadprog)&nbsp;optimization.&nbsp;The&nbsp;inputs&nbsp;are</span><br>
+<span class=help>%&nbsp;&nbsp;binary&nbsp;labeled&nbsp;training&nbsp;vectors.&nbsp;The&nbsp;parameter&nbsp;vector&nbsp;W</span><br>
+<span class=help>%&nbsp;&nbsp;of&nbsp;the&nbsp;linear&nbsp;classifier</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;q(x)&nbsp;=&nbsp;1&nbsp;&nbsp;for&nbsp;W'*x&nbsp;+&nbsp;b&nbsp;&gt;=&nbsp;0</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;2&nbsp;&nbsp;for&nbsp;W'*x&nbsp;+&nbsp;b&nbsp;&lt;&nbsp;0</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;is&nbsp;computed&nbsp;to&nbsp;maximize&nbsp;class&nbsp;separability&nbsp;criterion.</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;bias&nbsp;b&nbsp;is&nbsp;determined&nbsp;to&nbsp;lie&nbsp;between&nbsp;means&nbsp;of&nbsp;training</span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;projected&nbsp;onto&nbsp;direction&nbsp;W.&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Binary&nbsp;labeled&nbsp;training&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Binary&nbsp;linear&nbsp;classifier:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Parameter&nbsp;vector&nbsp;the&nbsp;linear&nbsp;classifier.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;the&nbsp;linear&nbsp;classifier.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.separab&nbsp;[1x1]&nbsp;Meassure&nbsp;of&nbsp;class&nbsp;separability.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;trn&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>%&nbsp;&nbsp;tst&nbsp;=&nbsp;load('riply_tst');</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;fldqp(&nbsp;trn&nbsp;);</span><br>
+<span class=help>%&nbsp;&nbsp;ypred&nbsp;=&nbsp;linclass(&nbsp;tst.X,&nbsp;model);</span><br>
+<span class=help>%&nbsp;&nbsp;cerror(ypred,&nbsp;tst.y)</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;ppatterns(trn);&nbsp;pline(model);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;FLD,&nbsp;LINCLASS.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;21-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;1-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;30-apr-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;24-Feb-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;1-Feb-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;inputs</span><br>
+<span class=comment>%-------------------------------</span><br>
+[dim,num_data&nbsp;]&nbsp;=&nbsp;size(data.X&nbsp;);<br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;means&nbsp;and&nbsp;scatter&nbsp;matrix</span><br>
+<span class=comment>%-------------------------------</span><br>
+inx1&nbsp;=&nbsp;find(&nbsp;data.y&nbsp;==&nbsp;1);<br>
+inx2&nbsp;=&nbsp;find(&nbsp;data.y&nbsp;==&nbsp;2);<br>
+n1&nbsp;=&nbsp;length(inx1);<br>
+n2&nbsp;=&nbsp;length(inx2);<br>
+<br>
+m1&nbsp;=&nbsp;mean(data.X(:,inx1),2);<br>
+m2&nbsp;=&nbsp;mean(data.X(:,inx2),2);<br>
+<br>
+S1&nbsp;=&nbsp;(data.X(:,inx1)-m1*ones(1,n1))*(data.X(:,inx1)-m1*ones(1,n1))';<br>
+S2&nbsp;=&nbsp;(data.X(:,inx2)-m2*ones(1,n2))*(data.X(:,inx2)-m2*ones(1,n2))';<br>
+Sw&nbsp;=&nbsp;S1&nbsp;+&nbsp;S2;<br>
+<br>
+<span class=comment>%&nbsp;set&nbsp;params&nbsp;for&nbsp;QP</span><br>
+<span class=comment>%------------------------</span><br>
+f=zeros(dim,1);<br>
+A=-(m1-m2)';<br>
+b=-2;<br>
+<br>
+[W,rinv]=quadprog(Sw,f,[],[],A,b,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[],[],[],optimset(<span class=quotes>'Display'</span>,<span class=quotes>'off'</span>));<br>
+<br>
+proj_m1&nbsp;=&nbsp;W'*m1;<br>
+proj_m2&nbsp;=&nbsp;W'*m2;<br>
+<br>
+model.W&nbsp;=&nbsp;W;<br>
+model.b&nbsp;=&nbsp;-0.5*(proj_m1+proj_m2);<br>
+model.separab&nbsp;=&nbsp;(proj_m1-proj_m2)^2/(W'*Sw*W);<br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'linclass'</span>;<br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+</code>

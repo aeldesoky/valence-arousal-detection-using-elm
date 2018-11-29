@@ -1,0 +1,78 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>mvsvmclass.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[y,votes]&nbsp;</span>=&nbsp;<span class=defun_name>mvsvmclass</span>(<span class=defun_in>X,model</span>)<br>
+<span class=h1>%&nbsp;MVSVMCLASS&nbsp;Majority&nbsp;voting&nbsp;multi-class&nbsp;SVM&nbsp;classifier.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;[y,votes]&nbsp;=&nbsp;mvsvmclass(X,model)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;[y,votes]&nbsp;=&nbsp;mvsvmclass(X,model)&nbsp;multi-class&nbsp;SVM&nbsp;classifier&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;based&nbsp;on&nbsp;majority&nbsp;voting.&nbsp;The&nbsp;classifier&nbsp;involves&nbsp;nrule</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;binary&nbsp;rules&nbsp;each&nbsp;classifying&nbsp;into&nbsp;one&nbsp;of&nbsp;nclass&nbsp;labels.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;final&nbsp;decision&nbsp;is&nbsp;make&nbsp;for&nbsp;the&nbsp;class&nbsp;with&nbsp;majority&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;votes.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Input&nbsp;vectors&nbsp;to&nbsp;be&nbsp;classified.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Multi-class&nbsp;SVM&nbsp;majority&nbsp;voting&nbsp;classifier:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;nrule]&nbsp;Weights.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.bin_y&nbsp;[2&nbsp;x&nbsp;nrule]&nbsp;Translation&nbsp;between&nbsp;binary&nbsp;responses&nbsp;of</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;discriminant&nbsp;functions&nbsp;and&nbsp;class&nbsp;labels.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[nrule&nbsp;x&nbsp;1]&nbsp;Biases&nbsp;of&nbsp;discriminant&nbsp;functions.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;nsv]&nbsp;Support&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options.ker&nbsp;[string]&nbsp;Kernel&nbsp;identifier;&nbsp;see&nbsp;'help&nbsp;kernel'.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options.arg&nbsp;[1&nbsp;x&nbsp;nargs]&nbsp;Kernel&nbsp;agrument(s).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Predicted&nbsp;labels.</span><br>
+<span class=help>%&nbsp;&nbsp;votes&nbsp;[nclass&nbsp;x&nbsp;num_data]&nbsp;Number&nbsp;of&nbsp;votes&nbsp;for&nbsp;each&nbsp;class.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;OAOSVM,&nbsp;SVMCLASS.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;Modifications</span><br>
+<span class=comment>%&nbsp;&nbsp;11-Feb-2003,&nbsp;VF&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;8-Feb-2003,&nbsp;VF&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;3-Jun-2002,&nbsp;V.Franc</span><br>
+<br>
+[dim,num_data]&nbsp;=&nbsp;size(X);<br>
+nclass&nbsp;=&nbsp;max(&nbsp;model.bin_y(:)&nbsp;);<br>
+nrule&nbsp;=&nbsp;size(&nbsp;model.Alpha,&nbsp;2);<br>
+<br>
+votes&nbsp;=&nbsp;zeros(nclass,&nbsp;num_data&nbsp;);<br>
+<br>
+dfce&nbsp;=&nbsp;kernelproj(&nbsp;X,&nbsp;model&nbsp;);<br>
+<br>
+<span class=keyword>for</span>&nbsp;i=1:nrule,<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;inx_pos&nbsp;=&nbsp;find(&nbsp;dfce(i,:)&nbsp;&gt;=&nbsp;0&nbsp;);<br>
+&nbsp;&nbsp;inx_neg&nbsp;=&nbsp;find(&nbsp;dfce(i,:)&nbsp;&lt;&nbsp;0&nbsp;);<br>
+<br>
+&nbsp;&nbsp;votes(&nbsp;model.bin_y(1,i),&nbsp;inx_pos)&nbsp;=&nbsp;votes(&nbsp;model.bin_y(1,i),&nbsp;inx_pos)&nbsp;+&nbsp;1;<br>
+&nbsp;&nbsp;votes(&nbsp;model.bin_y(2,i),&nbsp;inx_neg)&nbsp;=&nbsp;votes(&nbsp;model.bin_y(2,i),&nbsp;inx_neg)&nbsp;+&nbsp;1;<br>
+<br>
+<span class=keyword>end</span><br>
+<br>
+[dummy,&nbsp;y]&nbsp;=&nbsp;max(&nbsp;votes&nbsp;);<br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

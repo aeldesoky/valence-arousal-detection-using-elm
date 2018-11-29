@@ -1,0 +1,68 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">KPERCEPTR</b>
+<td valign="baseline" align="right" class="function"><a href="../kernels/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Kernel Perceptron.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;kperceptr(data)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;kperceptr(data,options)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;function&nbsp;is&nbsp;an&nbsp;implementation&nbsp;of&nbsp;the&nbsp;kernel&nbsp;version</span><br>
+<span class=help>&nbsp;&nbsp;of&nbsp;the&nbsp;Perceptron&nbsp;algorithm.&nbsp;The&nbsp;kernel&nbsp;perceptron&nbsp;search&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;for&nbsp;the&nbsp;kernel&nbsp;binary&nbsp;classifier&nbsp;with&nbsp;zero&nbsp;emprical&nbsp;error.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Binary&nbsp;labeled&nbsp;training&nbsp;data:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Control&nbsp;parameters:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.ker&nbsp;[string]&nbsp;Kernel&nbsp;identifier&nbsp;(default&nbsp;'linear').</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;See&nbsp;'help&nbsp;kernel'&nbsp;for&nbsp;more&nbsp;info.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.arg&nbsp;[1&nbsp;x&nbsp;nargs]&nbsp;Kernel&nbsp;argument.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;(default&nbsp;inf).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Found&nbsp;kernel&nbsp;classifer:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;1]&nbsp;Multipliers&nbsp;of&nbsp;the&nbsp;training&nbsp;data.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;the&nbsp;decision&nbsp;rule.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;nsv]&nbsp;Training&nbsp;data&nbsp;with&nbsp;non-zero&nbsp;Alphas.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.exitflag&nbsp;[1x1]&nbsp;1&nbsp;...&nbsp;Perceptron&nbsp;has&nbsp;converged.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;...&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;exceeded.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.iter&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.kercnt&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;kernel&nbsp;evaluations.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.trnerr&nbsp;[1x1]&nbsp;Training&nbsp;classification&nbsp;error;&nbsp;Note:&nbsp;if&nbsp;exitflag==1&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;then&nbsp;trnerr&nbsp;=&nbsp;0.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.options&nbsp;[struct]&nbsp;Copy&nbsp;of&nbsp;options.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.cputime&nbsp;[real]&nbsp;Used&nbsp;cputime&nbsp;in&nbsp;seconds.</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;If&nbsp;the&nbsp;linear&nbsp;kernel&nbsp;is&nbsp;used&nbsp;then&nbsp;model.W&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;contains&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;normal&nbsp;vector&nbsp;of&nbsp;the&nbsp;separating&nbsp;hyperplane.</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;=&nbsp;load('vltava');</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;kperceptr(data,&nbsp;struct('ker','poly','arg',2));</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;ppatterns(data);&nbsp;pboundary(model);</span><br>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also><a href = "../svm/svmclass.html" target="mdsbody">SVMCLASS</a>,&nbsp;SVM.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../kernels/list/kperceptr.html">kperceptr.m</a>
+  <p><b class="info_field">Modifications: </b>  <br>
+ 10-may-2004, VF<br>
+ 18-July-2003, VF<br>
+ 21-Nov-2001, V. Franc<br>
+
+</body>
+</html>

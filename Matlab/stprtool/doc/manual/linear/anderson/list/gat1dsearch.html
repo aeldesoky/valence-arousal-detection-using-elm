@@ -1,0 +1,169 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>gat1dsearch.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>t</span>=<span class=defun_name>gat1dsearch</span>(<span class=defun_in>MI,SG,alpha,dalpha,tmax,tdelta</span>)<br>
+<span class=h1>%&nbsp;GAT1DSEARCH&nbsp;1D&nbsp;search&nbsp;along&nbsp;improving&nbsp;direction&nbsp;in&nbsp;the&nbsp;GAT.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;t=gat1dsearch(MI,SG,alpha,dalpha,tmax,tdelta)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Auxciliary&nbsp;function&nbsp;for&nbsp;the&nbsp;'ganders'&nbsp;algorithm.</span><br>
+<span class=help>%&nbsp;&nbsp;It&nbsp;implements&nbsp;1D-search&nbsp;based&nbsp;on&nbsp;the&nbsp;cutting&nbsp;interval&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;algorithm&nbsp;according&nbsp;to&nbsp;the&nbsp;Fibonacci&nbsp;series.&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;GANDERS</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;21-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;17-sep-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;24.&nbsp;6.00&nbsp;V.&nbsp;Hlavac,&nbsp;comments&nbsp;polished.</span><br>
+<br>
+<hr>
+LO_TH=0;<br>
+<br>
+<span class=comment>%&nbsp;default&nbsp;setting</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;5,<br>
+&nbsp;&nbsp;&nbsp;tmax&nbsp;=&nbsp;inf;<br>
+&nbsp;&nbsp;&nbsp;delta=1e-6;<br>
+<span class=keyword>elseif</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;6,<br>
+&nbsp;&nbsp;&nbsp;delta=0;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;get&nbsp;dimension&nbsp;N&nbsp;and&nbsp;the&nbsp;#&nbsp;of&nbsp;distributions</span><br>
+K&nbsp;=&nbsp;size(MI,2);<br>
+N&nbsp;=&nbsp;size(MI,1);<br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;constants</span><br>
+<span class=keyword>for</span>&nbsp;j&nbsp;=&nbsp;1:K,<br>
+&nbsp;&nbsp;&nbsp;s(j)=&nbsp;alpha'*MI(:,j);<br>
+&nbsp;&nbsp;&nbsp;ss(j)&nbsp;=&nbsp;dalpha'*MI(:,j);<br>
+&nbsp;&nbsp;&nbsp;ds(j)&nbsp;=&nbsp;ss(j)&nbsp;-&nbsp;s(j);<br>
+&nbsp;&nbsp;&nbsp;sga(j)&nbsp;=&nbsp;alpha'*SG(:,:,j)*alpha;<br>
+&nbsp;&nbsp;&nbsp;sgd(j)&nbsp;=&nbsp;dalpha'*SG(:,:,j)*dalpha;<br>
+&nbsp;&nbsp;&nbsp;sgad(j)&nbsp;=&nbsp;dalpha'*SG(:,:,j)*alpha;<br>
+<span class=keyword>end</span><br>
+<br>
+<br>
+<span class=comment>%&nbsp;first&nbsp;step</span><br>
+F1=1;<br>
+F2=1;<br>
+tbeg=0;<br>
+tend=1;<br>
+tmid=0.5*(tend+tbeg);<br>
+<br>
+fmid=max([LO_TH,min(&nbsp;(s+tmid*ds)./sqrt(&nbsp;(1-tmid)^2*sga&nbsp;+&nbsp;2*tmid*(1-tmid)*sgad&nbsp;+&nbsp;tmid^2*sgd&nbsp;)&nbsp;)]);<br>
+fbeg=max([LO_TH,min(&nbsp;(s+tbeg*ds)./sqrt(&nbsp;(1-tbeg)^2*sga&nbsp;+&nbsp;2*tbeg*(1-tbeg)*sgad&nbsp;+&nbsp;tbeg^2*sgd&nbsp;)&nbsp;)]);<br>
+<br>
+<span class=keyword>if</span>&nbsp;sqrt(&nbsp;(1-tend)^2*sga&nbsp;+&nbsp;2*tend*(1-tend)*sgad&nbsp;+&nbsp;tend^2*sgd&nbsp;)&nbsp;==&nbsp;0,<br>
+&nbsp;fend=0;<br>
+<span class=keyword>else</span><br>
+&nbsp;fend=max([LO_TH,min(&nbsp;(s+tend*ds)./sqrt(&nbsp;(1-tend)^2*sga&nbsp;+&nbsp;2*tend*(1-tend)*sgad&nbsp;+&nbsp;tend^2*sgd&nbsp;)&nbsp;)]);<br>
+<span class=keyword>end</span><br>
+<br>
+<br>
+<span class=comment>%&nbsp;start&nbsp;up</span><br>
+stop=0;<br>
+<span class=keyword>while</span>&nbsp;stop==0&nbsp;&&nbsp;tmax&nbsp;&gt;&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;tmax=tmax-1;<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;store&nbsp;fmid</span><br>
+&nbsp;&nbsp;&nbsp;oldfmid=fmid;<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Fibonacci,&nbsp;F(k)=F(k-1)+F(k-2)</span><br>
+&nbsp;&nbsp;&nbsp;F=F2+F1;<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;find&nbsp;larger&nbsp;interval</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;(tmid-tbeg)&nbsp;&lt;&nbsp;(tend-tmid),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;new&nbsp;bound</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t=tmid+F1*(tend-tmid)/F;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fvalue=max([LO_TH,min(&nbsp;(s+t*ds)./sqrt(&nbsp;(1-t)^2*sga&nbsp;+&nbsp;2*t*(1-t)*sgad&nbsp;+&nbsp;t^2*sgd&nbsp;)&nbsp;)]);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;fvalue&nbsp;&lt;&nbsp;fmid,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tend=t;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fend=fvalue;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tbeg=tmid;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fbeg=fmid;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmid=t;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fmid=fvalue;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;new&nbsp;bound</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t=tbeg+F1*(tmid-tbeg)/F;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fvalue=max([LO_TH,min(&nbsp;(s+t*ds)./sqrt(&nbsp;(1-t)^2*sga&nbsp;+&nbsp;2*t*(1-t)*sgad&nbsp;+&nbsp;t^2*sgd&nbsp;)&nbsp;)]);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;fvalue&nbsp;&lt;&nbsp;fmid,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tbeg=t;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fbeg=fvalue;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tend=tmid;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fend=fmid;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmid=t;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fmid=fvalue;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;update&nbsp;Fibonacci&nbsp;F(k-2)=F(k-1)&nbsp;and&nbsp;F(k-1)=F(k);</span><br>
+&nbsp;&nbsp;&nbsp;F2=F1;<br>
+&nbsp;&nbsp;&nbsp;F1=F;<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;stop&nbsp;condition</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;tend-tbeg&nbsp;&lt;&nbsp;tdelta,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stop=1;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;get&nbsp;the&nbsp;bigest&nbsp;value</span><br>
+fvalues=[fbeg&nbsp;fmid&nbsp;fend];<br>
+tvalues=[tbeg&nbsp;tmid&nbsp;tend];<br>
+<br>
+[fmax,&nbsp;imax]=max(fvalues);<br>
+tmaxim=tvalues(imax);<br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;new&nbsp;alpha</span><br>
+<span class=comment>%alpha=alpha*(1-tmaxim)+dalpha*tmaxim;</span><br>
+t=tmaxim;<br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+<span class=comment>%&nbsp;debugging</span><br>
+<span class=keyword>if</span>&nbsp;1==1,<br>
+&nbsp;&nbsp;&nbsp;vals=[];<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;t=0:0.01:1,<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fvalue=min(&nbsp;(s+t*ds)./sqrt(&nbsp;(1-t)^2*sga&nbsp;+&nbsp;2*t*(1-t)*sgad&nbsp;+&nbsp;t^2*sgd&nbsp;)&nbsp;);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vals=[vals,fvalue];<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>figure</span>;<br>
+&nbsp;&nbsp;&nbsp;hold&nbsp;on;<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>plot</span>(0:0.01:1,vals,<span class=quotes>'g'</span>);<br>
+&nbsp;&nbsp;&nbsp;win=<span class=graph>axis</span>;<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>line</span>([tmid&nbsp;tmid],[&nbsp;win(3)&nbsp;win(4)],<span class=quotes>'Color'</span>,<span class=quotes>'k'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>line</span>([0&nbsp;1],[vals(1)&nbsp;vals(1)],<span class=quotes>'Color'</span>,<span class=quotes>'r'</span>);<br>
+&nbsp;&nbsp;&nbsp;drawnow;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=io>pause</span>;<br>
+<span class=jump>return</span>;<br>
+<br>
+</code>

@@ -1,0 +1,114 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>pca.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model&nbsp;</span>=&nbsp;<span class=defun_name>pca</span>(<span class=defun_in>X,arg1</span>)<br>
+<span class=h1>%&nbsp;PCA&nbsp;Principal&nbsp;Component&nbsp;Analysis.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;pca(X)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;pca(X,new_dim)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;pca(X,var)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;It&nbsp;computes&nbsp;Principal&nbsp;Component&nbsp;Analysis,&nbsp;i.e.,&nbsp;the</span><br>
+<span class=help>%&nbsp;&nbsp;linear&nbsp;transform&nbsp;which&nbsp;makes&nbsp;data&nbsp;uncorrelated&nbsp;and</span><br>
+<span class=help>%&nbsp;&nbsp;minize&nbsp;the&nbsp;reconstruction&nbsp;error.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;pca(X,new_dim)&nbsp;use&nbsp;to&nbsp;specify&nbsp;explicitely&nbsp;output</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;dimesnion&nbsp;where&nbsp;new_dim&nbsp;&gt;=&nbsp;1.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;pca(X,var)&nbsp;use&nbsp;to&nbsp;specify&nbsp;a&nbsp;portion&nbsp;of&nbsp;discarded</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;variance&nbsp;in&nbsp;data&nbsp;where&nbsp;0&nbsp;&lt;=&nbsp;var&nbsp;&lt;&nbsp;1.&nbsp;The&nbsp;new_dim&nbsp;is&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;selected&nbsp;be&nbsp;as&nbsp;small&nbsp;as&nbsp;possbile&nbsp;and&nbsp;to&nbsp;satisfy&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;&gt;=&nbsp;MsErr(new_dim)/MaxMsErr&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;where&nbsp;MaxMsErr&nbsp;=&nbsp;sum(sum(X.^2)).&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;training&nbsp;data&nbsp;stored&nbsp;as&nbsp;columns.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;new_dim&nbsp;[1x1]&nbsp;Output&nbsp;dimension;&nbsp;new_dim&nbsp;&gt;&nbsp;1&nbsp;(default&nbsp;new_dim&nbsp;=&nbsp;dim);</span><br>
+<span class=help>%&nbsp;&nbsp;var&nbsp;[1x1]&nbsp;Portion&nbsp;of&nbsp;discarded&nbsp;variance&nbsp;in&nbsp;data.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Ouputs:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Linear&nbsp;projection:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;new_dim]&nbsp;Projection&nbsp;matrix.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[new_dim&nbsp;x&nbsp;1]&nbsp;Bias.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.eigval&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;eigenvalues.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.mse&nbsp;[real]&nbsp;Mean&nbsp;square&nbsp;representation&nbsp;error.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.MsErr&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Mean-square&nbsp;errors&nbsp;with&nbsp;respect&nbsp;to&nbsp;number&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;basis&nbsp;vectors;&nbsp;mse=MsErr(new_dim).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.mean_X&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;mean&nbsp;of&nbsp;training&nbsp;data.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;in_data&nbsp;=&nbsp;load('iris');</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;pca(in_data.X,&nbsp;2)</span><br>
+<span class=help>%&nbsp;&nbsp;out_data&nbsp;=&nbsp;linproj(in_data,model);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;ppatterns(out_data);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;LINPROJ,&nbsp;PCAREC,&nbsp;KPCA.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;20-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;20-june-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;21-jan-03,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;20-jan-03,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;16-Jan-2003,&nbsp;VF,&nbsp;new&nbsp;comments.</span><br>
+<span class=help1>%&nbsp;26-jun-2002,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;get&nbsp;dimensions</span><br>
+[dim,num_data]=size(X);<br>
+<br>
+<span class=comment>%&nbsp;process&nbsp;input&nbsp;arguments</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;arg1&nbsp;=&nbsp;0;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;centering&nbsp;data</span><br>
+mean_X&nbsp;=&nbsp;mean(&nbsp;X<span class=quotes>'&nbsp;)'</span>;<br>
+X=X-mean_X*ones(1,num_data);<br>
+<br>
+<span class=comment>%&nbsp;covariance</span><br>
+S&nbsp;=&nbsp;X*X';<br>
+<br>
+<span class=comment>%&nbsp;eigenvalue&nbsp;decomposition</span><br>
+[U,D,V]=svd(S);<br>
+<br>
+model.eigval=diag(D)/num_data;<br>
+sum_eig&nbsp;=&nbsp;triu(ones(dim,dim),1)*model.eigval;<br>
+model.MsErr&nbsp;=&nbsp;sum_eig;<br>
+<br>
+<span class=comment>%&nbsp;decide&nbsp;about&nbsp;the&nbsp;new_dimension</span><br>
+<span class=keyword>if</span>&nbsp;arg1&nbsp;&gt;=&nbsp;1,<br>
+&nbsp;&nbsp;new_dim&nbsp;=&nbsp;arg1;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;new_dim&nbsp;enterd&nbsp;explicitely</span><br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;inx&nbsp;=&nbsp;find(&nbsp;sum_eig/sum(model.eigval)&nbsp;&lt;=&nbsp;arg1);<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isempty(inx),&nbsp;new_dim&nbsp;=&nbsp;dim;&nbsp;<span class=keyword>else</span>&nbsp;new_dim&nbsp;=&nbsp;inx(1);&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;model.var&nbsp;=&nbsp;arg1;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;take&nbsp;new_dim&nbsp;most&nbsp;important&nbsp;eigenvectors</span><br>
+model.W=V(:,1:new_dim);<br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;data&nbsp;translation</span><br>
+model.b&nbsp;=&nbsp;-model.W'*mean_X;<br>
+model.new_dim&nbsp;=&nbsp;new_dim;<br>
+model.mean_X&nbsp;=&nbsp;mean_X;<br>
+model.mse&nbsp;=&nbsp;model.MsErr(new_dim);<br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'linproj'</span>;<br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

@@ -1,0 +1,106 @@
+% Training of linear PCA model to tuned for image restoration.
+%
+
+% Modifications:
+% 5-may-2004, VF
+% 14-apr-2004, VF
+% 13-apr-2004, VF
+% 17-mar-2004, VF
+
+% == Setting ==========================================
+Num_Folds = 1;
+
+%New_Dim_Range = [5 10 20 30 40 60 80 100];
+New_Dim_Range = [1 2];
+
+input_data_file = 'circle_data';
+output_data_file = [];
+%input_data_file = '/home.dokt/xfrancv/data/usps_noisy';
+%output_data_file = 'LinearPCAModelUSPS';
+
+% ========================================================
+
+% Loads training and testing data.
+load(input_data_file);
+[Dim,Num_Data] = size( trn.X );
+
+% Data partitioning
+[itrn,itst]=crossval(Num_Data,Num_Folds);
+
+% Tuning linear PCA model
+Mse = [];
+
+for new_dim = New_Dim_Range,
+    
+ fprintf('\nnew_dim = %d\n', new_dim);
+   
+ cv_mse = 0;  
+ for i=1:Num_Folds,
+    
+   fprintf('\n');
+    
+   trn_X = trn.gnd_X(:,itrn{i});
+   val_gnd_X = trn.gnd_X(:,itst{i});
+   val_corr_X = trn.X(:,itst{i});
+
+   
+   fprintf('Computing Linear PCA...');
+   lin_model = pca(trn_X, new_dim);
+   fprintf('done\n');
+
+   fprintf('Projecting validation data...');
+   val_reconst_X = lpimage( val_corr_X, lin_model );
+   fprintf('done.\n');
+
+   dummy = (val_reconst_X - val_gnd_X).^2;
+  
+   mse = sum(dummy(:))/size(val_gnd_X,2);
+  
+   fprintf('folder %d/%d: validation errors mse=%f\n', ...
+      i, Num_Folds, mse);
+   
+   cv_mse = cv_mse + mse;
+ end
+ 
+ cv_mse = cv_mse/Num_Folds;
+ 
+ Mse(find(new_dim==New_Dim_Range)) = cv_mse;
+ 
+ fprintf('new_dim = %d: mse = %f\n', new_dim, cv_mse);
+end
+   
+[dummy,inx] = min(Mse);
+fprintf('\nMin(mse) = %f, dim = %f\n', ...
+   Mse(inx), New_Dim_Range(inx) );
+
+fprintf('Computing optimal Kernel PCA...');
+lpca_model = pca( trn.X, New_Dim_Range(inx) );
+fprintf('done.\n');
+
+if isempty(output_data_file),
+  figure; hold on;
+  xlabel('dim'); ylabel('mse');
+
+  plot(New_Dim_Range,Mse);
+else
+   save(output_data_file,'New_Dim_Range',...
+      'Mse','Num_Folds','input_data_file',...
+      'output_data_file','lpca_model');
+end
+
+% plots 2D data
+if Dim == 2 & isempty(output_data_file),
+  X = lpimage(tst.X, lin_model );
+
+  mse = sum(sum((X-tst.gnd_X).^2 ));
+  fprintf('\ntest mse=%f\n', mse);
+  
+  figure; hold on;
+  h0=ppatterns(tst.gnd_X,'r+');
+  h1=ppatterns(tst.X,'gx');
+  h2=ppatterns(X,'bo');
+  legend([h0.points h1.points h2.points],'Ground truth','Noisy','Reconst');
+end
+
+
+% EOF

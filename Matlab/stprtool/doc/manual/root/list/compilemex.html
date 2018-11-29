@@ -1,0 +1,153 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>compilemex.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_name>compilemex</span>(<span class=defun_in>root</span>)<br>
+<span class=h1>%&nbsp;COMPILEMEX&nbsp;Compiles&nbsp;all&nbsp;MEX&nbsp;files&nbsp;of&nbsp;the&nbsp;STPRtoolbox.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;compilemex</span><br>
+<span class=help>%&nbsp;&nbsp;compilemex(&nbsp;toolboxroot&nbsp;)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;It&nbsp;calls&nbsp;MEX&nbsp;complier&nbsp;on&nbsp;all&nbsp;C-codes&nbsp;of&nbsp;the&nbsp;STPRtoolbox.</span><br>
+<span class=help>%&nbsp;&nbsp;Run&nbsp;this&nbsp;function&nbsp;from&nbsp;the&nbsp;STPRtoolbox&nbsp;root&nbsp;directory&nbsp;or</span><br>
+<span class=help>%&nbsp;&nbsp;specify&nbsp;the&nbsp;root&nbsp;directory&nbsp;as&nbsp;an&nbsp;input&nbsp;argument.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;23-sep-2008,&nbsp;VF:&nbsp;fix&nbsp;of&nbsp;path&nbsp;traslation&nbsp;of&nbsp;MacOS;&nbsp;suggested&nbsp;by&nbsp;dkim@mrn.org</span><br>
+<span class=help1>%&nbsp;30-mar-2007,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;26-mar-2007,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;20-nov-2006,&nbsp;VF,&nbsp;added&nbsp;compilation&nbsp;of&nbsp;"qpbsvm_mex.c"&nbsp;and&nbsp;"qpssvm_mex.c"</span><br>
+<span class=help1>%&nbsp;09-sep-2005,&nbsp;VF,&nbsp;added&nbsp;compilation&nbsp;of&nbsp;"gnnls_mex.c"&nbsp;and&nbsp;"gnpp_mex.c"</span><br>
+<span class=help1>%&nbsp;25-aug-2005,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;24-jan-2005,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;29-dec-2004,&nbsp;VF,&nbsp;inconsistent&nbsp;variables&nbsp;("root"&nbsp;and&nbsp;"Root")&nbsp;unified</span><br>
+<span class=help1>%&nbsp;29-nov-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;19-sep-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;16-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;5-July-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;20-June-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;23-Jan-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=io>fprintf</span>(<span class=quotes>'Compiling&nbsp;MEX&nbsp;files&nbsp;of&nbsp;STPRtool...\n'</span>);<br>
+<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;1<br>
+&nbsp;&nbsp;&nbsp;root=pwd;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;current&nbsp;directory</span><br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;--&nbsp;List&nbsp;of&nbsp;functions&nbsp;to&nbsp;be&nbsp;complied&nbsp;---------------------------</span><br>
+fun(1).source={<span class=quotes>'$kernels/kernel.c'</span>,<span class=quotes>'$kernels/kernel_fun.c'</span>};<br>
+fun(1).outdir=<span class=quotes>'$kernels'</span>;<br>
+fun(1).include=<span class=quotes>'$kernels'</span>;<br>
+<br>
+fun(2).source={<span class=quotes>'$kernels/diagker.c'</span>,<span class=quotes>'$kernels/kernel_fun.c'</span>};<br>
+fun(2).outdir=<span class=quotes>'$kernels'</span>;<br>
+fun(2).include=<span class=quotes>'$kernels'</span>;<br>
+<br>
+fun(3).source={<span class=quotes>'$svm/smo1d_mex.c'</span>};<br>
+fun(3).outdir=<span class=quotes>'$svm'</span>;<br>
+fun(3).include=<span class=quotes>'$kernels'</span>;<br>
+<br>
+fun(4).source={<span class=quotes>'$svm/smo_mex.c'</span>,<span class=quotes>'$kernels/kernel_fun.c'</span>};<br>
+fun(4).outdir=<span class=quotes>'$svm'</span>;<br>
+fun(4).include=<span class=quotes>'$kernels'</span>;<br>
+<br>
+fun(5).source&nbsp;=&nbsp;{<span class=quotes>'$svm/bsvm2_mex.c'</span>,<span class=quotes>'$kernels/kernel_fun.c'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$optimization/gmnplib.c'</span>};<br>
+fun(5).outdir&nbsp;=&nbsp;<span class=quotes>'$svm'</span>;<br>
+fun(5).include&nbsp;=&nbsp;<span class=quotes>'$kernels'</span>;<br>
+<br>
+fun(6).source&nbsp;=&nbsp;{<span class=quotes>'$misc/knnclass_mex.c'</span>};<br>
+fun(6).outdir&nbsp;=&nbsp;<span class=quotes>'$misc'</span>;<br>
+fun(6).include&nbsp;=&nbsp;<span class=quotes>'$'</span>;<br>
+<br>
+fun(7).source&nbsp;=&nbsp;{<span class=quotes>'$svm/svm2_mex.c'</span>,<span class=quotes>'$kernels/kernel_fun.c'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$optimization/gnpplib.c'</span>};<br>
+fun(7).outdir&nbsp;=&nbsp;<span class=quotes>'$svm'</span>;<br>
+fun(7).include&nbsp;=&nbsp;<span class=quotes>'$kernels'</span>;<br>
+<br>
+fun(8).source={<span class=quotes>'$kernels/kernelproj_mex.c'</span>,<span class=quotes>'$kernels/kernel_fun.c'</span>};<br>
+fun(8).outdir=<span class=quotes>'$kernels'</span>;<br>
+fun(8).include=<span class=quotes>'$kernels'</span>;<br>
+<br>
+fun(9).source={<span class=quotes>'$optimization/gmnp_mex.c'</span>,<span class=quotes>'$optimization/gmnplib.c'</span>};<br>
+fun(9).outdir=<span class=quotes>'$optimization'</span>;<br>
+fun(9).include=<span class=quotes>'$'</span>;<br>
+<br>
+fun(10).source={<span class=quotes>'$optimization/gnnls_mex.c'</span>,<span class=quotes>'$optimization/gnnlslib.c'</span>};<br>
+fun(10).outdir=<span class=quotes>'$optimization'</span>;<br>
+fun(10).include=<span class=quotes>'$'</span>;<br>
+<br>
+fun(11).source={<span class=quotes>'$optimization/gnpp_mex.c'</span>,<span class=quotes>'$optimization/gnpplib.c'</span>};<br>
+fun(11).outdir=<span class=quotes>'$optimization'</span>;<br>
+fun(11).include=<span class=quotes>'$'</span>;<br>
+<br>
+fun(12).source={<span class=quotes>'$optimization/qpssvm_mex.c'</span>,<span class=quotes>'$optimization/qpssvmlib.c'</span>};<br>
+fun(12).outdir=<span class=quotes>'$optimization'</span>;<br>
+fun(12).include=<span class=quotes>'$'</span>;<br>
+<br>
+fun(13).source={<span class=quotes>'$optimization/qpbsvm_mex.c'</span>,<span class=quotes>'$optimization/qpbsvmlib.c'</span>};<br>
+fun(13).outdir=<span class=quotes>'$optimization'</span>;<br>
+fun(13).include=<span class=quotes>'$'</span>;<br>
+<br>
+fun(14).source={<span class=quotes>'$optimization/gsmo_mex.c'</span>,<span class=quotes>'$optimization/gsmolib.c'</span>};<br>
+fun(14).outdir=<span class=quotes>'$optimization'</span>;<br>
+fun(14).include=<span class=quotes>'$'</span>;<br>
+<br>
+<br>
+<span class=comment>%&nbsp;--&nbsp;Compile&nbsp;functions&nbsp;-----------------------------</span><br>
+<span class=keyword>for</span>&nbsp;i=1:length(fun),<br>
+&nbsp;&nbsp;&nbsp;mexstr&nbsp;=&nbsp;[<span class=quotes>'mex&nbsp;-O&nbsp;-I'</span>&nbsp;translate(fun(i).include,root)&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'&nbsp;-outdir&nbsp;'</span>&nbsp;translate(fun(i).outdir,&nbsp;root)&nbsp;<span class=quotes>'&nbsp;'</span>];<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;j=1:length(fun(i).source),&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;mexstr&nbsp;=&nbsp;[mexstr&nbsp;translate(char(fun(i).source(j)),root)&nbsp;<span class=quotes>'&nbsp;'</span>];<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'%s\n'</span>,mexstr);<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=eval>eval</span>(mexstr);<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=io>fprintf</span>(<span class=quotes>'MEX-files&nbsp;compiled&nbsp;successfully.\n'</span>);<br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+<span class=comment>%--translate&nbsp;---------------------------------------------------------</span><br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>p&nbsp;</span>=&nbsp;<span class=defun_name>translate</span>(<span class=defun_in>p,toolboxroot</span>);<br>
+<span class=comment>%TRANSLATE&nbsp;Translate&nbsp;unix&nbsp;path&nbsp;to&nbsp;platform&nbsp;specific&nbsp;path</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;TRANSLATE&nbsp;fixes&nbsp;up&nbsp;the&nbsp;path&nbsp;so&nbsp;that&nbsp;it's&nbsp;valid&nbsp;on&nbsp;non-UNIX&nbsp;platforms</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;This&nbsp;function&nbsp;was&nbsp;derived&nbsp;from&nbsp;MathWork&nbsp;M-file&nbsp;"pathdef.m"</span><br>
+<br>
+cname&nbsp;=&nbsp;computer;<br>
+<span class=comment>%&nbsp;Look&nbsp;for&nbsp;VMS,&nbsp;this&nbsp;covers&nbsp;VAX_VMSxx&nbsp;as&nbsp;well&nbsp;as&nbsp;AXP_VMSxx.</span><br>
+<span class=comment>%if&nbsp;(length&nbsp;(cname)&nbsp;&gt;=&nbsp;7)&nbsp;&&nbsp;strcmp(cname(4:7),'_VMS')</span><br>
+<span class=comment>%&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,'/','.');</span><br>
+<span class=comment>%&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,':','],');</span><br>
+<span class=comment>%&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,'$toolbox.','toolbox:[');</span><br>
+<span class=comment>%&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,'$','matlab:[');</span><br>
+<span class=comment>%&nbsp;&nbsp;p&nbsp;=&nbsp;[p&nbsp;']'];&nbsp;%&nbsp;Append&nbsp;a&nbsp;final&nbsp;']'</span><br>
+<br>
+<span class=comment>%&nbsp;Look&nbsp;for&nbsp;PC</span><br>
+<span class=keyword>if</span>&nbsp;strncmp(cname,<span class=quotes>'PC'</span>,2)<br>
+&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,<span class=quotes>'/'</span>,<span class=quotes>'\'</span>);<br>
+&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,<span class=quotes>':'</span>,<span class=quotes>';'</span>);<br>
+&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,<span class=quotes>'$'</span>,[toolboxroot&nbsp;<span class=quotes>'\'</span>]);<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,<span class=quotes>'$'</span>,[toolboxroot&nbsp;<span class=quotes>'/'</span>]);<br>
+<span class=keyword>end</span><br>
+</code>

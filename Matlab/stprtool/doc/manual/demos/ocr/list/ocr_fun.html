@@ -1,0 +1,76 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>ocr_fun.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_name>ocr_fun</span>(<span class=defun_in>data</span>)<br>
+<span class=h1>%&nbsp;OCR_FUN&nbsp;Calls&nbsp;OCR&nbsp;classifier&nbsp;and&nbsp;displays&nbsp;result.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;ocr_fun(data)</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;classifies&nbsp;images&nbsp;of&nbsp;characters&nbsp;stored&nbsp;as&nbsp;columns&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;of&nbsp;the&nbsp;matrix&nbsp;data.X.&nbsp;The&nbsp;output&nbsp;is&nbsp;displayed&nbsp;in&nbsp;a&nbsp;grid&nbsp;5&nbsp;x&nbsp;10.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data.X&nbsp;[dim&nbsp;x&nbsp;(5*10)]&nbsp;Input&nbsp;images&nbsp;store&nbsp;as&nbsp;column&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;images&nbsp;are&nbsp;assumed&nbsp;to&nbsp;be&nbsp;taken&nbsp;from&nbsp;grid&nbsp;5x10.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>(c)</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox,&nbsp;(C)&nbsp;1999-2003,</span><br>
+<span class=help1>%&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;engineering&lt;/a&gt;,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;04-jun-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;09-sep-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;loads&nbsp;the&nbsp;multi-class&nbsp;SVM&nbsp;model&nbsp;</span><br>
+OCRFileName&nbsp;=&nbsp;<span class=quotes>'ocrmodel.mat'</span>;<br>
+ocr&nbsp;=&nbsp;load(&nbsp;OCRFileName&nbsp;);<br>
+<br>
+<span class=comment>%&nbsp;make&nbsp;sure&nbsp;that&nbsp;only&nbsp;the&nbsp;filled&nbsp;subwindows&nbsp;will&nbsp;be&nbsp;classified</span><br>
+filled_inx&nbsp;=&nbsp;find(&nbsp;sum(data.X)&nbsp;~=&nbsp;0);<br>
+<span class=keyword>if</span>&nbsp;isempty(filled_inx),&nbsp;<span class=jump>return</span>;&nbsp;<span class=keyword>end</span><br>
+y&nbsp;=&nbsp;-ones(1,length(data.X));&nbsp;<span class=comment>%&nbsp;non-filled&nbsp;subwindows&nbsp;are&nbsp;labeled&nbsp;by&nbsp;-1</span><br>
+<br>
+<span class=comment>%&nbsp;classify&nbsp;filled&nbsp;subwindows</span><br>
+<span class=comment>%-------------------------------------------------------</span><br>
+[y(filled_inx),dfce]&nbsp;=&nbsp;<span class=eval>feval</span>(&nbsp;ocr.fun,&nbsp;data.X(:,filled_inx),&nbsp;ocr);<br>
+<br>
+<span class=comment>%&nbsp;displays&nbsp;results</span><br>
+<span class=comment>%-------------------------------------------------------</span><br>
+<span class=graph>figure</span>(10);&nbsp;<span class=graph>clf</span>;<br>
+<br>
+<span class=comment>%&nbsp;plot&nbsp;grid&nbsp;5&nbsp;x&nbsp;10&nbsp;</span><br>
+<span class=graph>axis</span>&nbsp;equal;<br>
+<span class=graph>axis</span>([0&nbsp;1&nbsp;0&nbsp;0.5]);<br>
+hold&nbsp;on;<br>
+<span class=graph>plot</span>(&nbsp;[&nbsp;0&nbsp;0&nbsp;1&nbsp;1&nbsp;0&nbsp;],&nbsp;[&nbsp;0&nbsp;.5&nbsp;.5&nbsp;0&nbsp;0&nbsp;]&nbsp;);<br>
+<span class=keyword>for</span>&nbsp;i&nbsp;=&nbsp;1:9,&nbsp;<span class=graph>plot</span>(&nbsp;[i/10&nbsp;i/10],[0&nbsp;.5]&nbsp;);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>for</span>&nbsp;i&nbsp;=&nbsp;1:4,&nbsp;<span class=graph>plot</span>(&nbsp;[0&nbsp;1],[i/10&nbsp;i/10]&nbsp;);&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;display&nbsp;recognized&nbsp;numerals</span><br>
+<span class=keyword>for</span>&nbsp;i=1:5,<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;j&nbsp;=&nbsp;1:10,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inx&nbsp;=&nbsp;j+(i-1)*10;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;y(inx)&nbsp;~=&nbsp;-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;character&nbsp;=&nbsp;ocr.labels(y(inx));&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h=text(0.05+(j-1)/10,-0.05+(5-i+1)/10,character);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h,<span class=quotes>'fontsize'</span>,25,<span class=quotes>'VerticalAlignment'</span>,<span class=quotes>'middle'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'HorizontalAlignment'</span>,<span class=quotes>'center'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

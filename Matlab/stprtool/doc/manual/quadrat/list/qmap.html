@@ -1,0 +1,84 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>qmap.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>Y</span>=<span class=defun_name>qmap</span>(<span class=defun_in>X</span>)<br>
+<span class=h1>%&nbsp;QMAP&nbsp;Quadratic&nbsp;data&nbsp;mapping.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Y&nbsp;=&nbsp;qmap(X)</span><br>
+<span class=help>%&nbsp;&nbsp;out_data&nbsp;=&nbsp;qmap(in_data)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Y&nbsp;=&nbsp;qmap(X)&nbsp;mapps&nbsp;input&nbsp;n-dimensional&nbsp;data&nbsp;X&nbsp;into&nbsp;a&nbsp;new&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;(n*(n+3)/2)-dimensional&nbsp;space&nbsp;using&nbsp;the&nbsp;quadratic&nbsp;mapping.&nbsp;An&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;input&nbsp;vector&nbsp;x=X(:,i)&nbsp;is&nbsp;mapped&nbsp;to&nbsp;its&nbsp;image&nbsp;y=Y(:,i)&nbsp;such&nbsp;that</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;y&nbsp;=&nbsp;[x(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;x(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;...;x(n);</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x(1)*x(1);x(1)*x(2);...;x(1)*x(n);</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x(2)*x(2);...;x(2)*x(n);</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x(n)*x(n)]</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;out_data&nbsp;=&nbsp;qmap(in_data)&nbsp;use&nbsp;to&nbsp;map&nbsp;labeled&nbsp;data&nbsp;such&nbsp;that</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;out_data.X&nbsp;=&nbsp;qmap(in_data.X)</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;out_data.y&nbsp;=&nbsp;in_data.y</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;orig_data&nbsp;=&nbsp;load('vltava');</span><br>
+<span class=help>%&nbsp;&nbsp;map_data&nbsp;=&nbsp;qmap(orig_data);</span><br>
+<span class=help>%&nbsp;&nbsp;lin_model&nbsp;=&nbsp;perceptron(map_data);</span><br>
+<span class=help>%&nbsp;&nbsp;quad_model&nbsp;=&nbsp;lin2quad(lin_model);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;ppatterns(orig_data);&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;pboundary(quad_model);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;LIN2QUAD,&nbsp;QUADCLASS.</span><br>
+<span class=help>%</span><br>
+<hr>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>(c)</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox,&nbsp;(C)&nbsp;1999-2003,</span><br>
+<span class=help1>%&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;engineering&lt;/a&gt;,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;17-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;22-Oct-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;26-June-2001,&nbsp;V.Franc,&nbsp;comments&nbsp;repared.</span><br>
+<span class=help1>%&nbsp;24.&nbsp;6.00&nbsp;V.&nbsp;Hlavac,&nbsp;comments&nbsp;polished.</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;if&nbsp;labeled&nbsp;data&nbsp;(struct&nbsp;(X,y))&nbsp;enters&nbsp;the&nbsp;function&nbsp;</span><br>
+<span class=comment>%&nbsp;then&nbsp;the&nbsp;mapping&nbsp;is&nbsp;performed&nbsp;on&nbsp;the&nbsp;vectors&nbsp;and&nbsp;the&nbsp;</span><br>
+<span class=comment>%&nbsp;labels&nbsp;are&nbsp;preserved</span><br>
+<span class=keyword>if</span>&nbsp;isstruct(X),&nbsp;tmp&nbsp;=&nbsp;X.y;&nbsp;X&nbsp;=&nbsp;X.X;&nbsp;<span class=keyword>else</span>&nbsp;tmp&nbsp;=&nbsp;[];&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;dimension</span><br>
+[dim,num_data]=size(X);<br>
+<br>
+new_dim=dim*(dim+3)/2;<br>
+<br>
+Y=zeros(new_dim,num_data);<br>
+<br>
+Y(1:dim,:)=X;<br>
+<br>
+inx=dim+1;<br>
+<span class=keyword>for</span>&nbsp;i=1:dim,<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;j=i:dim,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Y(inx,:)=X(i,:).*X(j,:);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inx=inx+1;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;deals&nbsp;with&nbsp;labeled&nbsp;data</span><br>
+<span class=keyword>if</span>&nbsp;~isempty(tmp)&nbsp;Y.X&nbsp;=&nbsp;Y;&nbsp;Y.y&nbsp;=&nbsp;tmp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

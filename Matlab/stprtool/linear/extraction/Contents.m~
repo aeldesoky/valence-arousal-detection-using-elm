@@ -1,0 +1,16 @@
+% Linear transformations for feature extraction.
+%
+% lda      - Linear Discriminant Analysis.
+% linproj  - Linear data projection.
+% pca      - Principal Component Analysis.
+%
+
+
+% About: Statistical Pattern Recognition Toolbox
+% (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac
+% <a href="http://www.cvut.cz">Czech Technical University Prague</a>
+% <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a>
+% <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a>
+
+% Modifications:
+%  13-Feb-2003, VF

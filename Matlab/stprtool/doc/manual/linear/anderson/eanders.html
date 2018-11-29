@@ -1,0 +1,81 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">EANDERS</b>
+<td valign="baseline" align="right" class="function"><a href="../../linear/anderson/index.html" target="mdsdir"><img border = 0 src="../../up.gif"></a></table>
+  <p><b>Epsilon-solution of the Generalized Andersson's task.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;eanders(distrib&nbsp;)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;eanders(distrib,&nbsp;options)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;eanders(distrib,&nbsp;options,&nbsp;init_model)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;function&nbsp;is&nbsp;an&nbsp;implementation&nbsp;of&nbsp;the&nbsp;Schlesinger's&nbsp;iterative</span><br>
+<span class=help>&nbsp;&nbsp;algorithm&nbsp;which&nbsp;finds&nbsp;the&nbsp;epsilon-solution&nbsp;of&nbsp;the&nbsp;Generalized&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;Anderson's&nbsp;task&nbsp;using&nbsp;the&nbsp;Kozinec's&nbsp;algorithm&nbsp;[<a href="../../references.html#SH10" title = "M.I.Schlesinger and V.Hlavac. Ten lectures on statistical and structural pattern recognition. Kluwer Academic Publishers, 2002." >SH10</a>].&nbsp;</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;goal&nbsp;of&nbsp;the&nbsp;GAT&nbsp;is&nbsp;find&nbsp;the&nbsp;binary&nbsp;linear&nbsp;classification</span><br>
+<span class=help>&nbsp;&nbsp;rule&nbsp;(g(x)=sgn(W'*x+b)&nbsp;with&nbsp;minimal&nbsp;probability&nbsp;of&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;misclassification.&nbsp;The&nbsp;conditional&nbsp;probabilities&nbsp;are&nbsp;known&nbsp;to&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;be&nbsp;Gaussians&nbsp;their&nbsp;paramaters&nbsp;belong&nbsp;to&nbsp;a&nbsp;given&nbsp;set&nbsp;of&nbsp;parameters.&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;true&nbsp;parameters&nbsp;are&nbsp;not&nbsp;known.&nbsp;The&nbsp;linear&nbsp;rule&nbsp;which&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;guarantes&nbsp;the&nbsp;minimimal&nbsp;classification&nbsp;error&nbsp;for&nbsp;the&nbsp;worst&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;possible&nbsp;case&nbsp;(the&nbsp;worst&nbsp;configuration&nbsp;of&nbsp;Gaussains)&nbsp;is&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;sought&nbsp;for.&nbsp;</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;distrib&nbsp;[struct]&nbsp;Input&nbsp;set&nbsp;of&nbsp;labeld&nbsp;(1&nbsp;or&nbsp;2)&nbsp;Gassians:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Mean&nbsp;[dim&nbsp;x&nbsp;ncomp]&nbsp;Mean&nbsp;veactors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Cov&nbsp;&nbsp;[dim&nbsp;x&nbsp;dim&nbsp;x&nbsp;ncomp]&nbsp;Covariance&nbsp;matrices.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;ncomp]&nbsp;Labels&nbsp;of&nbsp;Gaussian&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Determine&nbsp;stopping&nbsp;conditions:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.err&nbsp;[1x1]&nbsp;Desired&nbsp;classification&nbsp;error;&nbsp;must&nbsp;be&nbsp;0&lt;err&lt;0.5;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(default&nbsp;0.05).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;init_model&nbsp;[struct]&nbsp;Initial&nbsp;model:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;W1,&nbsp;W2,&nbsp;t.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Binary&nbsp;linear&nbsp;classifier:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Normal&nbsp;vector&nbsp;of&nbsp;the&nbsp;linear&nbsp;rule&nbsp;(hypeplane).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;the&nbsp;rule&nbsp;(shift&nbsp;from&nbsp;the&nbsp;origin).</span><br>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;used&nbsp;iterations.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.exitflag&nbsp;[1x1]&nbsp;1&nbsp;...&nbsp;solution&nbsp;with&nbsp;desired&nbsp;err&nbsp;was&nbsp;found.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;...&nbsp;maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;exceeded.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1&nbsp;...&nbsp;solution&nbsp;does&nbsp;not&nbsp;exist.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.W1,&nbsp;.W2&nbsp;Auxciliary&nbsp;vectors;&nbsp;W=W1-W2.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;distrib&nbsp;=&nbsp;load('mars');</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;eanders(distrib,struct('err',0.06'));</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;pandr(&nbsp;model,&nbsp;distrib&nbsp;);</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../../linear/anderson/androrig.html" target="mdsbody">ANDRORIG</a>,&nbsp;<a href = "../../linear/anderson/ganders.html" target="mdsbody">GANDERS</a>,&nbsp;<a href = "../../linear/anderson/ggradandr.html" target="mdsbody">GGRADANDR</a>,&nbsp;<a href = "../../linear/linclass.html" target="mdsbody">LINCLASS</a>.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../../linear/anderson/list/eanders.html">eanders.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 21-may-2004, VF<br>
+ 16-sep-2003, VF<br>
+
+</body>
+</html>

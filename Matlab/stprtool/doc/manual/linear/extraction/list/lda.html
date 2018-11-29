@@ -1,0 +1,107 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>lda.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model&nbsp;</span>=&nbsp;<span class=defun_name>lda</span>(<span class=defun_in>data,new_dim</span>)<br>
+<span class=h1>%&nbsp;LDA&nbsp;Linear&nbsp;Discriminant&nbsp;Analysis.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;lda(data)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;lda(data,new_dim)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;is&nbsp;implementation&nbsp;of&nbsp;Linear&nbsp;Discriminant&nbsp;Analysis.</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;goal&nbsp;is&nbsp;to&nbsp;train&nbsp;the&nbsp;linear&nbsp;transform&nbsp;which&nbsp;maximizes&nbsp;ratio&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;between&nbsp;between-class&nbsp;and&nbsp;within-class&nbsp;scatter&nbsp;matrix&nbsp;of&nbsp;projected&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;data.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Input&nbsp;labeled&nbsp;data:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Data&nbsp;sample.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;(1,2,...,nclass).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;new_dim&nbsp;[1x1]&nbsp;Output&nbsp;data&nbsp;dimension&nbsp;(default&nbsp;new_dim&nbsp;=&nbsp;dim).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Ouput:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Linear&nbsp;projection:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;new_dim]&nbsp;Projection&nbsp;matrix.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[new_dim&nbsp;x&nbsp;1]&nbsp;Biases.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.mean_X&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Mean&nbsp;value&nbsp;of&nbsp;data.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Sw&nbsp;[dim&nbsp;x&nbsp;dim]&nbsp;Within-class&nbsp;scatter&nbsp;matrix.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Sb&nbsp;[dim&nbsp;x&nbsp;dim]&nbsp;Between-class&nbsp;scatter&nbsp;matrix.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.eigval&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Eigenvalues.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;in_data&nbsp;=&nbsp;load('iris');</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;lda(&nbsp;in_data,&nbsp;2&nbsp;);</span><br>
+<span class=help>%&nbsp;&nbsp;out_data&nbsp;=&nbsp;linproj(&nbsp;in_data,&nbsp;model);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;ppatterns(out_data);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;LINPROJ,&nbsp;PCA.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;05-oct-2006,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;25-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;3-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;20-may-2001,&nbsp;V.Franc,&nbsp;created</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;process&nbsp;input&nbsp;arguments</span><br>
+<span class=comment>%----------------------------------------</span><br>
+data=c2s(data);<br>
+[dim,num_data]&nbsp;=&nbsp;size(data.X);<br>
+nclass&nbsp;=&nbsp;max(&nbsp;data.y&nbsp;);<br>
+<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;new_dim&nbsp;=&nbsp;dim;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;within-class&nbsp;scatter&nbsp;matrix</span><br>
+<span class=comment>%--------------------------------------</span><br>
+mean_X&nbsp;=&nbsp;mean(&nbsp;data.X,&nbsp;2);<br>
+Sw=zeros(dim,dim);<br>
+Sb=zeros(dim,dim);<br>
+<br>
+<span class=keyword>for</span>&nbsp;i&nbsp;=&nbsp;1:nclass,<br>
+&nbsp;&nbsp;inx_i&nbsp;=&nbsp;find(&nbsp;data.y==i);<br>
+&nbsp;&nbsp;X_i&nbsp;=&nbsp;data.X(:,inx_i);<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;mean_Xi&nbsp;=&nbsp;mean(X_i,2);<br>
+&nbsp;&nbsp;Sw&nbsp;=&nbsp;Sw&nbsp;+&nbsp;cov(&nbsp;X_i',&nbsp;1);<br>
+&nbsp;&nbsp;Sb&nbsp;=&nbsp;Sb&nbsp;+&nbsp;length(inx_i)*(mean_Xi-mean_X)*(mean_Xi-mean_X)';<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;Compute&nbsp;projection&nbsp;matrix</span><br>
+<span class=comment>%[U,D,V2]=svd(&nbsp;inv(&nbsp;Sw&nbsp;)*Sb&nbsp;);&nbsp;ERROR&nbsp;!</span><br>
+<span class=comment>%model.W&nbsp;=&nbsp;V(:,1:new_dim);</span><br>
+<br>
+[V,D]=eig(&nbsp;inv(&nbsp;Sw&nbsp;)*Sb&nbsp;);<br>
+[D,inx]&nbsp;=&nbsp;sort(diag(D),1,<span class=quotes>'descend'</span>);<br>
+<br>
+<span class=comment>%&nbsp;take&nbsp;new_dim&nbsp;biggest&nbsp;eigenvectors</span><br>
+model.W&nbsp;=&nbsp;V(:,inx(1:new_dim));<br>
+model.eigval&nbsp;=&nbsp;diag(D);<br>
+<br>
+<span class=comment>%&nbsp;translation</span><br>
+model.b&nbsp;=&nbsp;-model.W'*mean_X;<br>
+<br>
+model.Sw&nbsp;=&nbsp;Sw;<br>
+model.Sb&nbsp;=&nbsp;Sb;<br>
+model.mean_X&nbsp;=&nbsp;mean_X;<br>
+<br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'linproj'</span>;<br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

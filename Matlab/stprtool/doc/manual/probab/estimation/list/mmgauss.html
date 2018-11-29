@@ -1,0 +1,156 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>mmgauss.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model</span>=<span class=defun_name>mmgauss</span>(<span class=defun_in>X,options,init_model</span>)<br>
+<span class=h1>%&nbsp;MMGAUSS&nbsp;Minimax&nbsp;estimation&nbsp;of&nbsp;Gaussian&nbsp;distribution.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;mmgauss(X)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;mmgauss(X,options)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;mmgauss(X,options,init_model)</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;computes&nbsp;the&nbsp;minimax&nbsp;estimation&nbsp;of&nbsp;Gaussian&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;parameters.&nbsp;The&nbsp;minimax&nbsp;estimation&nbsp;(reffer&nbsp;to&nbsp;[SH10])&nbsp;for&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;Gaussian&nbsp;model&nbsp;is&nbsp;defined&nbsp;as:</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;(Mean,Cov)&nbsp;=&nbsp;argmax&nbsp;&nbsp;&nbsp;min(&nbsp;pdfgauss(X,&nbsp;Mean,&nbsp;Cov)&nbsp;).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mean,Cov&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;sample&nbsp;data&nbsp;X&nbsp;should&nbsp;be&nbsp;good&nbsp;representatives&nbsp;of&nbsp;the</span><br>
+<span class=help>%&nbsp;&nbsp;distribution.&nbsp;In&nbsp;contrast&nbsp;to&nbsp;maximum-likelihood&nbsp;estimation,&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;the&nbsp;data&nbsp;do&nbsp;not&nbsp;have&nbsp;to&nbsp;be&nbsp;i.i.d.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;An&nbsp;itrative&nbsp;algorithm&nbsp;is&nbsp;used&nbsp;for&nbsp;estimation.&nbsp;It&nbsp;iterates</span><br>
+<span class=help>%&nbsp;&nbsp;until&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;upper_bound&nbsp;-&nbsp;lower_bound&nbsp;&lt;&nbsp;eps,</span><br>
+<span class=help>%&nbsp;&nbsp;where&nbsp;eps&nbsp;is&nbsp;prescribed&nbsp;precission&nbsp;and&nbsp;upper_bound,&nbsp;lower_bound</span><br>
+<span class=help>%&nbsp;&nbsp;are&nbsp;bounds&nbsp;on&nbsp;the&nbsp;optimal&nbsp;solution</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;upper_bound&nbsp;&gt;&nbsp;&nbsp;&nbsp;max&nbsp;&nbsp;&nbsp;min(&nbsp;pdfgauss(X,&nbsp;Mean,&nbsp;Cov)&nbsp;)&nbsp;&gt;&nbsp;lower_bound</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mean,Cov&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Data&nbsp;sample.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Control&nbsp;parameters:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.eps&nbsp;[1x1]&nbsp;Precision&nbsp;of&nbsp;found&nbsp;estimate&nbsp;(default&nbsp;0.1).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;(default&nbsp;inf).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.cov_type&nbsp;[int]&nbsp;Type&nbsp;of&nbsp;estimated&nbsp;covariance&nbsp;matrix:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cov_type&nbsp;=&nbsp;'full'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;full&nbsp;covariance&nbsp;matrix&nbsp;(default)</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cov_type&nbsp;=&nbsp;'diag'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;diagonal&nbsp;covarinace&nbsp;matrix</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cov_type&nbsp;=&nbsp;'spherical'&nbsp;spherical&nbsp;covariance&nbsp;matrix</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.verb&nbsp;[int]&nbsp;If&nbsp;1&nbsp;then&nbsp;info&nbsp;is&nbsp;printed&nbsp;(default&nbsp;0).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;init_model&nbsp;[struct]&nbsp;Initial&nbsp;model:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[1xnum_data]&nbsp;Weights&nbsp;of&nbsp;training&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;(optional)&nbsp;Counter&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Gaussian&nbsp;distribution:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Mean&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Estimated&nbsp;mean&nbsp;vector.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Cov&nbsp;[dim&nbsp;x&nbsp;dim]&nbsp;Estimated&nbsp;covariance&nbsp;matrix.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.exitflag&nbsp;[1x1]&nbsp;1&nbsp;...&nbsp;(upper_bound&nbsp;-&nbsp;lower_bound)&nbsp;&lt;&nbsp;eps</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;...&nbsp;maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;tmax&nbsp;exceeded.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.upper_bound&nbsp;[1x1]&nbsp;Upper&nbsp;bound&nbsp;on&nbsp;the&nbsp;optimized&nbsp;criterion.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.lower_bound&nbsp;[1x1]&nbsp;Lower&nbsp;bound&nbsp;on&nbsp;the&nbsp;optimized&nbsp;criterion.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Data&nbsp;weights.&nbsp;The&nbsp;minimax&nbsp;estimate</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;equal&nbsp;to&nbsp;maximum-likelihood&nbsp;estimate&nbsp;of&nbsp;weighted&nbsp;data.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options&nbsp;[struct]&nbsp;Copy&nbsp;of&nbsp;used&nbsp;options.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;=&nbsp;[[0;0]&nbsp;[1;0]&nbsp;[0;1]];</span><br>
+<span class=help>%&nbsp;&nbsp;mm_model&nbsp;=&nbsp;mmgauss(X);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;ppatterns(X);</span><br>
+<span class=help>%&nbsp;&nbsp;pgauss(mm_model,&nbsp;struct('p',exp(mm_model.lower_bound')));</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;PDFGAUSS,&nbsp;MLCGMM,&nbsp;EMGMM.</span><br>
+<span class=help>%</span><br>
+<hr>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;26-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;30-apr-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;19-sep-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;27-feb-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;24.&nbsp;6.00&nbsp;V.&nbsp;Hlavac,&nbsp;comments&nbsp;polished.</span><br>
+<br>
+<hr>
+[dim,num_data]=size(X);<br>
+<br>
+<span class=comment>%&nbsp;processing&nbsp;input&nbsp;arguments</span><br>
+<span class=comment>%&nbsp;------------------------------------------</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;options=[];&nbsp;<span class=keyword>else</span>&nbsp;options&nbsp;=&nbsp;c2s(options);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'eps'</span>),&nbsp;options.eps&nbsp;=0.1;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'tmax'</span>),&nbsp;options.tmax&nbsp;=&nbsp;inf;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'verb'</span>),&nbsp;options.verb&nbsp;=&nbsp;0;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'cov_type'</span>),&nbsp;options.cov_type&nbsp;=&nbsp;<span class=quotes>'full'</span>;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;inicialization</span><br>
+<span class=comment>%---------------------------------</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;3,<br>
+&nbsp;&nbsp;model.Alpha&nbsp;=&nbsp;ones(1,num_data);&nbsp;&nbsp;<br>
+&nbsp;&nbsp;model.t&nbsp;=&nbsp;0;<br>
+&nbsp;&nbsp;model.fun&nbsp;=&nbsp;<span class=quotes>'pdfgauss'</span>;<br>
+&nbsp;&nbsp;model.options&nbsp;=&nbsp;options;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;model&nbsp;=&nbsp;init_model;<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isfield(init_model,<span class=quotes>'t'</span>),&nbsp;model.t&nbsp;=&nbsp;0;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;Main&nbsp;loop&nbsp;</span><br>
+<span class=comment>%&nbsp;----------------------------------------</span><br>
+stop&nbsp;=&nbsp;0;<br>
+<span class=keyword>while</span>&nbsp;~stop&nbsp;&&nbsp;options.tmax&nbsp;&gt;&nbsp;model.t,<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.verb,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'iteration&nbsp;%d:&nbsp;'</span>,&nbsp;model.t&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;compute&nbsp;ML&nbsp;estimate&nbsp;for&nbsp;given&nbsp;weights&nbsp;model.Alpha&nbsp;</span><br>
+&nbsp;&nbsp;&nbsp;tmp_model&nbsp;=&nbsp;melgmm(&nbsp;X,&nbsp;model.Alpha,&nbsp;options.cov_type);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;model.Mean&nbsp;=&nbsp;tmp_model.Mean;<br>
+&nbsp;&nbsp;&nbsp;model.Cov&nbsp;=&nbsp;tmp_model.Cov;<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;find&nbsp;a&nbsp;sample&nbsp;with&nbsp;the&nbsp;minimal&nbsp;probability</span><br>
+&nbsp;&nbsp;&nbsp;logPx&nbsp;=&nbsp;log(&nbsp;pdfgauss(X,&nbsp;model));<br>
+&nbsp;&nbsp;&nbsp;[minLogPx,min_inx]&nbsp;=&nbsp;min(&nbsp;logPx&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;compute&nbsp;upper&nbsp;bound&nbsp;and&nbsp;lower&nbsp;bound</span><br>
+&nbsp;&nbsp;&nbsp;model.upper_bound=sum(model.Alpha.*logPx)/sum(model.Alpha);<br>
+&nbsp;&nbsp;&nbsp;model.lower_bound=minLogPx;<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.verb,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'upper_bound=%f,&nbsp;lower_bound=%f\n'</span>,&nbsp;model.upper_bound,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.lower_bound&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;check&nbsp;stopping&nbsp;condition</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;model.upper_bound&nbsp;-&nbsp;model.lower_bound&nbsp;&lt;&nbsp;options.eps,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stop&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.exitflag&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;increase&nbsp;occurance&nbsp;of&nbsp;the&nbsp;'worst'&nbsp;sample&nbsp;by&nbsp;1</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.Alpha(min_inx)&nbsp;=&nbsp;model.Alpha(min_inx)&nbsp;+&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.t&nbsp;=&nbsp;model.t&nbsp;+&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.exitflag&nbsp;=&nbsp;0;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

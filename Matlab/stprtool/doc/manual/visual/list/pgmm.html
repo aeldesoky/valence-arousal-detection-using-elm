@@ -1,0 +1,156 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>pgmm.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>varargout&nbsp;</span>=&nbsp;<span class=defun_name>pgmm</span>(<span class=defun_in>&nbsp;model,&nbsp;options&nbsp;</span>)<br>
+<span class=h1>%&nbsp;PGMM&nbsp;Vizualizes&nbsp;Gaussian&nbsp;mixture&nbsp;model.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;pgmm(&nbsp;model&nbsp;);</span><br>
+<span class=help>%&nbsp;&nbsp;pgmm(&nbsp;model,&nbsp;options&nbsp;);</span><br>
+<span class=help>%&nbsp;&nbsp;h&nbsp;=&nbsp;pgmm(&nbsp;...&nbsp;);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;It&nbsp;vizualizes&nbsp;univariate&nbsp;(dim=1)&nbsp;or&nbsp;bivariate&nbsp;(dim=2)&nbsp;Gaussin&nbsp;mixture&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;(GMM).&nbsp;In&nbsp;the&nbsp;univariate&nbsp;case&nbsp;it&nbsp;also&nbsp;displays&nbsp;mixture&nbsp;components.&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;It&nbsp;returns&nbsp;handles&nbsp;of&nbsp;used&nbsp;graphics&nbsp;objects.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;In&nbsp;the&nbsp;case&nbsp;of&nbsp;bivariate&nbsp;GMM&nbsp;trhere&nbsp;are&nbsp;two&nbsp;options&nbsp;of&nbsp;visualization:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;countours&nbsp;of&nbsp;p.d.f.&nbsp;&nbsp;...&nbsp;options.visual&nbsp;=&nbsp;'contour'&nbsp;(default)</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;surface&nbsp;of&nbsp;p.d.f.&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;options.visual&nbsp;=&nbsp;'surf'</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model.Mean&nbsp;[dim&nbsp;x&nbsp;ncomp]&nbsp;Mean&nbsp;values.</span><br>
+<span class=help>%&nbsp;&nbsp;model.Cov&nbsp;[dim&nbsp;x&nbsp;ncomp]&nbsp;Covariances.</span><br>
+<span class=help>%&nbsp;&nbsp;model.Prior&nbsp;[dim&nbsp;x&nbsp;ncomp]&nbsp;Mixture&nbsp;weights.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;options.comp&nbsp;[1x1]&nbsp;If&nbsp;1&nbsp;(default)&nbsp;then&nbsp;it&nbsp;plots&nbsp;also&nbsp;mixture&nbsp;components.</span><br>
+<span class=help>%&nbsp;&nbsp;options.visual&nbsp;[string]&nbsp;If&nbsp;equal&nbsp;to&nbsp;'contour'&nbsp;then&nbsp;contour&nbsp;function&nbsp;is&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;used&nbsp;if&nbsp;'surf'&nbsp;then&nbsp;surf&nbsp;functions&nbsp;is&nbsp;used&nbsp;(see&nbsp;above).</span><br>
+<span class=help>%&nbsp;&nbsp;options.adj_axes&nbsp;[1x1]&nbsp;If&nbsp;1&nbsp;(default)&nbsp;then&nbsp;axes&nbsp;are&nbsp;set&nbsp;to&nbsp;display&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;whole&nbsp;mixture&nbsp;otherwise&nbsp;unchanged.</span><br>
+<span class=help>%&nbsp;&nbsp;options.color&nbsp;[string]&nbsp;Color&nbsp;of&nbsp;GMM&nbsp;plot&nbsp;in&nbsp;univariate&nbsp;case&nbsp;(default&nbsp;'b').</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;h&nbsp;[1&nbsp;x&nbsp;nobjects]&nbsp;Handles&nbsp;of&nbsp;used&nbsp;graphics&nbsp;object.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;Univariate&nbsp;case:</span><br>
+<span class=help>%&nbsp;&nbsp;model1&nbsp;=&nbsp;c2s({'Mean',[-3&nbsp;0&nbsp;3],'Cov',[0.5&nbsp;1&nbsp;0.8],'Prior',[0.4&nbsp;0.3&nbsp;0.3]});</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;pgmm(model1);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;Bivariate&nbsp;case:</span><br>
+<span class=help>%&nbsp;&nbsp;model2.Mean(:,1)&nbsp;=&nbsp;[-1;-1];&nbsp;model2.Cov(:,:,1)&nbsp;=&nbsp;[1,0.5;0.5,1];</span><br>
+<span class=help>%&nbsp;&nbsp;model2.Mean(:,2)&nbsp;=&nbsp;[1;1];&nbsp;model2.Cov(:,:,2)&nbsp;=&nbsp;[1,-0.5;-0.5,1];</span><br>
+<span class=help>%&nbsp;&nbsp;model2.Prior&nbsp;=&nbsp;[0.4&nbsp;0.6];</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;pgmm(model2);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;pgmm(model2,{'visual','surf'});</span><br>
+<span class=help>%</span><br>
+<hr>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;2-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;29-apr2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;8-mar-2004,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&gt;=&nbsp;2,&nbsp;options=c2s(options);&nbsp;<span class=keyword>else</span>&nbsp;options&nbsp;=&nbsp;[];&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'color'</span>),&nbsp;options.color&nbsp;=&nbsp;<span class=quotes>'b'</span>;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'comp_color'</span>),&nbsp;options.comp_color&nbsp;=&nbsp;options.color;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'comp'</span>),&nbsp;options.comp&nbsp;=&nbsp;1;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'adj_axes'</span>),&nbsp;options.adj_axes&nbsp;=&nbsp;1;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'visual'</span>),&nbsp;options.visual&nbsp;=&nbsp;<span class=quotes>'contour'</span>;&nbsp;<span class=keyword>end</span><br>
+<br>
+[dim,ncomp]&nbsp;=&nbsp;size(&nbsp;model.Mean);<br>
+a&nbsp;=&nbsp;<span class=graph>axis</span>;<br>
+old_hold&nbsp;=&nbsp;ishold;<br>
+hold&nbsp;on;<br>
+<br>
+<span class=comment>%&nbsp;univariate&nbsp;variances&nbsp;can&nbsp;be&nbsp;given&nbsp;as&nbsp;a&nbsp;vector</span><br>
+<span class=keyword>if</span>&nbsp;size(model.Cov,1)&nbsp;~=&nbsp;size(model.Cov,2),&nbsp;<br>
+&nbsp;&nbsp;model.Cov&nbsp;=&nbsp;reshape(model.Cov,1,1,ncomp);&nbsp;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;univariate&nbsp;case</span><br>
+<span class=keyword>if</span>&nbsp;dim&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;a&nbsp;=&nbsp;<span class=graph>axis</span>;<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.adj_axes&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;min_x&nbsp;=&nbsp;min(a(1),min(model.Mean)-sqrt(max(model.Cov))*3);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;max_x&nbsp;=&nbsp;max(a(2),max(model.Mean)+sqrt(max(model.Cov))*3);<br>
+&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;min_x&nbsp;=&nbsp;a(1);&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;max_x&nbsp;=&nbsp;a(2);<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;x&nbsp;=&nbsp;linspace(min_x,max_x,200);<br>
+<br>
+&nbsp;&nbsp;h&nbsp;=&nbsp;<span class=graph>plot</span>(x,&nbsp;pdfgmm(x,&nbsp;model),&nbsp;options.color&nbsp;);<br>
+<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.comp&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i=1:ncomp,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;length(options.comp_color)&nbsp;&lt;&nbsp;i,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comp_color&nbsp;=&nbsp;options.comp_color(1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comp_color&nbsp;=&nbsp;options.comp_color(i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h(i+1)&nbsp;=&nbsp;<span class=graph>plot</span>(x,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.Prior(i)*pdfgauss(x,&nbsp;model.Mean(:,i),model.Cov(:,:,i)),&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<span class=quotes>'--'</span>&nbsp;comp_color]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;bivariate&nbsp;case</span><br>
+<span class=keyword>elseif</span>&nbsp;dim&nbsp;==2,<br>
+<br>
+&nbsp;&nbsp;a&nbsp;=&nbsp;<span class=graph>axis</span>;<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.adj_axes&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tmp=[];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i=1:ncomp,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmp(i)&nbsp;=&nbsp;max(eig(model.Cov(:,:,i)));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;margin&nbsp;=&nbsp;sqrt(max(tmp))*3;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;min_x&nbsp;=&nbsp;min(a(1),min(model.Mean(1,:))-margin);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;max_x&nbsp;=&nbsp;max(a(2),max(model.Mean(1,:))+margin);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;min_y&nbsp;=&nbsp;min(a(3),min(model.Mean(2,:))-margin);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;max_y&nbsp;=&nbsp;max(a(4),max(model.Mean(2,:))+margin);<br>
+&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;min_x&nbsp;=&nbsp;a(1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;max_x&nbsp;=&nbsp;a(2);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;min_y&nbsp;=&nbsp;a(3);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;max_y&nbsp;=&nbsp;a(4);<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;[Ax,Ay]&nbsp;=&nbsp;meshgrid(linspace(min_x,max_x,50),&nbsp;linspace(min_y,max_y,50));<br>
+&nbsp;&nbsp;y&nbsp;=&nbsp;pdfgmm([Ax(:)<span class=quotes>';Ay(:)'</span>],model&nbsp;);<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>switch</span>&nbsp;options.visual<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=label>case</span>&nbsp;<span class=quotes>'contour'</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h&nbsp;=&nbsp;contour(&nbsp;Ax,&nbsp;Ay,&nbsp;reshape(y,50,50));&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=label>case</span>&nbsp;<span class=quotes>'surf'</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h&nbsp;=&nbsp;surf(&nbsp;Ax,&nbsp;Ay,&nbsp;reshape(y,50,50));&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;shading&nbsp;interp;<br>
+&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;<span class=error>error</span>(<span class=quotes>'GMM&nbsp;must&nbsp;be&nbsp;univariate&nbsp;or&nbsp;bivariate.'</span>);<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;return&nbsp;handles&nbsp;if&nbsp;required</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargout</span>&nbsp;&gt;&nbsp;0,&nbsp;<span class=stack>varargout</span>{1}&nbsp;=&nbsp;h;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;~old_hold,&nbsp;hold&nbsp;off;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

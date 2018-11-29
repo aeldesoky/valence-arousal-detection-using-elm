@@ -1,0 +1,44 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>fig2eps.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_name>fig2eps</span>(<span class=defun_in>fig</span>)<br>
+<span class=h1>%&nbsp;FIG2EPS&nbsp;Exports&nbsp;figure&nbsp;to&nbsp;EPS&nbsp;file.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;fig2eps(fig)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;invokes&nbsp;the&nbsp;standard&nbsp;save&nbsp;dialog&nbsp;to&nbsp;ask</span><br>
+<span class=help>%&nbsp;&nbsp;the&nbsp;user&nbsp;about&nbsp;the&nbsp;name&nbsp;to&nbsp;which&nbsp;the&nbsp;given&nbsp;figure&nbsp;should</span><br>
+<span class=help>%&nbsp;&nbsp;be&nbsp;exported&nbsp;in&nbsp;the&nbsp;Encapsulated&nbsp;PostScript&nbsp;(EPS)&nbsp;format.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;fig&nbsp;[1x1]&nbsp;Handle&nbsp;of&nbsp;a&nbsp;figure.</span><br>
+<span class=help>%</span><br>
+<hr>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;20-Feb-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+[filename,&nbsp;pathname]&nbsp;=&nbsp;uiputfile(<span class=quotes>'*.eps'</span>,&nbsp;<span class=quotes>'Save&nbsp;Figure&nbsp;to&nbsp;EPS'</span>);<br>
+<br>
+<span class=keyword>if</span>&nbsp;filename~=0,&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<br>
+&nbsp;&nbsp;&nbsp;file=strcat(pathname,filename);<br>
+&nbsp;&nbsp;&nbsp;<span class=eval>eval</span>(<span class=io>sprintf</span>(<span class=quotes>'print&nbsp;-depsc&nbsp;-noui&nbsp;-f%f&nbsp;%s'</span>,fig,file));<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

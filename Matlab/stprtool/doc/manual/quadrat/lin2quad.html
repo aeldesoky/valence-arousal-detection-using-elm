@@ -1,0 +1,46 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">LIN2QUAD</b>
+<td valign="baseline" align="right" class="function"><a href="../quadrat/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Merges linear rule and quadratic mapping.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;quad_model&nbsp;=&nbsp;lin2quad(lin_model)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;It&nbsp;recomputes&nbsp;parameters&nbsp;of&nbsp;input&nbsp;linear&nbsp;classifier</span><br>
+<span class=help>&nbsp;&nbsp;onto&nbsp;parameters&nbsp;of&nbsp;output&nbsp;quadratic&nbsp;classisifier.</span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;linear&nbsp;classifier&nbsp;is&nbsp;assumed&nbsp;to&nbsp;be&nbsp;trained&nbsp;on&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;the&nbsp;n-dimensional&nbsp;data&nbsp;quadraticaly&nbsp;mapped&nbsp;(see&nbsp;'help&nbsp;qmap')&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;into&nbsp;the&nbsp;(n*(n+3)/2)-dimensional&nbsp;feature&nbsp;space.&nbsp;The&nbsp;linear&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;classifier&nbsp;in&nbsp;the&nbsp;feature&nbsp;space&nbsp;appears&nbsp;as&nbsp;the&nbsp;quadratic&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;classifier&nbsp;in&nbsp;the&nbsp;original&nbsp;data&nbsp;space.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;orig_data&nbsp;=&nbsp;load('vltava');</span><br>
+<span class=help>&nbsp;&nbsp;map_data&nbsp;=&nbsp;qmap(orig_data);</span><br>
+<span class=help>&nbsp;&nbsp;lin_model&nbsp;=&nbsp;perceptron(map_data);</span><br>
+<span class=help>&nbsp;&nbsp;quad_model&nbsp;=&nbsp;lin2quad(lin_model);</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;ppatterns(orig_data);&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;pboundary(quad_model);</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;QUACLASS,&nbsp;<a href = "../quadrat/qmap.html" target="mdsbody">QMAP</a></span><br>
+<span class=help><span class=also></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../quadrat/list/lin2quad.html">lin2quad.m</a>
+  <p><b class="info_field">Modifications: </b> <br>
+ 09-jun-2004, VF<br>
+ 17-may-2004, VF<br>
+
+</body>
+</html>

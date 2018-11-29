@@ -1,0 +1,55 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>mahalan.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>dist&nbsp;</span>=&nbsp;<span class=defun_name>mahalan</span>(<span class=defun_in>X,Mean,Cov</span>)<br>
+<span class=h1>%&nbsp;MAHALAN&nbsp;Computes&nbsp;Mahalanobis&nbsp;distance.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;dist&nbsp;=&nbsp;mahalan(X,Mean,Cov)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;It&nbsp;computes&nbsp;Mahalanobis&nbsp;distance&nbsp;between&nbsp;column&nbsp;vectors&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;of&nbsp;matrix&nbsp;X&nbsp;and&nbsp;vector&nbsp;Mean&nbsp;with&nbsp;matrix&nbsp;Cov,&nbsp;i.e.,</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;dist(i)&nbsp;=&nbsp;(X(:,i)-Mean)'*inv(C)*(X(:,i)-Mean)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;for&nbsp;all&nbsp;i=1:size(X,2).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Input&nbsp;data.</span><br>
+<span class=help>%&nbsp;&nbsp;Mean&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Vector.</span><br>
+<span class=help>%&nbsp;&nbsp;Cov&nbsp;[dim&nbsp;x&nbsp;dim]&nbsp;Matrix.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;dist&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Mahalanobis&nbsp;distance.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;It&nbsp;plots&nbsp;isolines&nbsp;of&nbsp;Mahalanobis&nbsp;distance.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;[Ax,Ay]&nbsp;=&nbsp;meshgrid(linspace(-5,5,100),&nbsp;linspace(-5,5,100));</span><br>
+<span class=help>%&nbsp;&nbsp;dist&nbsp;=&nbsp;mahalan([Ax(:)';Ay(:)'],[0;0],[1&nbsp;0.5;&nbsp;0.5&nbsp;1]);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;contour(&nbsp;Ax,&nbsp;Ay,&nbsp;reshape(dist,100,100));</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;28-apr-2004,&nbsp;VF</span><br>
+<br>
+<hr>
+[dim,&nbsp;num_data]&nbsp;=&nbsp;size(&nbsp;X&nbsp;);<br>
+<br>
+XC&nbsp;=&nbsp;X&nbsp;-&nbsp;repmat(Mean,1,num_data);<br>
+dist=&nbsp;sum((XC<span class=quotes>'*inv(&nbsp;Cov&nbsp;).*XC'</span>)',1);<br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

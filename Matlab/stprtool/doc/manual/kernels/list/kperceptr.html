@@ -1,0 +1,145 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>kperceptr.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model&nbsp;</span>=&nbsp;<span class=defun_name>kperceptr</span>(<span class=defun_in>data,options</span>)<br>
+<span class=h1>%&nbsp;KPERCEPTR&nbsp;Kernel&nbsp;Perceptron.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;kperceptr(data)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;kperceptr(data,options)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;is&nbsp;an&nbsp;implementation&nbsp;of&nbsp;the&nbsp;kernel&nbsp;version</span><br>
+<span class=help>%&nbsp;&nbsp;of&nbsp;the&nbsp;Perceptron&nbsp;algorithm.&nbsp;The&nbsp;kernel&nbsp;perceptron&nbsp;search&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;for&nbsp;the&nbsp;kernel&nbsp;binary&nbsp;classifier&nbsp;with&nbsp;zero&nbsp;emprical&nbsp;error.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Binary&nbsp;labeled&nbsp;training&nbsp;data:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Control&nbsp;parameters:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.ker&nbsp;[string]&nbsp;Kernel&nbsp;identifier&nbsp;(default&nbsp;'linear').</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;See&nbsp;'help&nbsp;kernel'&nbsp;for&nbsp;more&nbsp;info.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.arg&nbsp;[1&nbsp;x&nbsp;nargs]&nbsp;Kernel&nbsp;argument.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;(default&nbsp;inf).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Found&nbsp;kernel&nbsp;classifer:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;1]&nbsp;Multipliers&nbsp;of&nbsp;the&nbsp;training&nbsp;data.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;the&nbsp;decision&nbsp;rule.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;nsv]&nbsp;Training&nbsp;data&nbsp;with&nbsp;non-zero&nbsp;Alphas.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.exitflag&nbsp;[1x1]&nbsp;1&nbsp;...&nbsp;Perceptron&nbsp;has&nbsp;converged.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;...&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;exceeded.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.iter&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.kercnt&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;kernel&nbsp;evaluations.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.trnerr&nbsp;[1x1]&nbsp;Training&nbsp;classification&nbsp;error;&nbsp;Note:&nbsp;if&nbsp;exitflag==1&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;then&nbsp;trnerr&nbsp;=&nbsp;0.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options&nbsp;[struct]&nbsp;Copy&nbsp;of&nbsp;options.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.cputime&nbsp;[real]&nbsp;Used&nbsp;cputime&nbsp;in&nbsp;seconds.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;If&nbsp;the&nbsp;linear&nbsp;kernel&nbsp;is&nbsp;used&nbsp;then&nbsp;model.W&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;contains&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;normal&nbsp;vector&nbsp;of&nbsp;the&nbsp;separating&nbsp;hyperplane.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;=&nbsp;load('vltava');</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;kperceptr(data,&nbsp;struct('ker','poly','arg',2));</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;ppatterns(data);&nbsp;pboundary(model);</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;SVMCLASS,&nbsp;SVM.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span>&nbsp;</span><br>
+<span class=help1>%&nbsp;10-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;18-July-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;21-Nov-2001,&nbsp;V.&nbsp;Franc</span><br>
+<br>
+<hr>
+tic;<br>
+<br>
+<span class=comment>%&nbsp;process&nbsp;inputs</span><br>
+<span class=comment>%=======================================</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;options=[];&nbsp;<span class=keyword>else</span>&nbsp;options=c2s(options);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(&nbsp;options,&nbsp;<span class=quotes>'ker'</span>),&nbsp;options.ker&nbsp;=&nbsp;<span class=quotes>'linear'</span>;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(&nbsp;options,&nbsp;<span class=quotes>'arg'</span>),&nbsp;options.arg&nbsp;=&nbsp;1;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(&nbsp;options,&nbsp;<span class=quotes>'tmax'</span>),&nbsp;options.tmax&nbsp;=&nbsp;inf;&nbsp;<span class=keyword>end</span><br>
+<br>
+[dim,&nbsp;num_data&nbsp;]&nbsp;=&nbsp;size(&nbsp;data.X&nbsp;);<br>
+<br>
+<span class=comment>%&nbsp;change&nbsp;{1,2}&nbsp;--&gt;&nbsp;{1,-1}</span><br>
+y&nbsp;=&nbsp;data.y;<br>
+y(find(y==2))&nbsp;=&nbsp;-1;<br>
+<br>
+<span class=comment>%&nbsp;inicialize&nbsp;multiliers&nbsp;Alpha&nbsp;and&nbsp;bias</span><br>
+<span class=comment>%&nbsp;=========================================</span><br>
+Alpha&nbsp;=&nbsp;zeros(&nbsp;num_data,1&nbsp;);<br>
+dfce&nbsp;=&nbsp;zeros(num_data,1);&nbsp;&nbsp;<span class=comment>%&nbsp;cache&nbsp;for&nbsp;f(x_i)=&lt;Phi(x_i),w&gt;+b</span><br>
+b&nbsp;=&nbsp;0;<br>
+exitflag&nbsp;=&nbsp;0;<br>
+iter&nbsp;=&nbsp;0;<br>
+kercnt&nbsp;=&nbsp;0;<br>
+<br>
+<span class=comment>%&nbsp;Main&nbsp;loop</span><br>
+<span class=comment>%====================================</span><br>
+<span class=keyword>while</span>&nbsp;iter&nbsp;&lt;&nbsp;options.tmax&nbsp;&&nbsp;exitflag&nbsp;==&nbsp;0,<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;iter&nbsp;=&nbsp;iter&nbsp;+&nbsp;1;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;[min_dfce,&nbsp;inx&nbsp;]&nbsp;=&nbsp;min(&nbsp;dfce.*y(:)&nbsp;);<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;min_dfce&nbsp;&lt;=0&nbsp;,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Perceptron&nbsp;rule&nbsp;in&nbsp;terms&nbsp;of&nbsp;dot&nbsp;products</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;old_alpha&nbsp;=&nbsp;Alpha(inx);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;old_b&nbsp;=&nbsp;b;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Alpha(inx)&nbsp;=&nbsp;old_alpha&nbsp;+&nbsp;y(inx);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;b&nbsp;=&nbsp;old_b&nbsp;+&nbsp;y(inx);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Updates&nbsp;cache</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;k_inx&nbsp;=&nbsp;kernel(data.X,data.X(:,inx),&nbsp;options.ker,&nbsp;options.arg&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;kercnt&nbsp;=&nbsp;kercnt&nbsp;+&nbsp;num_data;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dfce&nbsp;=&nbsp;dfce&nbsp;+&nbsp;(Alpha(inx)-old_alpha)*k_inx&nbsp;+&nbsp;b&nbsp;-&nbsp;old_b;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;exitflag&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;scales&nbsp;f(x)&nbsp;such&nbsp;that&nbsp;f(x)=1&nbsp;for&nbsp;the&nbsp;patterns&nbsp;closest&nbsp;to</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;the&nbsp;separating&nbsp;hyperplane</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;Alpha&nbsp;=&nbsp;Alpha/min_dfce;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;b&nbsp;=&nbsp;b/min_dfce;<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;fill&nbsp;up&nbsp;structure&nbsp;model</span><br>
+<span class=comment>%=================================</span><br>
+inx&nbsp;=&nbsp;find(&nbsp;Alpha&nbsp;~=&nbsp;0);<br>
+Alpha&nbsp;=&nbsp;Alpha(inx);<br>
+<br>
+model.Alpha&nbsp;=&nbsp;Alpha(:);<br>
+model.b&nbsp;=&nbsp;b;<br>
+model.sv.X&nbsp;=&nbsp;data.X(:,inx);<br>
+model.sv.y&nbsp;=&nbsp;data.y(inx);<br>
+model.sv.inx&nbsp;=&nbsp;inx;<br>
+model.nsv&nbsp;=&nbsp;length(&nbsp;inx);<br>
+model.options&nbsp;=&nbsp;options;<br>
+model.iter&nbsp;=&nbsp;iter;<br>
+model.kercnt&nbsp;=&nbsp;kercnt;<br>
+model.trnerr&nbsp;=&nbsp;length(&nbsp;find(dfce.*y(:)&nbsp;&lt;&nbsp;0))/num_data;<br>
+model.exitflag&nbsp;=&nbsp;exitflag;<br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'svmclass'</span>;<br>
+<br>
+<span class=keyword>if</span>&nbsp;strcmpi(<span class=quotes>'linear'</span>,options.ker),<br>
+&nbsp;&nbsp;model.W&nbsp;=&nbsp;model.sv.X&nbsp;*&nbsp;model.Alpha;<br>
+<span class=keyword>end</span><br>
+<br>
+model.cputime&nbsp;=&nbsp;toc;<br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

@@ -1,0 +1,263 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>evalsvm.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[best_model,Errors]&nbsp;</span>=&nbsp;<span class=defun_name>evalsvm</span>(<span class=defun_in>arg1,arg2,arg3</span>)<br>
+<span class=h1>%&nbsp;EVALSVM&nbsp;Trains&nbsp;and&nbsp;evaluates&nbsp;Support&nbsp;Vector&nbsp;Machines&nbsp;classifier.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;[model,Errors]&nbsp;=&nbsp;evalsvm(data,options)</span><br>
+<span class=help>%&nbsp;&nbsp;[model,Errors]&nbsp;=&nbsp;evalsvm(trn_data,val_data,options)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;[model,Errors]&nbsp;=&nbsp;evalsvm(data,options)&nbsp;uses&nbsp;cross-validation</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;assess&nbsp;SVM&nbsp;classifiers&nbsp;with&nbsp;given&nbsp;kernel&nbsp;arguments&nbsp;and&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;regularization&nbsp;constants.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;kernel&nbsp;type&nbsp;is&nbsp;given&nbsp;in&nbsp;options.ker&nbsp;(see&nbsp;'help&nbsp;kernel').</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;SVM&nbsp;solver&nbsp;to&nbsp;be&nbsp;used&nbsp;is&nbsp;specified&nbsp;by&nbsp;field&nbsp;options.solver&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;(default&nbsp;'smo').&nbsp;Both&nbsp;binary&nbsp;and&nbsp;multi-class&nbsp;SVM&nbsp;solvers&nbsp;are&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;allowed.&nbsp;The&nbsp;input&nbsp;data&nbsp;have&nbsp;the&nbsp;following&nbsp;format:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;used&nbsp;with&nbsp;regards&nbsp;to&nbsp;the&nbsp;number&nbsp;of&nbsp;labels&nbsp;of&nbsp;training&nbsp;data&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;...&nbsp;training&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;...&nbsp;labels.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;set&nbsp;of&nbsp;SVM&nbsp;parameters&nbsp;to&nbsp;be&nbsp;evaluated&nbsp;are&nbsp;specified&nbsp;in:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options.arg&nbsp;[dimarg&nbsp;x&nbsp;nargs]&nbsp;...&nbsp;enumeration&nbsp;of&nbsp;&nbsp;kernel&nbsp;arguments;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dimarg&nbsp;determins&nbsp;number&nbsp;of&nbsp;kernel&nbsp;argumens&nbsp;(e.g.,&nbsp;dimarg&nbsp;=&nbsp;1&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;'rbf'&nbsp;kernel&nbsp;and&nbsp;dimarg&nbsp;=&nbsp;2&nbsp;for&nbsp;'sigmoid').</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options.C&nbsp;[1&nbsp;x&nbsp;nc]&nbsp;...&nbsp;enumeration&nbsp;of&nbsp;regularization&nbsp;constants.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;Some&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;the&nbsp;selected&nbsp;SVM&nbsp;solver&nbsp;can&nbsp;be</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;specified&nbsp;in&nbsp;the&nbsp;field&nbsp;options.solver_options.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;Each&nbsp;configuration&nbsp;of&nbsp;SVM&nbsp;paramaters&nbsp;is&nbsp;evaluated&nbsp;using&nbsp;the</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;cross-validation.&nbsp;The&nbsp;number&nbsp;of&nbsp;folds&nbsp;is&nbsp;given&nbsp;in&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;optios.num_folds&nbsp;(default&nbsp;5).&nbsp;The&nbsp;trained&nbsp;SVM&nbsp;model&nbsp;with&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;smallest&nbsp;cross-validation&nbsp;error&nbsp;is&nbsp;returned.&nbsp;The&nbsp;computed</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;cross-validation&nbsp;errors&nbsp;with&nbsp;respect&nbsp;to&nbsp;SVM&nbsp;parametes&nbsp;are&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;returned&nbsp;in&nbsp;Errors&nbsp;[nc&nbsp;x&nbsp;nargs].</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;progress&nbsp;info&nbsp;is&nbsp;displayed&nbsp;if&nbsp;options.verb&nbsp;is&nbsp;set&nbsp;to&nbsp;1</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;(default&nbsp;0).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;[model,Errors]&nbsp;=&nbsp;evalsvm(trn_data,val_data,options)&nbsp;each</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;SVM&nbsp;is&nbsp;trained&nbsp;on&nbsp;the&nbsp;trn_data&nbsp;and&nbsp;evaluated&nbsp;on&nbsp;the&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;validation&nbsp;val_data&nbsp;instead&nbsp;of&nbsp;using&nbsp;cross-validation.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;trn&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>%&nbsp;&nbsp;tst&nbsp;=&nbsp;load('riply_tst');</span><br>
+<span class=help>%&nbsp;&nbsp;options.ker&nbsp;=&nbsp;'rbf';</span><br>
+<span class=help>%&nbsp;&nbsp;options.arg&nbsp;=&nbsp;[0.1&nbsp;0.5&nbsp;1&nbsp;5];</span><br>
+<span class=help>%&nbsp;&nbsp;options.C&nbsp;=&nbsp;[1&nbsp;10&nbsp;100];</span><br>
+<span class=help>%&nbsp;&nbsp;options.solver&nbsp;=&nbsp;'smo';</span><br>
+<span class=help>%&nbsp;&nbsp;options.num_folds&nbsp;=&nbsp;5;</span><br>
+<span class=help>%&nbsp;&nbsp;options.verb&nbsp;=&nbsp;1;</span><br>
+<span class=help>%&nbsp;&nbsp;[model,Errors]&nbsp;=&nbsp;evalsvm(trn,options);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;mesh(options.arg,options.C,Errors);</span><br>
+<span class=help>%&nbsp;&nbsp;hold&nbsp;on;&nbsp;xlabel('arg');&nbsp;ylabel('C');</span><br>
+<span class=help>%&nbsp;&nbsp;ypred&nbsp;=&nbsp;svmclass(tst.X,model);</span><br>
+<span class=help>%&nbsp;&nbsp;cerror(ypred,tst.y)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also:&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;SMO,&nbsp;SVMLIGHT,&nbsp;SVMCLASS.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;17-sep-2004,&nbsp;VF,&nbsp;Help&nbsp;improved.&nbsp;Info&nbsp;about&nbsp;training&nbsp;stage&nbsp;added.</span><br>
+<span class=help1>%&nbsp;18-aug-2004,&nbsp;VF,&nbsp;svm_options&nbsp;changed&nbsp;to&nbsp;solver_options</span><br>
+<span class=help1>%&nbsp;4-june-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;3-jun-2004,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;==&nbsp;2,<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;evaluation&nbsp;by&nbsp;cross-validation</span><br>
+&nbsp;&nbsp;<span class=comment>%=================================================================</span><br>
+&nbsp;&nbsp;options&nbsp;=&nbsp;c2s(arg2);<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'verb'</span>),&nbsp;options.verb&nbsp;=&nbsp;0;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'solver'</span>),&nbsp;options.solver&nbsp;=&nbsp;<span class=quotes>'smo'</span>;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'ker'</span>),&nbsp;options.ker&nbsp;=&nbsp;<span class=quotes>'linear'</span>;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'num_folds'</span>),&nbsp;options.num_folds&nbsp;=&nbsp;5;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'solver_options'</span>),&nbsp;options.solver_options&nbsp;=&nbsp;[];&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;nargs&nbsp;=&nbsp;size(options.arg,2);<br>
+&nbsp;&nbsp;nc&nbsp;=&nbsp;length(options.C);<br>
+&nbsp;&nbsp;[dim,num_data]&nbsp;=&nbsp;size(arg1.X);<br>
+<br>
+&nbsp;&nbsp;solver_options&nbsp;=&nbsp;options.solver_options;<br>
+&nbsp;&nbsp;solver_options.ker&nbsp;=&nbsp;options.ker;<br>
+&nbsp;&nbsp;min_error&nbsp;=&nbsp;inf;<br>
+&nbsp;&nbsp;Errors&nbsp;=&nbsp;[];<br>
+&nbsp;&nbsp;cnt_model&nbsp;=&nbsp;0;<br>
+&nbsp;&nbsp;num_model&nbsp;=&nbsp;nc*nargs;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;data&nbsp;partitioning</span><br>
+&nbsp;&nbsp;[itrn,itst]&nbsp;=&nbsp;crossval(num_data,options.num_folds);<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i&nbsp;=&nbsp;1:nargs,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;arg&nbsp;=&nbsp;options.arg(:,i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;j&nbsp;=&nbsp;1:nc,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cnt_model&nbsp;=&nbsp;cnt_model&nbsp;+&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C&nbsp;=&nbsp;options.C(j);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;svm&nbsp;parameters</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;solver_options.C&nbsp;=&nbsp;C;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;solver_options.arg&nbsp;=&nbsp;arg;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;display&nbsp;info</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.verb&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'Model&nbsp;%d/%d:&nbsp;ker=%s,&nbsp;C=%f,&nbsp;arg='</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cnt_model,&nbsp;num_model,solver_options.ker,&nbsp;C);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'%f&nbsp;'</span>,&nbsp;arg);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'\n'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fold_error&nbsp;=&nbsp;zeros(options.num_folds,1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;k=1:options.num_folds,<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.verb&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'fold&nbsp;%d/%d:&nbsp;#trn/tst&nbsp;=&nbsp;%d/%d,&nbsp;training'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k,&nbsp;options.num_folds,&nbsp;length(itrn{k}),&nbsp;length(itst{k}));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;trn.X&nbsp;=&nbsp;arg1.X(:,itrn{k});<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;trn.y&nbsp;=&nbsp;arg1.y(:,itrn{k});<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tst.X&nbsp;=&nbsp;arg1.X(:,itst{k});<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tst.y&nbsp;=&nbsp;arg1.y(:,itst{k});<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;run&nbsp;solver</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model&nbsp;=&nbsp;<span class=eval>feval</span>(&nbsp;options.solver,&nbsp;trn,&nbsp;solver_options&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.verb&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ypred&nbsp;=&nbsp;<span class=eval>feval</span>(&nbsp;model.fun,&nbsp;trn.X,&nbsp;model&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'&nbsp;err&nbsp;=&nbsp;%.4f,&nbsp;testing'</span>,&nbsp;cerror(&nbsp;ypred,trn.y));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;classify&nbsp;validation&nbsp;data</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ypred&nbsp;=&nbsp;<span class=eval>feval</span>(&nbsp;model.fun,&nbsp;tst.X,&nbsp;model&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fold_error(k)&nbsp;=&nbsp;cerror(&nbsp;ypred,&nbsp;tst.y&nbsp;);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.verb&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'&nbsp;err&nbsp;=&nbsp;%.4f\n'</span>,&nbsp;fold_error(k));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;cross-validation&nbsp;error</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;err&nbsp;=&nbsp;mean(&nbsp;fold_error&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Errors(j,i)&nbsp;=&nbsp;&nbsp;err;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;min_error&nbsp;&gt;&nbsp;err,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;min_error&nbsp;=&nbsp;err;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;best_model&nbsp;=&nbsp;model;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.verb&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'cross-validation&nbsp;error&nbsp;=&nbsp;%.4f&nbsp;(best&nbsp;so&nbsp;far)\n\n'</span>,&nbsp;err);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.verb&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'cross-validation&nbsp;error&nbsp;=&nbsp;%.4f\n\n'</span>,&nbsp;err);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;disp&nbsp;info</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.verb&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'best&nbsp;model:&nbsp;ker=%s,&nbsp;C=%f,&nbsp;arg='</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;best_model.options.ker,&nbsp;best_model.options.C);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'%f&nbsp;'</span>,&nbsp;best_model.options.arg);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'\ncross-validation&nbsp;error&nbsp;=&nbsp;%.4f\n'</span>,&nbsp;min_error);<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+<span class=keyword>elseif</span>&nbsp;<span class=stack>nargin</span>&nbsp;==&nbsp;3,&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;evaluation&nbsp;using&nbsp;val_data</span><br>
+&nbsp;&nbsp;<span class=comment>%=================================================================&nbsp;&nbsp;</span><br>
+&nbsp;&nbsp;options&nbsp;=&nbsp;c2s(arg3);<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'verb'</span>),&nbsp;options.verb&nbsp;=&nbsp;0;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'ker'</span>),&nbsp;options.ker&nbsp;=&nbsp;<span class=quotes>'linear'</span>;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'solver'</span>),&nbsp;options.solver&nbsp;=&nbsp;<span class=quotes>'smo'</span>;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'solver_options'</span>),&nbsp;options.solver_options&nbsp;=&nbsp;[];&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;nargs&nbsp;=&nbsp;size(options.arg,2);<br>
+&nbsp;&nbsp;nc&nbsp;=&nbsp;length(options.C);<br>
+&nbsp;&nbsp;[dim,num_data]&nbsp;=&nbsp;size(arg1.X);<br>
+<br>
+&nbsp;&nbsp;solver_options&nbsp;=&nbsp;options.solver_options;<br>
+&nbsp;&nbsp;solver_options.ker&nbsp;=&nbsp;options.ker;<br>
+&nbsp;&nbsp;min_error&nbsp;=&nbsp;inf;<br>
+&nbsp;&nbsp;Errors&nbsp;=&nbsp;[];<br>
+&nbsp;&nbsp;cnt_model&nbsp;=&nbsp;0;<br>
+&nbsp;&nbsp;num_model&nbsp;=&nbsp;nc*nargs;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i&nbsp;=&nbsp;1:nargs,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;arg&nbsp;=&nbsp;options.arg(:,i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;j&nbsp;=&nbsp;1:nc,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cnt_model&nbsp;=&nbsp;cnt_model&nbsp;+&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C&nbsp;=&nbsp;options.C(j);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;svm&nbsp;parameters</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;solver_options.C&nbsp;=&nbsp;C;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;solver_options.arg&nbsp;=&nbsp;arg;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;display&nbsp;info</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.verb&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'Model&nbsp;%d/%d:&nbsp;ker=%s,&nbsp;C=%f,&nbsp;arg='</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cnt_model,&nbsp;num_model,solver_options.ker,&nbsp;C);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'%f&nbsp;'</span>,&nbsp;arg);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'\n'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.verb&nbsp;==&nbsp;1,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'#trn/tst&nbsp;=&nbsp;%d/%d,&nbsp;training'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;length(arg1.y),&nbsp;length(arg2.y));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;run&nbsp;SVM&nbsp;solver</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model&nbsp;=&nbsp;<span class=eval>feval</span>(&nbsp;options.solver,&nbsp;arg1,&nbsp;solver_options&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.verb&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ypred&nbsp;=&nbsp;<span class=eval>feval</span>(&nbsp;model.fun,&nbsp;arg1.X,&nbsp;model&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'&nbsp;err&nbsp;=&nbsp;%.4f,&nbsp;testing'</span>,&nbsp;cerror(&nbsp;ypred,arg1.y));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;classify&nbsp;validation&nbsp;data</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ypred&nbsp;=&nbsp;<span class=eval>feval</span>(&nbsp;model.fun,&nbsp;arg2.X,&nbsp;model&nbsp;);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;err&nbsp;=&nbsp;cerror(ypred,arg2.y);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Errors(j,i)&nbsp;=&nbsp;&nbsp;err;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;min_error&nbsp;&gt;&nbsp;err,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;min_error&nbsp;=&nbsp;err;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;best_model&nbsp;=&nbsp;model;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.verb&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'&nbsp;err&nbsp;=&nbsp;%.4f&nbsp;(best&nbsp;so&nbsp;far)\n\n'</span>,&nbsp;err);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.verb&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'&nbsp;err&nbsp;=&nbsp;%.4f\n\n'</span>,&nbsp;err);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;disp&nbsp;info</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.verb&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'best&nbsp;model:&nbsp;ker=%s,&nbsp;C=%f,&nbsp;arg='</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;best_model.options.ker,&nbsp;best_model.options.C);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'%f&nbsp;'</span>,&nbsp;best_model.options.arg);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'\ntesting&nbsp;error&nbsp;=&nbsp;%.4f\n'</span>,&nbsp;min_error);<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%EOF</span><br>
+</code>

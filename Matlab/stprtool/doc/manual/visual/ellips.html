@@ -1,0 +1,59 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">ELLIPS</b>
+<td valign="baseline" align="right" class="function"><a href="../visual/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Creates ellipse.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;[X,Y]&nbsp;=&nbsp;ellips(Center,Shape,radius,n)</span><br>
+<span class=help>&nbsp;&nbsp;[X,Y,Z]&nbsp;=&nbsp;ellips(Center,Shape,radius,n)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;function&nbsp;interpolates&nbsp;ellipse&nbsp;by&nbsp;lines&nbsp;in&nbsp;2d&nbsp;space</span><br>
+<span class=help>&nbsp;&nbsp;or&nbsp;by&nbsp;patches&nbsp;in&nbsp;3d&nbsp;space&nbsp;respectivelly.&nbsp;The&nbsp;ellipsoid&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;is&nbsp;described&nbsp;as</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;radius^2=(x-Center)'*Shape*(x-Center).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;number&nbsp;of&nbsp;lines&nbsp;used&nbsp;for&nbsp;interpolation&nbsp;is&nbsp;given</span><br>
+<span class=help>&nbsp;&nbsp;by&nbsp;argument&nbsp;n&nbsp;in&nbsp;2d&nbsp;case.&nbsp;In&nbsp;3d&nbsp;case&nbsp;the&nbsp;argument</span><br>
+<span class=help>&nbsp;&nbsp;n&nbsp;has&nbsp;the&nbsp;same&nbsp;meaning&nbsp;in&nbsp;the&nbsp;Matlab&nbsp;function&nbsp;sphere(n).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;Center&nbsp;[2x1]&nbsp;or&nbsp;[3x1]&nbsp;Center&nbsp;of&nbsp;the&nbsp;ellipse.</span><br>
+<span class=help>&nbsp;&nbsp;Shape&nbsp;[2x2]&nbsp;or&nbsp;[3x3]&nbsp;Shape&nbsp;of&nbsp;the&nbsp;ellipse.</span><br>
+<span class=help>&nbsp;&nbsp;n&nbsp;[1x1]&nbsp;Density&nbsp;of&nbsp;interpolation&nbsp;(default&nbsp;20).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;2d&nbsp;ellipse</span><br>
+<span class=help>&nbsp;&nbsp;[x,y]&nbsp;=&nbsp;ellips([1;1],[1&nbsp;0.5;0.5&nbsp;1],1);</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;plot(x,y);</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;3d&nbsp;ellipsoid</span><br>
+<span class=help>&nbsp;&nbsp;[x,y,z]&nbsp;=&nbsp;ellips([1;1;1],[1&nbsp;0&nbsp;0;0&nbsp;2&nbsp;0;&nbsp;0&nbsp;0&nbsp;3],1);</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;mesh(x,y,z);</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../visual/list/ellips.html">ellips.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox                                <br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac                     <br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a>            <br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a>       <br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a>           <br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 30-apr-2004, VF<br>
+ 13-Feb-2003, VF<br>
+ 24-6-2000 V. Hlavac, comments polished.<br>
+
+</body>
+</html>

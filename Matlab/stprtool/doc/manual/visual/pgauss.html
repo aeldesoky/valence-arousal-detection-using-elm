@@ -1,0 +1,72 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">PGAUSS</b>
+<td valign="baseline" align="right" class="function"><a href="../visual/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Vizualizes set of bivariate Gaussians.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;pgauss(model)</span><br>
+<span class=help>&nbsp;&nbsp;pgauss(model,options)</span><br>
+<span class=help>&nbsp;&nbsp;h&nbsp;=&nbsp;pgauss(...)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;pgauss(model)&nbsp;visualizes&nbsp;a&nbsp;set&nbsp;of&nbsp;bivariate&nbsp;Gaussians&nbsp;as</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;isolines&nbsp;(ellipse)&nbsp;with&nbsp;equal&nbsp;probability&nbsp;density&nbsp;functions.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;The&nbsp;Gaussians&nbsp;are&nbsp;given&nbsp;by&nbsp;mean&nbsp;vectors&nbsp;model.Mean&nbsp;[2xncomp]</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;and&nbsp;covariance&nbsp;matrices&nbsp;model.Cov&nbsp;[2x2xncomp].&nbsp;If&nbsp;labels</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;model.y&nbsp;[1xncomp]&nbsp;are&nbsp;given&nbsp;then&nbsp;the&nbsp;Gaussians&nbsp;are&nbsp;distinguished</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;by&nbsp;colors&nbsp;correspoding&nbsp;to&nbsp;labels.</span><br>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;pgauss(model,options)&nbsp;structure&nbsp;options&nbsp;controls&nbsp;visualization;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;If&nbsp;options.fill&nbsp;equals&nbsp;1&nbsp;then&nbsp;Ellipses&nbsp;are&nbsp;filled&nbsp;otherwise&nbsp;only</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;contours&nbsp;are&nbsp;plotted.&nbsp;The&nbsp;isolines&nbsp;to&nbsp;be&nbsp;drawn&nbsp;are&nbsp;given&nbsp;by&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;values&nbsp;of&nbsp;probability&nbsp;distribution&nbsp;function&nbsp;in&nbsp;field&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;options.p&nbsp;[1xncomp].&nbsp;If&nbsp;length(option.p)==1&nbsp;then&nbsp;isolines&nbsp;for</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;all&nbsp;Gaussians&nbsp;are&nbsp;drawn&nbsp;for&nbsp;the&nbsp;same&nbsp;value.</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;h&nbsp;=&nbsp;pgauss(...)&nbsp;returns&nbsp;handles&nbsp;of&nbsp;used&nbsp;graphics&nbsp;objects.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Parameters&nbsp;of&nbsp;Gaussian&nbsp;distributions:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Mean&nbsp;[2&nbsp;x&nbsp;ncomp]&nbsp;Mean&nbsp;vectors&nbsp;of&nbsp;ncomp&nbsp;Gaussians.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Cov&nbsp;[2&nbsp;x&nbsp;2&nbsp;x&nbsp;ncomp]&nbsp;Covariance&nbsp;matrices.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;ncomp]&nbsp;(optional)&nbsp;Labels&nbsp;of&nbsp;Gaussians&nbsp;used&nbsp;to&nbsp;distingush&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;them&nbsp;by&nbsp;colors.&nbsp;If&nbsp;y&nbsp;is&nbsp;not&nbsp;given&nbsp;then&nbsp;y&nbsp;=&nbsp;1:ncomp&nbsp;is&nbsp;used.</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;options.p&nbsp;[1&nbsp;x&nbsp;ncomp]&nbsp;Value&nbsp;of&nbsp;p.d.f&nbsp;on&nbsp;the&nbsp;draw&nbsp;isolines.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;If&nbsp;not&nbsp;given&nbsp;then&nbsp;p&nbsp;is&nbsp;computed&nbsp;to&nbsp;make&nbsp;non-overlapping&nbsp;isolines.</span><br>
+<span class=help>&nbsp;&nbsp;options.fill&nbsp;[int]&nbsp;If&nbsp;1&nbsp;then&nbsp;ellipses&nbsp;are&nbsp;filled&nbsp;(default&nbsp;0).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;h&nbsp;[1&nbsp;x&nbsp;nobjects]&nbsp;Handles&nbsp;of&nbsp;used&nbsp;graphics&nbsp;objects.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;mlcgmm(&nbsp;data&nbsp;);</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;hold&nbsp;on;</span><br>
+<span class=help>&nbsp;&nbsp;ppatterns(data);</span><br>
+<span class=help>&nbsp;&nbsp;pgauss(&nbsp;model&nbsp;);</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../visual/list/pgauss.html">pgauss.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 23-aug-2004, VF, uses model.y to color plots in 1D case<br>
+ 30-apr-2004, VF<br>
+
+</body>
+</html>

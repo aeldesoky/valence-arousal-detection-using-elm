@@ -1,0 +1,103 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>bayescls.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[y,&nbsp;dfce]&nbsp;</span>=&nbsp;<span class=defun_name>bayescls</span>(<span class=defun_in>&nbsp;X,&nbsp;model&nbsp;</span>)<br>
+<span class=h1>%&nbsp;BAYESCLS&nbsp;Bayesian&nbsp;classifier&nbsp;with&nbsp;reject&nbsp;option.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;[y,&nbsp;dfce]&nbsp;=&nbsp;bayescls(X,model)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;implements&nbsp;the&nbsp;classifier&nbsp;minimizing&nbsp;the&nbsp;Bayesian&nbsp;risk&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;with&nbsp;0/1-loss&nbsp;function.&nbsp;It&nbsp;corresponds&nbsp;to&nbsp;the&nbsp;minimization&nbsp;of&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;probability&nbsp;of&nbsp;misclassification.&nbsp;The&nbsp;input&nbsp;vectors&nbsp;X&nbsp;are&nbsp;classified&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;into&nbsp;classes&nbsp;with&nbsp;the&nbsp;highest&nbsp;a&nbsp;posterior&nbsp;probabilities&nbsp;computed&nbsp;from&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;given&nbsp;model.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;model&nbsp;contains&nbsp;parameters&nbsp;of&nbsp;conditional&nbsp;class&nbsp;probabilities</span><br>
+<span class=help>%&nbsp;&nbsp;in&nbsp;model.Pclass&nbsp;[cell&nbsp;1&nbsp;x&nbsp;num_classes]&nbsp;and&nbsp;a&nbsp;priory&nbsp;probabilities</span><br>
+<span class=help>%&nbsp;&nbsp;in&nbsp;model.Prior&nbsp;[1&nbsp;x&nbsp;num_classes].&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;function</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;p&nbsp;=&nbsp;feval(model.Pclass{i}.fun,&nbsp;X,&nbsp;model.pclass{i})</span><br>
+<span class=help>%&nbsp;&nbsp;is&nbsp;called&nbsp;to&nbsp;evaluate&nbsp;the&nbsp;i-the&nbsp;class&nbsp;conditional&nbsp;probability&nbsp;of&nbsp;X.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;It&nbsp;returns&nbsp;class&nbsp;labels&nbsp;y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;for&nbsp;each&nbsp;input&nbsp;vector</span><br>
+<span class=help>%&nbsp;&nbsp;and&nbsp;matrix&nbsp;dfce&nbsp;[num_class&nbsp;x&nbsp;num_data]&nbsp;of&nbsp;unnormalized&nbsp;a&nbsp;posterior</span><br>
+<span class=help>%&nbsp;&nbsp;probabilities</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;dfce(y,i)&nbsp;=&nbsp;Conditional_probability(X(:,i)|y)*Prior(y).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;If&nbsp;the&nbsp;field&nbsp;model.eps&nbsp;exists&nbsp;then&nbsp;the&nbsp;Bayesian&nbsp;classifier&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;with&nbsp;the&nbsp;reject&nbsp;option&nbsp;is&nbsp;used.&nbsp;The&nbsp;eps&nbsp;is&nbsp;penalty&nbsp;for&nbsp;the&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;decision&nbsp;"don't&nbsp;know"&nbsp;which&nbsp;is&nbsp;indicated&nbsp;by&nbsp;label&nbsp;y&nbsp;=&nbsp;0.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Vectors&nbsp;to&nbsp;be&nbsp;classified.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Describes&nbsp;probabilistic&nbsp;model:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Pclass&nbsp;[cell&nbsp;1&nbsp;x&nbsp;num_classes]&nbsp;Class&nbsp;conditional&nbsp;probabilities.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Prior&nbsp;[1&nbsp;x&nbsp;num_classes]&nbsp;A&nbsp;priory&nbsp;probabilities.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.eps&nbsp;[1x1]&nbsp;(optional)&nbsp;Penalty&nbsp;of&nbsp;decision&nbsp;"don't&nbsp;know".&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;(1&nbsp;to&nbsp;num_classes);&nbsp;0&nbsp;for&nbsp;"don't&nbsp;know".</span><br>
+<span class=help>%&nbsp;&nbsp;dfce&nbsp;[num_classes&nbsp;x&nbsp;num_data]&nbsp;Unnormalized&nbsp;a&nbsp;posterior&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;probabilities&nbsp;(see&nbsp;above).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;trn&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>%&nbsp;&nbsp;tst&nbsp;=&nbsp;load('riply_tst');</span><br>
+<span class=help>%&nbsp;&nbsp;inx1&nbsp;=&nbsp;find(trn.y==1);</span><br>
+<span class=help>%&nbsp;&nbsp;inx2&nbsp;=&nbsp;find(trn.y==2);</span><br>
+<span class=help>%&nbsp;&nbsp;model.Pclass{1}&nbsp;=&nbsp;mlcgmm(trn.X(:,inx1));</span><br>
+<span class=help>%&nbsp;&nbsp;model.Pclass{2}&nbsp;=&nbsp;mlcgmm(trn.X(:,inx2));</span><br>
+<span class=help>%&nbsp;&nbsp;model.Prior&nbsp;=&nbsp;[length(inx1)&nbsp;length(inx2)]/(length(inx1)+length(inx2));</span><br>
+<span class=help>%&nbsp;&nbsp;ypred&nbsp;=&nbsp;bayescls(tst.X,model);</span><br>
+<span class=help>%&nbsp;&nbsp;cerror(ypred,tst.y)</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;BAYESDF,&nbsp;BAYESERR.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;09-jun-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;01-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;11-mar-2004,&nbsp;VF,&nbsp;"don't"&nbsp;know&nbsp;decision&nbsp;added.</span><br>
+<span class=help1>%&nbsp;19-sep-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+[dim,num_data]=size(X);<br>
+num_classes&nbsp;=&nbsp;length(&nbsp;model.Pclass&nbsp;);<br>
+<br>
+dfce=zeros(num_classes,num_data);<br>
+<span class=comment>%&nbsp;compute&nbsp;unnormalized&nbsp;a&nbsp;posterior&nbsp;probabilities</span><br>
+<span class=keyword>for</span>&nbsp;i=1:num_classes,<br>
+&nbsp;&nbsp;dfce(i,:)&nbsp;=&nbsp;model.Prior(i)*<span class=eval>feval</span>(model.Pclass{i}.fun,X,model.Pclass{i});<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;take&nbsp;maximum</span><br>
+[tmp,y]&nbsp;=&nbsp;max(dfce);<br>
+<br>
+<span class=comment>%&nbsp;reject&nbsp;options</span><br>
+<span class=keyword>if</span>&nbsp;isfield(model,&nbsp;<span class=quotes>'eps'</span>),<br>
+&nbsp;&nbsp;perror&nbsp;=&nbsp;1-tmp./sum(dfce,1);<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;inx&nbsp;=&nbsp;find(&nbsp;perror&nbsp;&gt;&nbsp;model.eps);<br>
+&nbsp;&nbsp;y(inx)&nbsp;=&nbsp;0;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

@@ -1,0 +1,134 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>kpca.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model&nbsp;</span>=&nbsp;<span class=defun_name>kpca</span>(<span class=defun_in>X,options</span>)<br>
+<span class=h1>%&nbsp;KPCA&nbsp;Kernel&nbsp;Principal&nbsp;Component&nbsp;Analysis.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;kpca(X)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;kpca(X,options)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;is&nbsp;implementation&nbsp;of&nbsp;Kernel&nbsp;Principal&nbsp;Component&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;Analysis&nbsp;(KPCA)&nbsp;[Schol98b].&nbsp;The&nbsp;input&nbsp;data&nbsp;X&nbsp;are&nbsp;non-linearly</span><br>
+<span class=help>%&nbsp;&nbsp;mapped&nbsp;to&nbsp;a&nbsp;new&nbsp;high&nbsp;dimensional&nbsp;space&nbsp;induced&nbsp;by&nbsp;prescribed</span><br>
+<span class=help>%&nbsp;&nbsp;kernel&nbsp;function.&nbsp;The&nbsp;PCA&nbsp;is&nbsp;applied&nbsp;on&nbsp;the&nbsp;non-linearly&nbsp;mapped&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;data.&nbsp;The&nbsp;result&nbsp;is&nbsp;a&nbsp;model&nbsp;describing&nbsp;non-linear&nbsp;data&nbsp;projection.</span><br>
+<span class=help>%&nbsp;&nbsp;See&nbsp;'help&nbsp;kernelproj'&nbsp;for&nbsp;info&nbsp;how&nbsp;to&nbsp;project&nbsp;data.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;data.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Decribes&nbsp;kernel&nbsp;and&nbsp;output&nbsp;dimension:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.ker&nbsp;[string]&nbsp;Kernel&nbsp;identifier&nbsp;(see&nbsp;'help&nbsp;kernel');&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(default&nbsp;'linear').</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.arg&nbsp;[1&nbsp;x&nbsp;narg]&nbsp;kernel&nbsp;argument;&nbsp;(default&nbsp;1).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.new_dim&nbsp;[1x1]&nbsp;Output&nbsp;dimension&nbsp;(number&nbsp;of&nbsp;used&nbsp;principal&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;components);&nbsp;(default&nbsp;num_data).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Kernel&nbsp;projection:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[num_data&nbsp;x&nbsp;new_dim]&nbsp;Multipliers.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[new_dim&nbsp;x&nbsp;1]&nbsp;Bias.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.nsv&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;training&nbsp;data.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.eigval&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Eigenvalues&nbsp;of&nbsp;centered&nbsp;kernel&nbsp;matrix.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.mse&nbsp;[1x1]&nbsp;Mean&nbsp;square&nbsp;representation&nbsp;error&nbsp;of&nbsp;maped&nbsp;data.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.MsErr&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;MSE&nbsp;with&nbsp;respect&nbsp;to&nbsp;used&nbsp;basis&nbsp;vectors;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mse=MsErr(new_dim).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.kercnt&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;used&nbsp;kernel&nbsp;evaluations.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options&nbsp;[struct]&nbsp;Copy&nbsp;of&nbsp;used&nbsp;options.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.cputime&nbsp;[1x1]&nbsp;CPU&nbsp;time&nbsp;used&nbsp;for&nbsp;training.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;=&nbsp;gencircledata([1;1],5,250,1);</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;kpca(&nbsp;X,&nbsp;struct('ker','rbf','arg',4,'new_dim',2));</span><br>
+<span class=help>%&nbsp;&nbsp;XR&nbsp;=&nbsp;kpcarec(&nbsp;X,&nbsp;model&nbsp;);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;ppatterns(&nbsp;X&nbsp;);&nbsp;ppatterns(&nbsp;XR,&nbsp;'+r'&nbsp;);</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;KERNELPROJ,&nbsp;PCA,&nbsp;GDA.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;2-jun-2008,&nbsp;VF,&nbsp;default&nbsp;new_dim&nbsp;changed&nbsp;to&nbsp;num_data;&nbsp;suggested&nbsp;by&nbsp;Claudio&nbsp;Lopez</span><br>
+<span class=help1>%&nbsp;4-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;10-july-2003,&nbsp;VF,&nbsp;computation&nbsp;of&nbsp;kercnt&nbsp;added</span><br>
+<span class=help1>%&nbsp;22-jan-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;11-july-2002,&nbsp;VF,&nbsp;mistake&nbsp;"Jt=zeros(N,L)/N"&nbsp;repared&nbsp;</span><br>
+<span class=help1>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(reported&nbsp;by&nbsp;SH_Srinivasan@Satyam.com).</span><br>
+<span class=help1>%&nbsp;5-July-2001,&nbsp;V.Franc,&nbsp;comments&nbsp;changed</span><br>
+<span class=help1>%&nbsp;20-dec-2000,&nbsp;V.Franc,&nbsp;algorithm&nbsp;was&nbsp;implemented</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;timer</span><br>
+start_time&nbsp;=&nbsp;cputime;<br>
+<br>
+<span class=comment>%&nbsp;gets&nbsp;dimensions</span><br>
+[dim,num_data]&nbsp;=&nbsp;size(X);&nbsp;&nbsp;<br>
+<br>
+<span class=comment>%&nbsp;process&nbsp;input&nbsp;arguments</span><br>
+<span class=comment>%-----------------------------------</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;options&nbsp;=&nbsp;[];&nbsp;<span class=keyword>else</span>&nbsp;options=c2s(options);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'ker'</span>),&nbsp;options.ker&nbsp;=&nbsp;<span class=quotes>'linear'</span>;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'arg'</span>),&nbsp;options.arg&nbsp;=&nbsp;1;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'new_dim'</span>),&nbsp;options.new_dim&nbsp;=&nbsp;num_data;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;kernel&nbsp;matrix</span><br>
+K&nbsp;=&nbsp;kernel(X,options.ker,options.arg);<br>
+<br>
+<span class=comment>%&nbsp;Centering&nbsp;kernel&nbsp;matrix&nbsp;(non-linearly&nbsp;mapped&nbsp;data).</span><br>
+J&nbsp;=&nbsp;ones(num_data,num_data)/num_data;<br>
+Kc&nbsp;=&nbsp;K&nbsp;-&nbsp;J*K&nbsp;-&nbsp;K*J&nbsp;+&nbsp;J*K*J;<br>
+<br>
+<span class=comment>%&nbsp;eigen&nbsp;decomposition&nbsp;of&nbsp;the&nbsp;kernel&nbsp;marix</span><br>
+[U,D]&nbsp;=&nbsp;eig(Kc);<br>
+Lambda=real(diag(D));<br>
+<br>
+<span class=comment>%&nbsp;normalization&nbsp;of&nbsp;eigenvectors&nbsp;to&nbsp;be&nbsp;orthonormal&nbsp;</span><br>
+<span class=keyword>for</span>&nbsp;k&nbsp;=&nbsp;1:num_data,<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;Lambda(k)&nbsp;~=&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;U(:,k)=U(:,k)/sqrt(Lambda(k));<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;Sort&nbsp;the&nbsp;eigenvalues&nbsp;and&nbsp;the&nbsp;eigenvectors&nbsp;in&nbsp;descending&nbsp;order.</span><br>
+[Lambda,ordered]=sort(-Lambda);&nbsp;&nbsp;&nbsp;&nbsp;<br>
+Lambda=-Lambda;<br>
+U=U(:,ordered);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<br>
+<span class=comment>%&nbsp;use&nbsp;first&nbsp;new_dim&nbsp;principal&nbsp;components</span><br>
+A=U(:,1:options.new_dim);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;Alpha&nbsp;and&nbsp;compute&nbsp;bias&nbsp;(implicite&nbsp;centering)</span><br>
+<span class=comment>%&nbsp;of&nbsp;kernel&nbsp;projection</span><br>
+model.Alpha&nbsp;=&nbsp;(eye(num_data,num_data)-J)*A;<br>
+Jt=ones(num_data,1)/num_data;<br>
+model.b&nbsp;=&nbsp;A<span class=quotes>'*(J'</span>*K*Jt-K*Jt);<br>
+<br>
+<span class=comment>%&nbsp;fill&nbsp;output&nbsp;structure</span><br>
+model.sv.X&nbsp;=&nbsp;X;<br>
+model.nsv&nbsp;=&nbsp;num_data;<br>
+model.options&nbsp;=&nbsp;options;<br>
+model.eigval&nbsp;=&nbsp;Lambda;<br>
+model.kercnt&nbsp;=&nbsp;num_data*(num_data+1)/2;<br>
+model.MsErr&nbsp;=&nbsp;triu(ones(num_data,num_data),1)*model.eigval/num_data;<br>
+model.mse&nbsp;=&nbsp;model.MsErr(options.new_dim);<br>
+model.cputime&nbsp;=&nbsp;cputime&nbsp;-&nbsp;start_time;<br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'kernelproj'</span>;<br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

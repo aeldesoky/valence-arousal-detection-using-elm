@@ -1,0 +1,124 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>stprpath.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_name>stprpath</span>(<span class=defun_in>toolboxroot</span>)<br>
+<span class=h1>%&nbsp;STPRPATH&nbsp;sets&nbsp;path&nbsp;to&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox.&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;stprpath</span><br>
+<span class=help>%&nbsp;&nbsp;stprpath(toolboxroot)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;stprpath(toolboxroot)&nbsp;sets&nbsp;path&nbsp;to&nbsp;the&nbsp;Statistical&nbsp;Pattern&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;Recognition&nbsp;Toolbox&nbsp;stored&nbsp;in&nbsp;given&nbsp;root&nbsp;directory&nbsp;toolboxroot.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;stprpath&nbsp;uses&nbsp;toolboxroot&nbsp;=&nbsp;pwd&nbsp;.</span><br>
+<span class=help>%</span><br>
+<hr>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2005,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;23-nov-2005,&nbsp;VF,&nbsp;MAC&nbsp;computers&nbsp;problem&nbsp;removed&nbsp;-&nbsp;updated&nbsp;version&nbsp;received&nbsp;</span><br>
+<span class=help1>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;from&nbsp;Vivek&nbsp;Varshney</span><br>
+<span class=help1>%&nbsp;24-jan-2005,&nbsp;VF,&nbsp;added&nbsp;a&nbsp;new&nbsp;directory&nbsp;'optimization'</span><br>
+<span class=help1>%&nbsp;28-apr-2004,&nbsp;VF,&nbsp;renamed&nbsp;to&nbsp;stprpath</span><br>
+<span class=help1>%&nbsp;22-oct-2003,&nbsp;FV,&nbsp;command&nbsp;addpath&nbsp;used.</span><br>
+<span class=help1>%&nbsp;18-July-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;9-Feb-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;23-Jan-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;7-jan-2003,&nbsp;VF,&nbsp;A&nbsp;new&nbsp;coat.</span><br>
+<span class=help1>%&nbsp;23-mar-2001,&nbsp;V.Franc,&nbsp;added&nbsp;new&nbsp;directories</span><br>
+<br>
+<hr>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;1<br>
+&nbsp;&nbsp;&nbsp;toolboxroot=pwd;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;current&nbsp;directory</span><br>
+<span class=keyword>end</span><br>
+<br>
+<span class=io>disp</span>(<span class=quotes>'Adding&nbsp;path&nbsp;for&nbsp;the&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox...'</span>);<br>
+<br>
+<span class=comment>%&nbsp;path&nbsp;for&nbsp;UNIX</span><br>
+p&nbsp;=&nbsp;[<span class=quotes>'$:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$bayes:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$data:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$data/anderson_task:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$data/binary_separable:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$data/gmm_samples:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$data/mm_samples:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$data/multi_separable:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$data/svm_samples:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$data/iris_data:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$data/riply_data:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$demos:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$demos/ocr:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$demos/image_denoising:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$kernels:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$kernels/extraction:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$kernels/preimage:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$linear:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$linear/anderson:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$linear/finite:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$linear/fisher:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$linear/extraction:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$misc:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$optimization:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$probab:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$probab/estimation:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$quadrat:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$svm:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$visual:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'$xtal_regression:'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;];<br>
+<br>
+p=translate(p,toolboxroot);<br>
+<br>
+<span class=comment>%&nbsp;adds&nbsp;path&nbsp;at&nbsp;the&nbsp;start</span><br>
+addpath(p);<br>
+<br>
+<br>
+<br>
+<span class=comment>%--translate&nbsp;---------------------------------------------------------</span><br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>p&nbsp;</span>=&nbsp;<span class=defun_name>translate</span>(<span class=defun_in>p,toolboxroot</span>);<br>
+<span class=comment>%TRANSLATE&nbsp;Translate&nbsp;unix&nbsp;path&nbsp;to&nbsp;platform&nbsp;specific&nbsp;path</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;TRANSLATE&nbsp;fixes&nbsp;up&nbsp;the&nbsp;path&nbsp;so&nbsp;that&nbsp;it's&nbsp;valid&nbsp;on&nbsp;non-UNIX&nbsp;platforms</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;This&nbsp;function&nbsp;was&nbsp;derived&nbsp;from&nbsp;MathWork&nbsp;M-file&nbsp;"pathdef.m"</span><br>
+<br>
+cname&nbsp;=&nbsp;computer;<br>
+<span class=comment>%&nbsp;Look&nbsp;for&nbsp;VMS,&nbsp;this&nbsp;covers&nbsp;VAX_VMSxx&nbsp;as&nbsp;well&nbsp;as&nbsp;AXP_VMSxx.</span><br>
+<span class=comment>%if&nbsp;(length&nbsp;(cname)&nbsp;&gt;=&nbsp;7)&nbsp;&&nbsp;strcmp(cname(4:7),'_VMS')</span><br>
+<span class=comment>%&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,'/','.');</span><br>
+<span class=comment>%&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,':','],');</span><br>
+<span class=comment>%&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,'$toolbox.','toolbox:[');</span><br>
+<span class=comment>%&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,'$','matlab:[');</span><br>
+<span class=comment>%&nbsp;&nbsp;p&nbsp;=&nbsp;[p&nbsp;']'];&nbsp;%&nbsp;Append&nbsp;a&nbsp;final&nbsp;']'</span><br>
+<br>
+<span class=comment>%&nbsp;Look&nbsp;for&nbsp;PC</span><br>
+<span class=keyword>if</span>&nbsp;strncmp(cname,<span class=quotes>'PC'</span>,2)<br>
+&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,<span class=quotes>'/'</span>,<span class=quotes>'\'</span>);<br>
+&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,<span class=quotes>':'</span>,<span class=quotes>';'</span>);<br>
+&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,<span class=quotes>'$'</span>,[toolboxroot&nbsp;<span class=quotes>'\'</span>]);<br>
+<br>
+<span class=comment>%&nbsp;Look&nbsp;for&nbsp;MAC</span><br>
+<span class=comment>%elseif&nbsp;strncmp(cname,'MAC',3)</span><br>
+<span class=comment>%&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,':',':;');</span><br>
+<span class=comment>%&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,'/',':');</span><br>
+<span class=comment>%&nbsp;&nbsp;m&nbsp;=&nbsp;toolboxroot;</span><br>
+<span class=comment>%&nbsp;&nbsp;if&nbsp;m(end)&nbsp;~=&nbsp;':'</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,'$',[toolboxroot&nbsp;':']);</span><br>
+<span class=comment>%&nbsp;&nbsp;else</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,'$',toolboxroot);</span><br>
+<span class=comment>%&nbsp;&nbsp;end</span><br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;p&nbsp;=&nbsp;strrep(p,<span class=quotes>'$'</span>,[toolboxroot&nbsp;<span class=quotes>'/'</span>]);<br>
+<span class=keyword>end</span><br>
+</code>

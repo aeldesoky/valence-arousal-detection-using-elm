@@ -1,0 +1,82 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">DEMO_ANDERSON</b>
+<td valign="baseline" align="right" class="function"><a href="../demos/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Demo on Generalized Anderson's task.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;demo_anderson</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;demo&nbsp;demonstrates&nbsp;the&nbsp;algorithms&nbsp;which&nbsp;solve&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;the&nbsp;Generalized&nbsp;Anderson`s&nbsp;Task&nbsp;(GAT)&nbsp;[<a href="../references.html#SH10" title = "M.I.Schlesinger and V.Hlavac. Ten lectures on statistical and structural pattern recognition. Kluwer Academic Publishers, 2002." >SH10</a>].&nbsp;The&nbsp;GAT&nbsp;is&nbsp;an&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;instance&nbsp;of&nbsp;the&nbsp;non-Bayesian&nbsp;task&nbsp;of&nbsp;decision&nbsp;under&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;non-random&nbsp;intervention.&nbsp;</span><br>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;goal&nbsp;of&nbsp;is&nbsp;to&nbsp;find&nbsp;a&nbsp;binary&nbsp;linear&nbsp;classification</span><br>
+<span class=help>&nbsp;&nbsp;rule&nbsp;(g(x)=sgn(W'*x+b)&nbsp;(line&nbsp;in&nbsp;2D)&nbsp;with&nbsp;minimal&nbsp;probability&nbsp;of</span><br>
+<span class=help>&nbsp;&nbsp;misclassification.&nbsp;The&nbsp;conditional&nbsp;probabilities&nbsp;are&nbsp;known&nbsp;to</span><br>
+<span class=help>&nbsp;&nbsp;be&nbsp;Gaussians&nbsp;their&nbsp;paramaters&nbsp;belong&nbsp;to&nbsp;a&nbsp;given&nbsp;set&nbsp;of&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;parameters.&nbsp;The&nbsp;true&nbsp;parameters&nbsp;are&nbsp;not&nbsp;known.&nbsp;The&nbsp;linear&nbsp;rule&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;which&nbsp;guarantes&nbsp;the&nbsp;minimimal&nbsp;classification&nbsp;error&nbsp;for&nbsp;the&nbsp;worst</span><br>
+<span class=help>&nbsp;&nbsp;possible&nbsp;case&nbsp;(the&nbsp;worst&nbsp;configuration&nbsp;of&nbsp;Gaussains)&nbsp;is</span><br>
+<span class=help>&nbsp;&nbsp;sought&nbsp;for.</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;found&nbsp;solution&nbsp;(hyperplane,&nbsp;line&nbsp;in&nbsp;2D)&nbsp;is&nbsp;vizualized&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;as&nbsp;well&nbsp;as&nbsp;the&nbsp;input&nbsp;Gaussians&nbsp;which&nbsp;describe&nbsp;input&nbsp;classes.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;Following&nbsp;algorithms&nbsp;can&nbsp;be&nbsp;tested:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;Eps-solution&nbsp;-&nbsp;Finds&nbsp;epsilon-solution&nbsp;of&nbsp;the&nbsp;GAT&nbsp;in&nbsp;finite&nbsp;number</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;iterations&nbsp;if&nbsp;such&nbsp;solution&nbsp;exist.&nbsp;The&nbsp;epsilon&nbsp;means</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;desired&nbsp;classification&nbsp;error.</span><br>
+<span class=help>&nbsp;&nbsp;Original&nbsp;&nbsp;-&nbsp;Original&nbsp;Anderson-Bahadur's&nbsp;algorithm&nbsp;defined&nbsp;for&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;two&nbsp;Gaussians&nbsp;only&nbsp;(each&nbsp;class&nbsp;one&nbsp;Gaussian).</span><br>
+<span class=help>&nbsp;&nbsp;Optimal&nbsp;&nbsp;&nbsp;-&nbsp;Implementation&nbsp;of&nbsp;general&nbsp;algorithm&nbsp;propsed&nbsp;by&nbsp;Schlesinger.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;It&nbsp;finds&nbsp;the&nbsp;optimal&nbsp;solution.</span><br>
+<span class=help>&nbsp;&nbsp;Gradient&nbsp;&nbsp;-&nbsp;Fast&nbsp;and&nbsp;simple&nbsp;implementation&nbsp;which&nbsp;uses&nbsp;the&nbsp;generalized</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gradient&nbsp;descent&nbsp;optimization.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Control:</span></span><br>
+<span class=help>&nbsp;&nbsp;Algorithm&nbsp;&nbsp;-&nbsp;select&nbsp;algorithm&nbsp;for&nbsp;testing.</span><br>
+<span class=help>&nbsp;&nbsp;Parameter&nbsp;&nbsp;-&nbsp;parameters&nbsp;for&nbsp;the&nbsp;selected&nbsp;algorithm.</span><br>
+<span class=help>&nbsp;&nbsp;Iterations&nbsp;-&nbsp;number&nbsp;of&nbsp;iterations&nbsp;in&nbsp;one&nbsp;step.</span><br>
+<span class=help>&nbsp;&nbsp;Animation&nbsp;&nbsp;-&nbsp;enable/dissable&nbsp;animation.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;FIG2EPS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;export&nbsp;screen&nbsp;to&nbsp;the&nbsp;PostScript&nbsp;file.</span><br>
+<span class=help>&nbsp;&nbsp;Load&nbsp;data&nbsp;&nbsp;&nbsp;-&nbsp;load&nbsp;input&nbsp;point&nbsp;sets&nbsp;from&nbsp;file.</span><br>
+<span class=help>&nbsp;&nbsp;Create&nbsp;data&nbsp;-&nbsp;call&nbsp;interactive&nbsp;program&nbsp;for&nbsp;creating&nbsp;sets&nbsp;of&nbsp;Gaussians.</span><br>
+<span class=help>&nbsp;&nbsp;Reset&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;set&nbsp;the&nbsp;tested&nbsp;algorithm&nbsp;to&nbsp;the&nbsp;initial&nbsp;state.</span><br>
+<span class=help>&nbsp;&nbsp;Play&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;run&nbsp;the&nbsp;tested&nbsp;algorithm.</span><br>
+<span class=help>&nbsp;&nbsp;Stop&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;stop&nbsp;the&nbsp;running&nbsp;algorithm.</span><br>
+<span class=help>&nbsp;&nbsp;Step&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;perform&nbsp;only&nbsp;one&nbsp;step.</span><br>
+<span class=help>&nbsp;&nbsp;Info&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;display&nbsp;the&nbsp;info&nbsp;box.</span><br>
+<span class=help>&nbsp;&nbsp;Close&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;close&nbsp;the&nbsp;program.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../linear/anderson/eanders.html" target="mdsbody">EANDERS</a>,&nbsp;<a href = "../linear/anderson/androrig.html" target="mdsbody">ANDRORIG</a>,&nbsp;<a href = "../linear/anderson/ggradandr.html" target="mdsbody">GGRADANDR</a>,&nbsp;<a href = "../linear/anderson/ganders.html" target="mdsbody">GANDERS</a>.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../demos/list/demo_anderson.html">demo_anderson.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 17-sep-2003, VF<br>
+ 11-June-2001, V.Franc, comments added.<br>
+ 24. 6.00 V. Hlavac, comments polished.<br>
+
+</body>
+</html>

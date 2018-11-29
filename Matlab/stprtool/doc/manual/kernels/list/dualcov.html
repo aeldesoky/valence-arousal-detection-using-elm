@@ -1,0 +1,85 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>dualcov.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>Z</span>=<span class=defun_name>dualcov</span>(<span class=defun_in>varargin</span>)<br>
+<span class=h1>%&nbsp;DUALCOV&nbsp;Dual&nbsp;representation&nbsp;of&nbsp;covariance&nbsp;matrix.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Z=dualcov(num_data)</span><br>
+<span class=help>%&nbsp;&nbsp;Z=dualcov(labels,&nbsp;y)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;computes&nbsp;a&nbsp;matrix&nbsp;Z&nbsp;[num_data&nbsp;x&nbsp;num_data]&nbsp;which&nbsp;allows&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;to&nbsp;express&nbsp;the&nbsp;sample&nbsp;covariance&nbsp;matrix&nbsp;of&nbsp;data&nbsp;sample&nbsp;X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;in&nbsp;terms&nbsp;of&nbsp;dot&nbsp;products.&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;Z&nbsp;=&nbsp;dualcov(num_data)&nbsp;computes&nbsp;a&nbsp;matrix&nbsp;Z&nbsp;[num_data&nbsp;x&nbsp;num_data]&nbsp;such&nbsp;that&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;cov(X',1)&nbsp;=&nbsp;X*Z*X'.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;m&nbsp;=&nbsp;dualcov(labels,y)&nbsp;computes&nbsp;a&nbsp;matrix&nbsp;Z&nbsp;[length(y)&nbsp;x&nbsp;length(y)]&nbsp;such&nbsp;that</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;cov(X(:,find(labels==y))',1)&nbsp;=&nbsp;X*Z*X',</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;where&nbsp;labels&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;is&nbsp;a&nbsp;vector&nbsp;of&nbsp;data&nbsp;labels&nbsp;and&nbsp;&nbsp;y&nbsp;[1x1]&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;is&nbsp;a&nbsp;label&nbsp;od&nbsp;class&nbsp;which&nbsp;covariance&nbsp;metrix&nbsp;is&nbsp;to&nbsp;be&nbsp;computed.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Unlabeled&nbsp;data:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;data&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;ca&nbsp;=&nbsp;cov(&nbsp;data.X',&nbsp;1)</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;cb&nbsp;=&nbsp;data.X*dualcov(size(data.X,2))*data.X'</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;Labeled&nbsp;data:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;data&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;ca1&nbsp;=&nbsp;cov(&nbsp;data.X(:,find(data.y==1))',1)</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;cb1&nbsp;=&nbsp;data.X*dualcov(data.y,1)*data.X'</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;ca2&nbsp;=&nbsp;cov(&nbsp;data.X(:,find(data.y==2))',1)</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;cb2&nbsp;=&nbsp;data.X*dualcov(data.y,2)*data.X'</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;DUALMEAN.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;16-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;14-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;22-Jan-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;22-May-2001,&nbsp;V.&nbsp;Franc,&nbsp;created</span><br>
+<br>
+<hr>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;==&nbsp;2,<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;labeled&nbsp;data</span><br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;labels&nbsp;=&nbsp;<span class=stack>varargin</span>{1};<br>
+&nbsp;&nbsp;y&nbsp;=&nbsp;<span class=stack>varargin</span>{2};<br>
+&nbsp;<br>
+&nbsp;&nbsp;num_data&nbsp;=&nbsp;length(labels);&nbsp;&nbsp;<br>
+&nbsp;&nbsp;inx_y=find(&nbsp;labels&nbsp;==&nbsp;y);<br>
+&nbsp;&nbsp;n&nbsp;=&nbsp;length(inx_y);<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;J=ones(n,1)/n;&nbsp;<br>
+&nbsp;&nbsp;Zy&nbsp;=&nbsp;(&nbsp;eye(n,n)/n&nbsp;-&nbsp;J*J'&nbsp;);&nbsp;<br>
+<br>
+&nbsp;&nbsp;Z&nbsp;=&nbsp;zeros(num_data,num_data);<br>
+&nbsp;&nbsp;Z(inx_y,inx_y)&nbsp;=&nbsp;Zy;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;unlabeled&nbsp;data</span><br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;n&nbsp;=&nbsp;<span class=stack>varargin</span>{1};<br>
+&nbsp;&nbsp;J=ones(n,1)/n;&nbsp;<br>
+&nbsp;&nbsp;Z&nbsp;=&nbsp;(&nbsp;eye(n,n)/n&nbsp;-&nbsp;J*J'&nbsp;);&nbsp;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

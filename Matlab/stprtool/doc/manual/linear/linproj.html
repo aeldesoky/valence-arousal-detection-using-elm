@@ -1,0 +1,54 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">LINPROJ</b>
+<td valign="baseline" align="right" class="function"><a href="../linear/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Linear data projection.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;Y&nbsp;=&nbsp;linproj(X,&nbsp;model)</span><br>
+<span class=help>&nbsp;&nbsp;out_data&nbsp;=&nbsp;linproj(in_data,&nbsp;model)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;Y&nbsp;=&nbsp;linproj(X,&nbsp;model)&nbsp;linearly&nbsp;projects&nbsp;data&nbsp;in&nbsp;X&nbsp;such&nbsp;that</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;Y&nbsp;=&nbsp;model.W'*X&nbsp;+&nbsp;model.b</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;out_data&nbsp;=&nbsp;linproj(in_data,&nbsp;model)&nbsp;projects&nbsp;in_data.X&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;out_data.X&nbsp;=&nbsp;model.W'*in_data.X&nbsp;+&nbsp;model.b</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;out_data.y&nbsp;=&nbsp;in_data.y</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;[struct]&nbsp;linear&nbsp;projection:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;ncomp]&nbsp;Projection&nbsp;matrix.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.b&nbsp;[ncomp&nbsp;x&nbsp;1]&nbsp;Bias.</span><br>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;help&nbsp;pca;</span><br>
+<span class=help>&nbsp;&nbsp;help&nbsp;lda;</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../linear/extraction/pca.html" target="mdsbody">PCA</a>,&nbsp;<a href = "../linear/extraction/lda.html" target="mdsbody">LDA</a>,&nbsp;<a href = "../kernels/kernelproj.html" target="mdsbody">KERNELPROJ</a>.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../linear/list/linproj.html">linproj.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 3-may-2004, VF<br>
+ 21-jan-03, VF<br>
+ 16-Jun-2002, VF<br>
+
+</body>
+</html>

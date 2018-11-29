@@ -1,0 +1,63 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">ROC</b>
+<td valign="baseline" align="right" class="function"><a href="../misc/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>computes Receiver Operating Characteristic (ROC) curves. </b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;[FP,FN]=roc(dfce,y)</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;It&nbsp;computes&nbsp;false&nbsp;positive&nbsp;rate&nbsp;FP&nbsp;and&nbsp;false&nbsp;negative&nbsp;rate&nbsp;FN</span><br>
+<span class=help>&nbsp;&nbsp;with&nbsp;rescpect&nbsp;to&nbsp;the&nbsp;shift&nbsp;of&nbsp;the&nbsp;bias&nbsp;of&nbsp;given&nbsp;binary&nbsp;decision&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;function.&nbsp;The&nbsp;values&nbsp;of&nbsp;the&nbsp;decision&nbsp;function&nbsp;are&nbsp;given&nbsp;in&nbsp;dfce&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;and&nbsp;y&nbsp;contains&nbsp;true&nbsp;labels&nbsp;(number&nbsp;1&nbsp;and/or&nbsp;2).&nbsp;The&nbsp;vectors&nbsp;dfce&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;and&nbsp;y&nbsp;must&nbsp;be&nbsp;of&nbsp;the&nbsp;same&nbsp;length.&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;bias&nbsp;is&nbsp;shifted&nbsp;from&nbsp;min(dfce)&nbsp;to&nbsp;max(dfce).&nbsp;</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;dfce&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Values&nbsp;of&nbsp;decision&nbsp;function&nbsp;returned&nbsp;by&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;a&nbsp;classifier.</span><br>
+<span class=help>&nbsp;&nbsp;y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;True&nbsp;labels.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;FP&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;False&nbsp;positive&nbsp;rate.</span><br>
+<span class=help>&nbsp;&nbsp;FN&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;False&nbsp;negative&nbsp;rate.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;fld(data);</span><br>
+<span class=help>&nbsp;&nbsp;[y_pred,dfce]&nbsp;=&nbsp;linclass(data.X,model);</span><br>
+<span class=help>&nbsp;&nbsp;[FP,FN]&nbsp;=&nbsp;roc(dfce,data.y);</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;hold&nbsp;on;&nbsp;plot(FP,FN);</span><br>
+<span class=help>&nbsp;&nbsp;xlabel('false&nbsp;positives');&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;ylabel('false&nbsp;negatives');</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../misc/cerror.html" target="mdsbody">CERROR</a></span><br>
+<span class=help><span class=also></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../misc/list/roc.html">roc.m</a>
+  <p><b class="info_field">(c) </b> Statistical Pattern Recognition Toolbox, (C) 1999-2003,<br>
+ Written by Vojtech Franc and Vaclav Hlavac,<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a>,<br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical engineering</a>,<br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 26-aug-2005, VF<br>
+ 17-may-2004, VF<br>
+ 6-June-2003, VF<br>
+ 24-Feb-2003, VF<br>
+
+</body>
+</html>

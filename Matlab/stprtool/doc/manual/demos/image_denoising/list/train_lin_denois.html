@@ -1,0 +1,143 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>train_lin_denois.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=h1>%&nbsp;TRAIN_LIN_DENOIS&nbsp;Training&nbsp;of&nbsp;linear&nbsp;PCA&nbsp;model&nbsp;for&nbsp;image&nbsp;denoising.&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;linear&nbsp;PCA&nbsp;model&nbsp;is&nbsp;trained&nbsp;to&nbsp;describe&nbsp;an&nbsp;input</span><br>
+<span class=help>%&nbsp;&nbsp;class&nbsp;of&nbsp;images&nbsp;corrupted&nbsp;by&nbsp;noise.&nbsp;The&nbsp;training&nbsp;data&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;contains&nbsp;images&nbsp;corrupted&nbsp;by&nbsp;noise&nbsp;and&nbsp;corresponding&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;ground&nbsp;truth.&nbsp;The&nbsp;output&nbsp;dimension&nbsp;of&nbsp;the&nbsp;linear&nbsp;PCA</span><br>
+<span class=help>%&nbsp;&nbsp;is&nbsp;tuned&nbsp;by&nbsp;cross-validation.&nbsp;The&nbsp;objective&nbsp;function&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;is&nbsp;a&nbsp;sum&nbsp;of&nbsp;squared&nbsp;differences&nbsp;between&nbsp;ground&nbsp;truth&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;images&nbsp;and&nbsp;reconstructed&nbsp;images.&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also</span><br>
+<span class=help>%&nbsp;&nbsp;PCA,&nbsp;PCAREC,&nbsp;LINPROJ.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;07-jun-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;05-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;17-mar-2004,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;Setting&nbsp;</span><br>
+<span class=comment>%-------------------------------------------------------</span><br>
+<br>
+<span class=comment>%&nbsp;#&nbsp;folds&nbsp;for&nbsp;cross-validation;&nbsp;</span><br>
+<span class=comment>%&nbsp;num_folds&nbsp;=&nbsp;1&nbsp;means&nbsp;50/50&nbsp;-&nbsp;training/testing&nbsp;part</span><br>
+num_folds&nbsp;=&nbsp;1;&nbsp;&nbsp;<br>
+<br>
+<span class=comment>%&nbsp;parameters&nbsp;to&nbsp;be&nbsp;evaluated&nbsp;by&nbsp;cross-validation:</span><br>
+<span class=comment>%New_Dim_Range&nbsp;=&nbsp;[5&nbsp;10&nbsp;20&nbsp;30&nbsp;40&nbsp;60&nbsp;80&nbsp;100];&nbsp;%&nbsp;USPS</span><br>
+New_Dim_Range&nbsp;=&nbsp;[1&nbsp;2];&nbsp;<span class=comment>%&nbsp;noisy_circle</span><br>
+<br>
+input_data_file&nbsp;=&nbsp;<span class=quotes>'noisy_circle'</span>;<br>
+output_data_file&nbsp;=&nbsp;[];<br>
+<span class=comment>%input_data_file&nbsp;=&nbsp;'/home.dokt/xfrancv/data/usps/usps_noisy';</span><br>
+<span class=comment>%output_data_file&nbsp;=&nbsp;'USPSModelLinPCA';</span><br>
+<br>
+<span class=comment>%-------------------------------------------------------</span><br>
+<br>
+<span class=comment>%&nbsp;Loads&nbsp;training&nbsp;and&nbsp;testing&nbsp;data</span><br>
+load(input_data_file,<span class=quotes>'trn'</span>,<span class=quotes>'tst'</span>);<br>
+[Dim,num_data]&nbsp;=&nbsp;size(&nbsp;trn.X&nbsp;);<br>
+<br>
+<span class=comment>%&nbsp;Data&nbsp;partitioning&nbsp;for&nbsp;cross-validation</span><br>
+[itrn,itst]=crossval(num_data,num_folds);<br>
+<br>
+<span class=comment>%&nbsp;Tuning&nbsp;linear&nbsp;PCA&nbsp;model</span><br>
+<span class=comment>%-------------------------------------------------------</span><br>
+Mse&nbsp;=&nbsp;[];<br>
+<br>
+<span class=keyword>for</span>&nbsp;new_dim&nbsp;=&nbsp;New_Dim_Range,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;<span class=io>fprintf</span>(<span class=quotes>'\nnew_dim&nbsp;=&nbsp;%d\n'</span>,&nbsp;new_dim);<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;cv_mse&nbsp;=&nbsp;0;&nbsp;&nbsp;<br>
+&nbsp;<span class=keyword>for</span>&nbsp;i=1:num_folds,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'\n'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;trn_X&nbsp;=&nbsp;trn.gnd_X(:,itrn{i});<br>
+&nbsp;&nbsp;&nbsp;val_gnd_X&nbsp;=&nbsp;trn.gnd_X(:,itst{i});<br>
+&nbsp;&nbsp;&nbsp;val_corr_X&nbsp;=&nbsp;trn.X(:,itst{i});<br>
+<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'Computing&nbsp;Linear&nbsp;PCA...'</span>);<br>
+&nbsp;&nbsp;&nbsp;lin_model&nbsp;=&nbsp;pca(trn_X,&nbsp;new_dim);<br>
+&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'done\n'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'Projecting&nbsp;validation&nbsp;data...'</span>);<br>
+&nbsp;&nbsp;&nbsp;val_reconst_X&nbsp;=&nbsp;pcarec(&nbsp;val_corr_X,&nbsp;lin_model&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'done.\n'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;dummy&nbsp;=&nbsp;(val_reconst_X&nbsp;-&nbsp;val_gnd_X).^2;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;mse&nbsp;=&nbsp;sum(dummy(:))/size(val_gnd_X,2);<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'folder&nbsp;%d/%d:&nbsp;validation&nbsp;errors&nbsp;mse=%f\n'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i,&nbsp;num_folds,&nbsp;mse);<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;cv_mse&nbsp;=&nbsp;cv_mse&nbsp;+&nbsp;mse;<br>
+&nbsp;<span class=keyword>end</span><br>
+&nbsp;<br>
+&nbsp;cv_mse&nbsp;=&nbsp;cv_mse/num_folds;<br>
+&nbsp;<br>
+&nbsp;Mse(find(new_dim==New_Dim_Range))&nbsp;=&nbsp;cv_mse;<br>
+&nbsp;<br>
+&nbsp;<span class=io>fprintf</span>(<span class=quotes>'new_dim&nbsp;=&nbsp;%d:&nbsp;mse&nbsp;=&nbsp;%f\n'</span>,&nbsp;new_dim,&nbsp;cv_mse);<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;take&nbsp;the&nbsp;best&nbsp;dimension</span><br>
+<span class=comment>%--------------------------------------------------</span><br>
+[dummy,inx]&nbsp;=&nbsp;min(Mse);<br>
+<span class=io>fprintf</span>(<span class=quotes>'\nMin(mse)&nbsp;=&nbsp;%f,&nbsp;dim&nbsp;=&nbsp;%f\n'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;Mse(inx),&nbsp;New_Dim_Range(inx)&nbsp;);<br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;PCA&nbsp;with&nbsp;tbe&nbsp;best&nbsp;dimesion&nbsp;and&nbsp;all&nbsp;training&nbsp;data</span><br>
+<span class=comment>%----------------------------------------------------------</span><br>
+<span class=io>fprintf</span>(<span class=quotes>'Computing&nbsp;optimal&nbsp;Kernel&nbsp;PCA...'</span>);<br>
+lpca_model&nbsp;=&nbsp;pca(&nbsp;trn.X,&nbsp;New_Dim_Range(inx)&nbsp;);<br>
+<span class=io>fprintf</span>(<span class=quotes>'done.\n'</span>);<br>
+<br>
+<span class=keyword>if</span>&nbsp;isempty(output_data_file),<br>
+&nbsp;&nbsp;<span class=graph>figure</span>;&nbsp;hold&nbsp;on;<br>
+&nbsp;&nbsp;xlabel(<span class=quotes>'dim'</span>);&nbsp;ylabel(<span class=quotes>'mse'</span>);<br>
+<br>
+&nbsp;&nbsp;<span class=graph>plot</span>(New_Dim_Range,Mse);<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;save(output_data_file,<span class=quotes>'New_Dim_Range'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Mse'</span>,<span class=quotes>'num_folds'</span>,<span class=quotes>'input_data_file'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'output_data_file'</span>,<span class=quotes>'lpca_model'</span>);<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;plot&nbsp;denosing&nbsp;in&nbsp;2D&nbsp;case&nbsp;only</span><br>
+<span class=comment>%-------------------------------------</span><br>
+<span class=keyword>if</span>&nbsp;Dim&nbsp;==&nbsp;2&nbsp;&&nbsp;isempty(output_data_file),<br>
+&nbsp;&nbsp;X&nbsp;=&nbsp;pcarec(tst.X,&nbsp;lin_model&nbsp;);<br>
+<br>
+&nbsp;&nbsp;mse&nbsp;=&nbsp;sum(sum((X-tst.gnd_X).^2&nbsp;));<br>
+&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'\ntest&nbsp;mse=%f\n'</span>,&nbsp;mse);<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=graph>figure</span>;&nbsp;hold&nbsp;on;<br>
+&nbsp;&nbsp;h0=ppatterns(tst.gnd_X,<span class=quotes>'r+'</span>);<br>
+&nbsp;&nbsp;h1=ppatterns(tst.X,<span class=quotes>'gx'</span>);<br>
+&nbsp;&nbsp;h2=ppatterns(X,<span class=quotes>'bo'</span>);<br>
+&nbsp;&nbsp;legend([h0&nbsp;h1&nbsp;h2],<span class=quotes>'Ground&nbsp;truth'</span>,<span class=quotes>'Noisy'</span>,<span class=quotes>'Reconst'</span>);<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

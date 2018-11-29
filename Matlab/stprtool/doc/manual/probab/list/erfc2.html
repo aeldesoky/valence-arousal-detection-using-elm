@@ -1,0 +1,47 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>erfc2.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>y</span>=<span class=defun_name>erfc2</span>(<span class=defun_in>x,m,v</span>)<br>
+<span class=h1>%&nbsp;ERFC2&nbsp;Normal&nbsp;cumulative&nbsp;distribution&nbsp;function.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;y=erfc2(x,m,v)</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;It&nbsp;computes&nbsp;normal&nbsp;cumulative&nbsp;distribution&nbsp;function&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;erfc2(x)&nbsp;=&nbsp;1/sqrt(2*pi)*v)&nbsp;*&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;integral&nbsp;from&nbsp;x&nbsp;to&nbsp;inf&nbsp;of&nbsp;exp(-(t-m)^2/(2*v^2)&nbsp;dt</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;x&nbsp;[1x1]&nbsp;Real&nbsp;number.</span><br>
+<span class=help>%&nbsp;&nbsp;m&nbsp;[1x1]&nbsp;Mean&nbsp;value.</span><br>
+<span class=help>%&nbsp;&nbsp;v&nbsp;[1x1]&nbsp;Variance.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;y&nbsp;[1x1]&nbsp;Error&nbsp;function.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;ERFC.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;28-apr-2004,&nbsp;VF</span><br>
+<br>
+<hr>
+x2=(x-m)/(sqrt(2)*v);<br>
+y=erfc(x2)/2;<br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

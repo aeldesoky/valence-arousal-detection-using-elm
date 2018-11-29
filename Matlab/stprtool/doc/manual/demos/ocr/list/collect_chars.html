@@ -1,0 +1,51 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>collect_chars.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_name>collect_chars</span>(<span class=defun_in>&nbsp;fname&nbsp;</span>)<br>
+<span class=h1>%&nbsp;COLLECT_CHARS&nbsp;Collect&nbsp;training&nbsp;examples&nbsp;for&nbsp;OCR.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;collect_chars(&nbsp;fname&nbsp;)</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;It&nbsp;calls&nbsp;function&nbsp;that&nbsp;allows&nbsp;a&nbsp;user&nbsp;to&nbsp;draw&nbsp;examples</span><br>
+<span class=help>%&nbsp;&nbsp;of&nbsp;characters.&nbsp;The&nbsp;drawn&nbsp;characters&nbsp;are&nbsp;saved&nbsp;to&nbsp;the</span><br>
+<span class=help>%&nbsp;&nbsp;file&nbsp;fname&nbsp;whenever&nbsp;the&nbsp;middle&nbsp;mouse&nbsp;button&nbsp;is&nbsp;pressed.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;fname&nbsp;[string]&nbsp;The&nbsp;filename&nbsp;to&nbsp;which&nbsp;the&nbsp;characters&nbsp;are&nbsp;saved.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Proceed&nbsp;as&nbsp;follows:</span><br>
+<span class=help>%&nbsp;&nbsp;1)&nbsp;run&nbsp;function</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;collect_chars('my_examples_1');&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;2)&nbsp;draw&nbsp;examples&nbsp;of&nbsp;numeral&nbsp;'1'&nbsp;(fill&nbsp;up&nbsp;the&nbsp;whole&nbsp;form);&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;left&nbsp;button&nbsp;-&gt;&nbsp;draw,&nbsp;middle&nbsp;button&nbsp;-&gt;&nbsp;save&nbsp;it&nbsp;to&nbsp;file,&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;right&nbsp;-&gt;&nbsp;erase.</span><br>
+<span class=help>%&nbsp;&nbsp;3)&nbsp;repeate&nbsp;the&nbsp;points&nbsp;1)&nbsp;and&nbsp;2)&nbsp;for&nbsp;numerals&nbsp;from&nbsp;2&nbsp;to&nbsp;9,&nbsp;0&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(use&nbsp;label&nbsp;10&nbsp;for&nbsp;numeral&nbsp;0,&nbsp;i.e.,&nbsp;collect_chars('my_examples_10'))</span><br>
+<span class=help>%</span><br>
+<hr>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>(c)</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox,&nbsp;(C)&nbsp;1999-2003,</span><br>
+<span class=help1>%&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;engineering&lt;/a&gt;,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;9-sep-03,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=type>global</span>&nbsp;FileName;<br>
+FileName&nbsp;=&nbsp;fname;<br>
+<br>
+mpaper(&nbsp;{<span class=quotes>'fun'</span>,<span class=quotes>'save_chars'</span>,<span class=quotes>'width'</span>,16,<span class=quotes>'height'</span>,16});<br>
+<br>
+<span class=comment>%EOF</span><br>
+</code>

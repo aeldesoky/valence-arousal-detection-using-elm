@@ -1,0 +1,123 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>smo.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model&nbsp;</span>=&nbsp;<span class=defun_name>smo</span>(<span class=defun_in>&nbsp;data,&nbsp;options,&nbsp;init_model</span>)<br>
+<span class=h1>%&nbsp;SMO&nbsp;Sequential&nbsp;Minimal&nbsp;Optimization&nbsp;for&nbsp;binary&nbsp;SVM&nbsp;with&nbsp;L1-soft&nbsp;margin.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;smo(&nbsp;data&nbsp;)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;smo(&nbsp;data,&nbsp;options&nbsp;)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;smo(&nbsp;data,&nbsp;options,&nbsp;init_model)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;is&nbsp;implementation&nbsp;of&nbsp;the&nbsp;Sequential&nbsp;Minimal&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;Optimizer&nbsp;(SMO)&nbsp;[Platt98]&nbsp;to&nbsp;train&nbsp;the&nbsp;binary&nbsp;Support&nbsp;Vector&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;Machines&nbsp;Classifier&nbsp;with&nbsp;L1-soft&nbsp;margin.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Binary&nbsp;labeled&nbsp;training&nbsp;vectors:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[a&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Control&nbsp;parameters:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.ker&nbsp;[string]&nbsp;Kernel&nbsp;identifier&nbsp;(default&nbsp;'linear');&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;See&nbsp;'help&nbsp;kernel'for&nbsp;more&nbsp;info.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.arg&nbsp;[1&nbsp;x&nbsp;nargs]&nbsp;Kernel&nbsp;argument(s)&nbsp;(default&nbsp;1).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.C&nbsp;Regularization&nbsp;constant&nbsp;(default&nbsp;C=inf).&nbsp;The&nbsp;constant&nbsp;C&nbsp;can&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;given&nbsp;as:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C&nbsp;[1x1]&nbsp;..&nbsp;for&nbsp;all&nbsp;data.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C&nbsp;[1x2]&nbsp;..&nbsp;for&nbsp;each&nbsp;class&nbsp;separately&nbsp;C=[C1,C2].</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C&nbsp;[1xnum_data]&nbsp;..&nbsp;for&nbsp;each&nbsp;training&nbsp;vector&nbsp;separately.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.eps&nbsp;[1x1]&nbsp;SMO&nbsp;paramater&nbsp;(default&nbsp;0.001).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.tol&nbsp;[1x1]&nbsp;Tolerance&nbsp;of&nbsp;KKT-conditions&nbsp;(default&nbsp;0.001).</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;init_model&nbsp;[struct]&nbsp;Specifies&nbsp;initial&nbsp;model:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[num_data&nbsp;x&nbsp;1]&nbsp;Initial&nbsp;model.&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias.</span><br>
+<span class=help>%&nbsp;&nbsp;If&nbsp;not&nbsp;given&nbsp;then&nbsp;it&nbsp;is&nbsp;set&nbsp;to&nbsp;zero&nbsp;by&nbsp;default.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Binary&nbsp;SVM&nbsp;classifier:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;1]&nbsp;Weights&nbsp;(Lagrangians).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;nsv]&nbsp;Support&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.nsv&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;Support&nbsp;Vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.kercnt&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;kernel&nbsp;evaluations&nbsp;used&nbsp;by&nbsp;SMO.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.trnerr&nbsp;[1x1]&nbsp;Training&nbsp;classification&nbsp;error.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.margin&nbsp;[1x1]&nbsp;Margin&nbsp;of&nbsp;the&nbsp;found&nbsp;classifier.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.cputime&nbsp;[1x1]&nbsp;Used&nbsp;CPU&nbsp;time&nbsp;in&nbsp;seconds.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options&nbsp;[struct]&nbsp;Copy&nbsp;of&nbsp;used&nbsp;options.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;trn&nbsp;=&nbsp;load('riply_trn');&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;smo(trn,struct('ker','rbf','C',10,'arg',1));</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;ppatterns(trn);&nbsp;psvm(model);&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;tst&nbsp;=&nbsp;load('riply_tst');</span><br>
+<span class=help>%&nbsp;&nbsp;ypred&nbsp;=&nbsp;svmclass(&nbsp;tst.X,&nbsp;model&nbsp;);</span><br>
+<span class=help>%&nbsp;&nbsp;cerror(&nbsp;ypred,&nbsp;tst.y&nbsp;)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;SVMCLASS,&nbsp;SVMLIGHT,&nbsp;SVMQUADPROG.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;23-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;17-September-2001,&nbsp;V.&nbsp;Franc,&nbsp;created</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;timer</span><br>
+tic;<br>
+<br>
+<span class=comment>%&nbsp;Input&nbsp;arguments&nbsp;</span><br>
+<span class=comment>%-------------------------------------------------------</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;&nbsp;options&nbsp;=&nbsp;[];&nbsp;<span class=keyword>else</span>&nbsp;options=c2s(options);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'ker'</span>),&nbsp;options.ker&nbsp;=&nbsp;<span class=quotes>'linear'</span>;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'arg'</span>),&nbsp;options.arg&nbsp;=&nbsp;1;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'C'</span>),&nbsp;options.C&nbsp;=&nbsp;inf;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'eps'</span>),&nbsp;options.eps&nbsp;=&nbsp;0.001;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'tol'</span>),&nbsp;options.tol&nbsp;=&nbsp;0.001;&nbsp;<span class=keyword>end</span><br>
+<br>
+[dim,num_data]&nbsp;=&nbsp;size(data.X);<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;3,<br>
+&nbsp;&nbsp;init_model.Alpha&nbsp;=&nbsp;zeros(num_data,1);&nbsp;<br>
+&nbsp;&nbsp;init_model.b&nbsp;=&nbsp;0;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;run&nbsp;optimizer</span><br>
+<span class=comment>%----------------------------------------------------</span><br>
+[model.Alpha,&nbsp;model.b,&nbsp;model.nsv,&nbsp;model.kercnt,&nbsp;model.trnerr,&nbsp;model.margin]...<br>
+&nbsp;&nbsp;&nbsp;=&nbsp;smo_mex(data.X,&nbsp;data.y,&nbsp;options.ker,&nbsp;options.arg,&nbsp;options.C,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options.eps,&nbsp;options.tol,&nbsp;init_model.Alpha,&nbsp;init_model.b&nbsp;);<br>
+<br>
+<span class=comment>%&nbsp;set&nbsp;up&nbsp;output</span><br>
+<span class=comment>%------------------------------------------------------</span><br>
+inx&nbsp;=&nbsp;find(&nbsp;model.Alpha&nbsp;);<br>
+model.sv.X&nbsp;=&nbsp;data.X(:,inx);<br>
+model.sv.y&nbsp;=&nbsp;data.y(inx);<br>
+model.sv.inx&nbsp;=&nbsp;inx;<br>
+model.Alpha&nbsp;=&nbsp;model.Alpha(inx);<br>
+model.Alpha(find(model.sv.y&nbsp;==&nbsp;2))&nbsp;=&nbsp;-model.Alpha(find(model.sv.y&nbsp;==&nbsp;2));<br>
+<br>
+<span class=comment>%&nbsp;computes&nbsp;normal&nbsp;vector&nbsp;of&nbsp;the&nbsp;hypeprlane&nbsp;if&nbsp;linear&nbsp;kernel&nbsp;used</span><br>
+<span class=keyword>if</span>&nbsp;strcmpi(options.ker,<span class=quotes>'linear'</span>),<br>
+&nbsp;&nbsp;model.W&nbsp;=&nbsp;model.sv.X*model.Alpha;<br>
+<span class=keyword>end</span><br>
+<br>
+model.options&nbsp;=&nbsp;options;<br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'svmclass'</span>;<br>
+<br>
+model.cputime&nbsp;=&nbsp;toc;<br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

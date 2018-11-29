@@ -1,0 +1,58 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>make_noisy_data.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=h1>%&nbsp;MAKE_NOISY_DATA&nbsp;Adds&nbsp;Gaussian&nbsp;noise&nbsp;to&nbsp;USPS&nbsp;database.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;It&nbsp;adds&nbsp;Gaussian&nbsp;noise&nbsp;to&nbsp;the&nbsp;USPS&nbsp;images.&nbsp;The&nbsp;input</span><br>
+<span class=help>%&nbsp;&nbsp;file&nbsp;usps.mat&nbsp;contains&nbsp;training&nbsp;trn.X&nbsp;and&nbsp;testing&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;tst.X&nbsp;part.&nbsp;This&nbsp;script&nbsp;generates&nbsp;file&nbsp;usps_noisy</span><br>
+<span class=help>%&nbsp;&nbsp;which&nbsp;contains</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;trn.gnd_X&nbsp;[256x7291]&nbsp;Original&nbsp;training&nbsp;USPS&nbsp;data.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;trn.X&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[256x7291]&nbsp;USPS&nbsp;data&nbsp;with&nbsp;added&nbsp;Gaussian&nbsp;noise.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;trn.y&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1x7291]&nbsp;Labels&nbsp;(1..10).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;tst.gnd_X&nbsp;[256x2007]&nbsp;Original&nbsp;testing&nbsp;USPS&nbsp;data.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;tst.X&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[256x2007]&nbsp;USPS&nbsp;data&nbsp;with&nbsp;added&nbsp;Gaussian&nbsp;noise.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;tst.y&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1x2007]&nbsp;Labels&nbsp;(1..10).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;07-jun-2004,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;setting</span><br>
+<span class=comment>%---------------------------------------------</span><br>
+<span class=comment>%&nbsp;signal&nbsp;to&nbsp;noise&nbsp;ratio</span><br>
+snr&nbsp;=&nbsp;1;<br>
+<br>
+input_data_file&nbsp;=&nbsp;<span class=quotes>'/home.dokt/xfrancv/data/usps/usps.mat'</span>;<br>
+output_data_file&nbsp;=&nbsp;<span class=quotes>'/home.dokt/xfrancv/data/usps/usps_noisy.mat'</span>;<br>
+<br>
+<span class=comment>%&nbsp;load&nbsp;input&nbsp;file</span><br>
+orig&nbsp;=&nbsp;load(input_data_file);<br>
+<br>
+<span class=comment>%&nbsp;add&nbsp;noise</span><br>
+trn.X&nbsp;=&nbsp;orig.trn.X&nbsp;+&nbsp;randn(size(orig.trn.X))*(std(orig.trn.X(:))/snr);<br>
+trn.y&nbsp;=&nbsp;orig.trn.y;<br>
+trn.gnd_X&nbsp;=&nbsp;orig.trn.X;<br>
+tst.X&nbsp;=&nbsp;orig.tst.X&nbsp;+&nbsp;randn(size(orig.tst.X))*(std(orig.tst.X(:))/snr);<br>
+tst.y&nbsp;=&nbsp;orig.tst.y;<br>
+tst.gnd_X&nbsp;=&nbsp;orig.tst.X;<br>
+<br>
+<span class=comment>%&nbsp;save&nbsp;it&nbsp;to&nbsp;file</span><br>
+save(output_data_file,<span class=quotes>'tst'</span>,<span class=quotes>'trn'</span>);<br>
+<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

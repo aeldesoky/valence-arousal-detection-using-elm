@@ -1,0 +1,61 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">QMAP</b>
+<td valign="baseline" align="right" class="function"><a href="../quadrat/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Quadratic data mapping.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;Y&nbsp;=&nbsp;qmap(X)</span><br>
+<span class=help>&nbsp;&nbsp;out_data&nbsp;=&nbsp;qmap(in_data)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;Y&nbsp;=&nbsp;qmap(X)&nbsp;mapps&nbsp;input&nbsp;n-dimensional&nbsp;data&nbsp;X&nbsp;into&nbsp;a&nbsp;new&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;(n*(n+3)/2)-dimensional&nbsp;space&nbsp;using&nbsp;the&nbsp;quadratic&nbsp;mapping.&nbsp;An&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;input&nbsp;vector&nbsp;x=X(:,i)&nbsp;is&nbsp;mapped&nbsp;to&nbsp;its&nbsp;image&nbsp;y=Y(:,i)&nbsp;such&nbsp;that</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;y&nbsp;=&nbsp;[x(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;x(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;...;x(n);</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x(1)*x(1);x(1)*x(2);...;x(1)*x(n);</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x(2)*x(2);...;x(2)*x(n);</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x(n)*x(n)]</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;out_data&nbsp;=&nbsp;qmap(in_data)&nbsp;use&nbsp;to&nbsp;map&nbsp;labeled&nbsp;data&nbsp;such&nbsp;that</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;out_data.X&nbsp;=&nbsp;qmap(in_data.X)</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;out_data.y&nbsp;=&nbsp;in_data.y</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;orig_data&nbsp;=&nbsp;load('vltava');</span><br>
+<span class=help>&nbsp;&nbsp;map_data&nbsp;=&nbsp;qmap(orig_data);</span><br>
+<span class=help>&nbsp;&nbsp;lin_model&nbsp;=&nbsp;perceptron(map_data);</span><br>
+<span class=help>&nbsp;&nbsp;quad_model&nbsp;=&nbsp;lin2quad(lin_model);</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;ppatterns(orig_data);&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;pboundary(quad_model);</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../quadrat/lin2quad.html" target="mdsbody">LIN2QUAD</a>,&nbsp;<a href = "../quadrat/quadclass.html" target="mdsbody">QUADCLASS</a>.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../quadrat/list/qmap.html">qmap.m</a>
+  <p><b class="info_field">(c) </b> Statistical Pattern Recognition Toolbox, (C) 1999-2003,<br>
+ Written by Vojtech Franc and Vaclav Hlavac,<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a>,<br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical engineering</a>,<br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 17-may-2004, VF<br>
+ 22-Oct-2003, VF<br>
+ 26-June-2001, V.Franc, comments repared.<br>
+ 24. 6.00 V. Hlavac, comments polished.<br>
+
+</body>
+</html>

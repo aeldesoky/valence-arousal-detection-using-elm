@@ -1,0 +1,112 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>rspoly2.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>red_model&nbsp;</span>=&nbsp;<span class=defun_name>rspoly2</span>(<span class=defun_in>model,max_nsv</span>)<br>
+<span class=h1>%&nbsp;RSPOLY2&nbsp;Reduced&nbsp;set&nbsp;method&nbsp;for&nbsp;second&nbsp;order&nbsp;homogeneous&nbsp;polynomial&nbsp;kernel.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;red_model&nbsp;=&nbsp;rspoly2(model)</span><br>
+<span class=help>%&nbsp;&nbsp;red_model&nbsp;=&nbsp;rspoly2(model,max_nsv)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;It&nbsp;uses&nbsp;reduced&nbsp;set&nbsp;techique&nbsp;to&nbsp;reduce&nbsp;complexity</span><br>
+<span class=help>%&nbsp;&nbsp;of&nbsp;the&nbsp;kernel&nbsp;expansion&nbsp;with&nbsp;second&nbsp;order&nbsp;homogeneous&nbsp;polynomial&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;kernel&nbsp;k(x,y)&nbsp;=&nbsp;(x'*y)^2&nbsp;=&nbsp;kernel(x,y,'poly',2)&nbsp;.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;method&nbsp;was&nbsp;published&nbsp;in&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;J.C.Burges:&nbsp;Simplified&nbsp;Support&nbsp;Vector&nbsp;Decision&nbsp;Rules.&nbsp;ICML,&nbsp;1996.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Kernel&nbsp;expansion:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;1]&nbsp;Weights&nbsp;of&nbsp;kernel&nbsp;expansion.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;nsv]&nbsp;Support&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options.ker&nbsp;=&nbsp;'poly'</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options.arg&nbsp;=&nbsp;[2&nbsp;0]</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;max_nsv&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;new&nbsp;support&nbsp;vectors.&nbsp;If&nbsp;not&nbsp;given&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;then&nbsp;the&nbsp;new&nbsp;expansion&nbsp;approximates&nbsp;the&nbsp;original&nbsp;one&nbsp;exactly&nbsp;with</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;at&nbsp;most&nbsp;dim&nbsp;support&nbsp;vectors.&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;red_model&nbsp;[struct]&nbsp;Reduced&nbsp;kernel&nbsp;expansion:</span><br>
+<span class=help>%&nbsp;&nbsp;red_model.Alpha&nbsp;[new_nsv&nbsp;x&nbsp;1]&nbsp;New&nbsp;weights.</span><br>
+<span class=help>%&nbsp;&nbsp;red_model.b&nbsp;[scalar]&nbsp;Bias.</span><br>
+<span class=help>%&nbsp;&nbsp;red_model.sv.X&nbsp;[dim&nbsp;x&nbsp;new_nsv]&nbsp;New&nbsp;support&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;...</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;trn&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;smo(trn,struct('ker','poly','arg',[2&nbsp;0],'C',10));</span><br>
+<span class=help>%&nbsp;&nbsp;red_model&nbsp;=&nbsp;rspoly2(&nbsp;model&nbsp;);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;subplot(1,2,1);&nbsp;axis&nbsp;square;&nbsp;ppatterns(trn);&nbsp;psvm(model);</span><br>
+<span class=help>%&nbsp;&nbsp;subplot(1,2,2);&nbsp;axis&nbsp;square;&nbsp;ppatterns(trn);&nbsp;psvm(red_model);</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;RSRBF.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2004,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;22-dec-2004,&nbsp;VF,&nbsp;header&nbsp;and&nbsp;comments&nbsp;added</span><br>
+<span class=help1>%&nbsp;28-nov-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;check&nbsp;inputs</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;max_nsv&nbsp;=&nbsp;inf;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;strcmpi(model.options.ker,<span class=quotes>'poly'</span>)&nbsp;~=&nbsp;1&nbsp;|&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;(model.options.arg&nbsp;~=&nbsp;[2&nbsp;0]&nbsp;&&nbsp;model.options.arg&nbsp;~=&nbsp;2)<br>
+&nbsp;&nbsp;<span class=error>error</span>(<span class=quotes>'Kernel&nbsp;must&nbsp;be&nbsp;homogeneous&nbsp;second&nbsp;order&nbsp;polynomial.'</span>);<br>
+<span class=keyword>end</span><br>
+<br>
+dim=size(model.sv.X,1);<br>
+nsv&nbsp;=&nbsp;model.nsv;<br>
+<br>
+S&nbsp;=&nbsp;zeros(dim,dim);<br>
+<br>
+<span class=keyword>for</span>&nbsp;i=1:dim,<br>
+&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;j=i:dim,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;S(i,j)&nbsp;=&nbsp;(model.sv.X(i,:).*model.sv.X(j,:)&nbsp;)*model.Alpha(:);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;S(j,i)&nbsp;=&nbsp;S(i,j);<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>end</span><br>
+<br>
+[V,D]&nbsp;=&nbsp;eig(S);<br>
+D&nbsp;=&nbsp;real(diag(D));<br>
+[dummy,inx]&nbsp;=&nbsp;sort(-abs(D));<br>
+D=D(inx);<br>
+V=V(:,inx);<br>
+inx&nbsp;=&nbsp;find(D&nbsp;~=&nbsp;0);<br>
+<br>
+<span class=comment>%&nbsp;take&nbsp;at&nbsp;most&nbsp;max_nsv&nbsp;support&nbsp;vectors</span><br>
+inx&nbsp;=&nbsp;inx(1:min(max_nsv,length(inx)));<br>
+<br>
+red_model.nsv&nbsp;=&nbsp;length(inx);<br>
+red_model.Alpha&nbsp;=&nbsp;zeros(red_model.nsv,1);<br>
+red_model.b&nbsp;=&nbsp;model.b;<br>
+red_model.sv.X&nbsp;=&nbsp;zeros(dim,red_model.nsv);<br>
+red_model.options&nbsp;=&nbsp;model.options;<br>
+red_model.classifier&nbsp;=&nbsp;<span class=quotes>'svmclass'</span>;<br>
+red_model.eigval&nbsp;=&nbsp;D(inx);<br>
+<br>
+cnt&nbsp;=&nbsp;0;<br>
+<span class=keyword>for</span>&nbsp;i=inx(:)',<br>
+&nbsp;&nbsp;cnt&nbsp;=&nbsp;cnt+1;<br>
+&nbsp;&nbsp;red_model.sv.X(:,cnt)&nbsp;=&nbsp;V(:,i);<br>
+&nbsp;&nbsp;red_model.Alpha(cnt)&nbsp;=&nbsp;D(i)/(red_model.sv.X(:,cnt)'*red_model.sv.X(:,cnt));<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

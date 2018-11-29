@@ -1,0 +1,259 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>mpaper.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_name>mpaperr</span>(<span class=defun_in>varargin</span>)<br>
+<span class=h1>%&nbsp;MPAPER&nbsp;Allows&nbsp;to&nbsp;enter&nbsp;handwritten&nbsp;characters&nbsp;by&nbsp;mouse.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;mpaper</span><br>
+<span class=help>%&nbsp;&nbsp;mpaper(&nbsp;options&nbsp;)</span><br>
+<span class=help>%&nbsp;&nbsp;mpaper({'param1',val1,...})</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;script&nbsp;allows&nbsp;a&nbsp;user&nbsp;to&nbsp;draw&nbsp;images&nbsp;by&nbsp;mouse&nbsp;to&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;figure&nbsp;with&nbsp;a&nbsp;grid.&nbsp;The&nbsp;drown&nbsp;images&nbsp;are&nbsp;normalized&nbsp;to</span><br>
+<span class=help>%&nbsp;&nbsp;exactly&nbsp;fit&nbsp;the&nbsp;subwindows&nbsp;given&nbsp;by&nbsp;the&nbsp;grid.</span><br>
+<span class=help>%&nbsp;&nbsp;<span class=help_field>Control:</span></span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;Left&nbsp;mouse&nbsp;button&nbsp;...&nbsp;draw&nbsp;line.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;Right&nbsp;mouse&nbsp;button&nbsp;...&nbsp;erase&nbsp;the&nbsp;focused&nbsp;subwindow.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;Middle&nbsp;mouse&nbsp;button&nbsp;...&nbsp;call&nbsp;function&nbsp;which&nbsp;proccess&nbsp;the</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;drawn&nbsp;data.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;function&nbsp;called&nbsp;to&nbsp;processed&nbsp;the&nbsp;drawn&nbsp;data&nbsp;is</span><br>
+<span class=help>%&nbsp;&nbsp;prescribed&nbsp;by&nbsp;options.fun.&nbsp;The&nbsp;implicite&nbsp;setting&nbsp;is&nbsp;'ocr_fun'</span><br>
+<span class=help>%&nbsp;&nbsp;which&nbsp;calls&nbsp;OCR&nbsp;trained&nbsp;for&nbsp;handwritten&nbsp;numerals&nbsp;and&nbsp;displays&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;the&nbsp;result&nbsp;of&nbsp;recognition.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;options.width&nbsp;[int]&nbsp;Width&nbsp;of&nbsp;a&nbsp;single&nbsp;image.</span><br>
+<span class=help>%&nbsp;&nbsp;options.height&nbsp;[int]&nbsp;Height&nbsp;of&nbsp;a&nbsp;single&nbsp;image.</span><br>
+<span class=help>%&nbsp;&nbsp;options.fun&nbsp;[string]&nbsp;If&nbsp;the&nbsp;middle&nbsp;mouse&nbsp;button&nbsp;is&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;pressed&nbsp;then&nbsp;feval(fun,data)&nbsp;is&nbsp;called&nbsp;where</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;structure&nbsp;data&nbsp;contains:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;data.X&nbsp;[dim&nbsp;x&nbsp;num_images]&nbsp;images&nbsp;stored&nbsp;as&nbsp;columns</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;size&nbsp;dim&nbsp;=&nbsp;width*height.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;data.img_size&nbsp;=&nbsp;[height,width].</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;open&nbsp;ocr_demo.fig</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>(c)</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox,&nbsp;(C)&nbsp;1999-2003,</span><br>
+<span class=help1>%&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;engineering&lt;/a&gt;,</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;&nbsp;9-sep-03,&nbsp;VF,&nbsp;</span><br>
+<span class=help1>%&nbsp;&nbsp;8-sep-03,&nbsp;MM,&nbsp;Martin&nbsp;Matousek&nbsp;programmed&nbsp;the&nbsp;GUI&nbsp;enviroment.</span><br>
+<br>
+<hr>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&gt;=&nbsp;1&nbsp;&&nbsp;ischar(<span class=stack>varargin</span>{1}),<br>
+&nbsp;&nbsp;<span class=keyword>switch</span>&nbsp;<span class=stack>varargin</span>{1},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=label>case</span>&nbsp;<span class=quotes>'Dn'</span>,&nbsp;Dn;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=label>case</span>&nbsp;<span class=quotes>'Up'</span>,&nbsp;Up;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=label>case</span>&nbsp;<span class=quotes>'Plot'</span>,&nbsp;Plot;<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&gt;=1,&nbsp;options&nbsp;=&nbsp;c2s(<span class=stack>varargin</span>{1});&nbsp;<span class=keyword>else</span>&nbsp;options=[];&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;function&nbsp;called&nbsp;when&nbsp;middle&nbsp;button&nbsp;is&nbsp;pressed</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isfield(&nbsp;options,&nbsp;<span class=quotes>'fun'</span>),&nbsp;options.fun&nbsp;=&nbsp;<span class=quotes>'ocr_fun'</span>;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;resulting&nbsp;resolution&nbsp;of&nbsp;each&nbsp;character</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isfield(&nbsp;options,&nbsp;<span class=quotes>'width'</span>),&nbsp;options.width&nbsp;=&nbsp;16;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isfield(&nbsp;options,&nbsp;<span class=quotes>'height'</span>),&nbsp;options.height&nbsp;=&nbsp;16;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;brush&nbsp;stroke&nbsp;within&nbsp;del_dist&nbsp;is&nbsp;deleted</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isfield(&nbsp;options,&nbsp;<span class=quotes>'del_dist'</span>),&nbsp;options.del_dist&nbsp;=&nbsp;0.01;&nbsp;<span class=keyword>end</span>&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=graph>figure</span>;<br>
+&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;<span class=graph>gcf</span>,&nbsp;<span class=quotes>'WindowButtonDownFcn'</span>,&nbsp;<span class=quotes>'mpaper('</span><span class=quotes>'Dn'</span><span class=quotes>')'</span>&nbsp;);<br>
+&nbsp;&nbsp;Cla;<br>
+&nbsp;&nbsp;setappdata(&nbsp;<span class=graph>gcf</span>,&nbsp;<span class=quotes>'options'</span>,options&nbsp;);<br>
+&nbsp;&nbsp;setappdata(&nbsp;<span class=graph>gcf</span>,&nbsp;<span class=quotes>'cells'</span>,cell(5,10)&nbsp;);<br>
+<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_name>Up</span>(<span class=defun_in>varargin</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;<span class=graph>gcf</span>,&nbsp;<span class=quotes>'WindowButtonMotionFcn'</span>,&nbsp;<span class=quotes>''</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;<span class=graph>gcf</span>,&nbsp;<span class=quotes>'WindowButtonUpFcn'</span>,&nbsp;<span class=quotes>''</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;last&nbsp;=&nbsp;getappdata(&nbsp;<span class=graph>gcf</span>,&nbsp;<span class=quotes>'last'</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;x&nbsp;=&nbsp;<span class=graph>get</span>(&nbsp;last,&nbsp;<span class=quotes>'xdata'</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;y&nbsp;=&nbsp;<span class=graph>get</span>(&nbsp;last,&nbsp;<span class=quotes>'ydata'</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isempty(x)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[r&nbsp;c]=&nbsp;index(&nbsp;[&nbsp;x(1)&nbsp;y(1)&nbsp;]&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cells&nbsp;=&nbsp;getappdata(&nbsp;<span class=graph>gcf</span>,&nbsp;<span class=quotes>'cells'</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cells{r,c}&nbsp;=&nbsp;[cells{r,c}&nbsp;last];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setappdata(&nbsp;<span class=graph>gcf</span>,&nbsp;<span class=quotes>'cells'</span>,&nbsp;cells&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_name>Dn</span>(<span class=defun_in>varargin</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>switch</span>&nbsp;<span class=graph>get</span>(<span class=graph>gcf</span>,&nbsp;<span class=quotes>'SelectionType'</span>)&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;clicked&nbsp;mouse&nbsp;button</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=label>case</span>&nbsp;<span class=quotes>'normal'</span>&nbsp;&nbsp;<span class=comment>%&nbsp;left</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setappdata(<span class=graph>gcf</span>,&nbsp;<span class=quotes>'last'</span>,&nbsp;[]&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;<span class=graph>gcf</span>,&nbsp;<span class=quotes>'WindowButtonMotionFcn'</span>,&nbsp;<span class=quotes>'mpaper('</span><span class=quotes>'Plot'</span><span class=quotes>')'</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;<span class=graph>gcf</span>,&nbsp;<span class=quotes>'WindowButtonUpFcn'</span>,&nbsp;<span class=quotes>'mpaper('</span><span class=quotes>'Up'</span><span class=quotes>')'</span>&nbsp;);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Plot<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=label>case</span>&nbsp;<span class=quotes>'extend'</span>&nbsp;&nbsp;<span class=comment>%&nbsp;middle</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cells&nbsp;=&nbsp;getappdata(&nbsp;<span class=graph>gcf</span>,&nbsp;<span class=quotes>'cells'</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;r&nbsp;=&nbsp;&nbsp;1:5<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;c&nbsp;=&nbsp;1:10<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>(&nbsp;~isempty(cells{r,c})&nbsp;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;normalize(&nbsp;([r&nbsp;c]-1)/10+0.001&nbsp;,&nbsp;[0.098&nbsp;0.098],&nbsp;cells{r,c}&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>(1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options=getappdata(&nbsp;<span class=graph>gcf</span>,&nbsp;<span class=quotes>'options'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;handles=findobj(<span class=graph>gca</span>,&nbsp;<span class=quotes>'tag'</span>,&nbsp;<span class=quotes>'brush_stoke'</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bmp&nbsp;=&nbsp;plot2bmp(&nbsp;handles);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isempty(options.fun),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data.img_size&nbsp;=&nbsp;[options.height,options.width];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dim&nbsp;=&nbsp;prod(data.img_size);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data.X&nbsp;=&nbsp;zeros(dim,10*5);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;j=1:5,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i=1:10,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xrange=(i-1)*options.width+1&nbsp;:&nbsp;i*options.width;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yrange=(j-1)*options.height+1&nbsp;:&nbsp;j*options.height;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x&nbsp;=&nbsp;reshape(bmp(yrange,xrange),dim,1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data.X(:,i+(j-1)*10)=&nbsp;x;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=eval>feval</span>(options.fun,data);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>figure</span>;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;imshow(bmp,[]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;figure(7);&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;imshow(bmp,[]);</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=label>case</span>&nbsp;<span class=quotes>'alt'</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;right</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cla</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cells&nbsp;=&nbsp;getappdata(&nbsp;<span class=graph>gcf</span>,&nbsp;<span class=quotes>'cells'</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x&nbsp;=&nbsp;<span class=graph>get</span>(&nbsp;<span class=graph>gca</span>,&nbsp;<span class=quotes>'currentpoint'</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[r&nbsp;c]&nbsp;=&nbsp;index(x([1&nbsp;3]));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isempty(cells{r,c})&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(cells{r,c},&nbsp;<span class=quotes>'erasemode'</span>,<span class=quotes>'normal'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delete(cells{r,c});<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cells{r,c}&nbsp;=&nbsp;[];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setappdata(&nbsp;<span class=graph>gcf</span>,&nbsp;<span class=quotes>'cells'</span>,&nbsp;cells&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_name>Cla</span>()<br>
+&nbsp;&nbsp;<span class=graph>cla</span>;<br>
+&nbsp;&nbsp;<span class=graph>plot</span>(&nbsp;[&nbsp;0&nbsp;0&nbsp;1&nbsp;1&nbsp;0&nbsp;],&nbsp;[&nbsp;0&nbsp;.5&nbsp;.5&nbsp;0&nbsp;0&nbsp;]&nbsp;);<br>
+&nbsp;&nbsp;hold&nbsp;on;<br>
+&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i&nbsp;=&nbsp;1:9,&nbsp;<span class=graph>plot</span>(&nbsp;[i/10&nbsp;i/10],[0&nbsp;.5]&nbsp;);&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i&nbsp;=&nbsp;1:4,&nbsp;<span class=graph>plot</span>(&nbsp;[0&nbsp;1],[i/10&nbsp;i/10]&nbsp;);&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;<span class=graph>axis</span>&nbsp;equal;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;<span class=graph>gca</span>,&nbsp;<span class=quotes>'drawmode'</span>,&nbsp;<span class=quotes>'fast'</span>&nbsp;);<br>
+&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;<span class=graph>gca</span>,&nbsp;<span class=quotes>'interruptible'</span>,&nbsp;<span class=quotes>'off'</span>&nbsp;);<br>
+&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;<span class=graph>gca</span>,&nbsp;<span class=quotes>'xlimmode'</span>,&nbsp;<span class=quotes>'manual'</span>,&nbsp;<span class=quotes>'ylimmode'</span>,&nbsp;<span class=quotes>'manual'</span>,&nbsp;<span class=quotes>'zlimmode'</span>,&nbsp;<span class=quotes>'manual'</span>&nbsp;);<br>
+<span class=comment>%&nbsp;axis&nbsp;off</span><br>
+<br>
+&nbsp;&nbsp;title(<span class=quotes>'Control:&nbsp;left\_button&nbsp;-&nbsp;draw,&nbsp;middle\_button&nbsp;-&nbsp;classify,&nbsp;right\_button&nbsp;-&nbsp;erase.'</span>);<br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_name>Plot</span>(<span class=defun_in>varargin</span>)<br>
+&nbsp;&nbsp;&nbsp;x&nbsp;=<span class=graph>get</span>(&nbsp;<span class=graph>gca</span>,&nbsp;<span class=quotes>'currentpoint'</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>(&nbsp;x(1)&nbsp;&gt;&nbsp;0&nbsp;&&nbsp;x(1)&nbsp;&lt;&nbsp;1&nbsp;&&nbsp;x(3)&nbsp;&gt;&nbsp;0&nbsp;&&nbsp;x(3)&nbsp;&lt;&nbsp;1&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l&nbsp;=&nbsp;getappdata(<span class=graph>gcf</span>,&nbsp;<span class=quotes>'last'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>(&nbsp;isempty(&nbsp;l&nbsp;)&nbsp;),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l&nbsp;=&nbsp;<span class=graph>plot</span>(&nbsp;x(1),&nbsp;x(3),&nbsp;<span class=quotes>'.-'</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;l,&nbsp;<span class=quotes>'erasemode'</span>,&nbsp;<span class=quotes>'none'</span>,&nbsp;<span class=quotes>'tag'</span>,&nbsp;<span class=quotes>'brush_stoke'</span>,&nbsp;<span class=quotes>'color'</span>,&nbsp;[0.5&nbsp;0&nbsp;0]&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setappdata(<span class=graph>gcf</span>,&nbsp;<span class=quotes>'last'</span>,&nbsp;l&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;X&nbsp;=&nbsp;<span class=graph>get</span>(&nbsp;l,&nbsp;<span class=quotes>'xdata'</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Y&nbsp;=&nbsp;<span class=graph>get</span>(&nbsp;l,&nbsp;<span class=quotes>'ydata'</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;l,&nbsp;<span class=quotes>'xdata'</span>,&nbsp;[X&nbsp;x(1)],&nbsp;<span class=quotes>'ydata'</span>,&nbsp;[Y&nbsp;x(3)]&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>end</span><br>
+<br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>bmp&nbsp;</span>=&nbsp;<span class=defun_name>plot2bmp</span>(<span class=defun_in>&nbsp;handles&nbsp;</span>)<br>
+&nbsp;&nbsp;&nbsp;options=getappdata(&nbsp;<span class=graph>gcf</span>,&nbsp;<span class=quotes>'options'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;Width&nbsp;=&nbsp;options.width*10;<br>
+&nbsp;&nbsp;&nbsp;Height&nbsp;=&nbsp;options.height*5;<br>
+&nbsp;&nbsp;&nbsp;bmp&nbsp;=&nbsp;zeros(&nbsp;Height,&nbsp;Width&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i&nbsp;=&nbsp;1:length(handles&nbsp;),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;X&nbsp;=&nbsp;get(&nbsp;handles(i),&nbsp;'xdata');</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Y&nbsp;=&nbsp;get(&nbsp;handles(i),&nbsp;'ydata');</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;points&nbsp;=&nbsp;<span class=graph>get</span>(&nbsp;handles(i),&nbsp;<span class=quotes>'Userdata'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;X&nbsp;=&nbsp;points.xdata;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Y&nbsp;=&nbsp;points.ydata;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1&nbsp;=&nbsp;min(fix(X(1)*Width)+1,Width);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y1&nbsp;=&nbsp;min(fix(2*Y(1)*Height)+1,Height);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;j=1:length(&nbsp;X&nbsp;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x2&nbsp;=&nbsp;min(fix(X(j)*Width)+1,Width);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y2&nbsp;=&nbsp;min(fix(2*Y(j)*Height)+1,Height);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n&nbsp;=&nbsp;max(&nbsp;ceil(&nbsp;max(&nbsp;abs(x2-x1),&nbsp;abs(y2-y1)&nbsp;)&nbsp;*&nbsp;2&nbsp;),&nbsp;1&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;=&nbsp;[0:n]/n;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x&nbsp;=&nbsp;round(&nbsp;x1&nbsp;*&nbsp;a&nbsp;+&nbsp;x2&nbsp;*&nbsp;(1-a)&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y&nbsp;=&nbsp;Height&nbsp;-&nbsp;round(&nbsp;y1&nbsp;*&nbsp;a&nbsp;+&nbsp;y2&nbsp;*&nbsp;(1-a)&nbsp;)&nbsp;+&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bmp(&nbsp;y&nbsp;+&nbsp;(x&nbsp;-&nbsp;1)&nbsp;*&nbsp;Height&nbsp;)&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1=x2;&nbsp;y1=y2;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_name>normalize</span>(<span class=defun_in>&nbsp;corner,&nbsp;sz,&nbsp;h&nbsp;</span>)<br>
+&nbsp;&nbsp;<br>
+x&nbsp;=&nbsp;<span class=graph>get</span>(&nbsp;h,&nbsp;<span class=quotes>'xdata'</span>&nbsp;);<br>
+y&nbsp;=&nbsp;<span class=graph>get</span>(&nbsp;h,&nbsp;<span class=quotes>'ydata'</span>&nbsp;);<br>
+<span class=keyword>if</span>(&nbsp;iscell(x)&nbsp;),&nbsp;x&nbsp;=&nbsp;[x{:}];&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>(&nbsp;iscell(y)&nbsp;),&nbsp;y&nbsp;=&nbsp;[y{:}];&nbsp;<span class=keyword>end</span><br>
+<br>
+mx&nbsp;=&nbsp;min(&nbsp;x&nbsp;);<br>
+Mx&nbsp;=&nbsp;max(&nbsp;x&nbsp;);<br>
+sx&nbsp;=&nbsp;Mx&nbsp;-&nbsp;mx;<br>
+my&nbsp;=&nbsp;min(&nbsp;y&nbsp;);<br>
+My&nbsp;=&nbsp;max(&nbsp;y&nbsp;);<br>
+sy&nbsp;=&nbsp;My&nbsp;-&nbsp;my;<br>
+<br>
+centerx&nbsp;=&nbsp;(mx&nbsp;+&nbsp;Mx)&nbsp;/&nbsp;2;<br>
+centery&nbsp;=&nbsp;(my&nbsp;+&nbsp;My)&nbsp;/&nbsp;2;<br>
+center&nbsp;=&nbsp;corner&nbsp;+&nbsp;sz/2;<br>
+<br>
+<span class=keyword>if</span>(&nbsp;sy/sx&nbsp;&gt;&nbsp;&nbsp;sz(1)/sz(2)&nbsp;)<br>
+&nbsp;&nbsp;scale&nbsp;=&nbsp;sz(1)&nbsp;/&nbsp;sy;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;scale&nbsp;=&nbsp;sz(2)&nbsp;/&nbsp;sx;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=keyword>for</span>&nbsp;hnd&nbsp;=&nbsp;h<br>
+<span class=comment>%&nbsp;&nbsp;set(&nbsp;hnd,&nbsp;'erasemode',&nbsp;'normal'&nbsp;);</span><br>
+<span class=comment>%&nbsp;&nbsp;set(&nbsp;hnd,&nbsp;'xdata',&nbsp;...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;(&nbsp;get(&nbsp;hnd,&nbsp;'xdata'&nbsp;)&nbsp;-&nbsp;centerx&nbsp;)&nbsp;*&nbsp;scale&nbsp;+&nbsp;center(2),&nbsp;...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'ydata',&nbsp;...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(&nbsp;get(&nbsp;hnd,&nbsp;'ydata'&nbsp;)&nbsp;-&nbsp;centery&nbsp;)&nbsp;*&nbsp;scale&nbsp;+&nbsp;center(1)&nbsp;);</span><br>
+<br>
+&nbsp;&nbsp;points.xdata&nbsp;=&nbsp;(&nbsp;<span class=graph>get</span>(&nbsp;hnd,&nbsp;<span class=quotes>'xdata'</span>&nbsp;)&nbsp;-&nbsp;centerx&nbsp;)&nbsp;*&nbsp;scale&nbsp;+&nbsp;center(2);<br>
+&nbsp;&nbsp;points.ydata&nbsp;=&nbsp;(&nbsp;<span class=graph>get</span>(&nbsp;hnd,&nbsp;<span class=quotes>'ydata'</span>&nbsp;)&nbsp;-&nbsp;centery&nbsp;)&nbsp;*&nbsp;scale&nbsp;+&nbsp;center(1);<br>
+&nbsp;&nbsp;<span class=graph>set</span>(&nbsp;hnd,&nbsp;<span class=quotes>'userdata'</span>,&nbsp;points&nbsp;);<br>
+<span class=keyword>end</span><br>
+<br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[r,&nbsp;c]&nbsp;</span>=&nbsp;<span class=defun_name>index</span>(<span class=defun_in>&nbsp;x&nbsp;</span>)<br>
+r&nbsp;=&nbsp;min(&nbsp;floor(&nbsp;x(2)&nbsp;*&nbsp;10&nbsp;)&nbsp;+&nbsp;1,&nbsp;5&nbsp;);<br>
+c&nbsp;=&nbsp;min(&nbsp;floor(&nbsp;x(1)&nbsp;*&nbsp;10&nbsp;)&nbsp;+&nbsp;1,&nbsp;10&nbsp;);<br>
+</code>

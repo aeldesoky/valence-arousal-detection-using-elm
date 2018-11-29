@@ -1,0 +1,107 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>rbfpreimg.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>x&nbsp;</span>=&nbsp;<span class=defun_name>rbfpreimg</span>(<span class=defun_in>&nbsp;model,&nbsp;options,&nbsp;init_point&nbsp;&nbsp;</span>)<br>
+<span class=h1>%&nbsp;RBFPREIMG&nbsp;RBF&nbsp;pre-image&nbsp;by&nbsp;Schoelkopf's&nbsp;fixed-point&nbsp;algorithm.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;x&nbsp;=&nbsp;rbfpreimg(&nbsp;model&nbsp;)</span><br>
+<span class=help>%&nbsp;&nbsp;x&nbsp;=&nbsp;rbfpreimg(&nbsp;model,&nbsp;options&nbsp;&nbsp;)</span><br>
+<span class=help>%&nbsp;&nbsp;x&nbsp;=&nbsp;rbfpreimg(&nbsp;model,&nbsp;options,&nbsp;init_point&nbsp;&nbsp;)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;x&nbsp;=&nbsp;rbfpreimg(&nbsp;model&nbsp;)&nbsp;it&nbsp;is&nbsp;an&nbsp;implementation&nbsp;of&nbsp;the&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;Schoelkopf's&nbsp;fixed-point&nbsp;algorithm&nbsp;to&nbsp;solve&nbsp;the&nbsp;pre-image&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;problem&nbsp;for&nbsp;kernel&nbsp;expansion&nbsp;wiht&nbsp;RBF&nbsp;kernel&nbsp;[Schol98a].&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;The&nbsp;kernel&nbsp;expansion&nbsp;is&nbsp;given&nbsp;in&nbsp;the&nbsp;input&nbsp;structure&nbsp;model.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;x&nbsp;=&nbsp;rbfpreimg(&nbsp;model,&nbsp;options&nbsp;&nbsp;)&nbsp;use&nbsp;structure&nbsp;options&nbsp;to&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;set&nbsp;up&nbsp;control&nbsp;parameters:&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;tmax&nbsp;...&nbsp;maximal&nbsp;number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;eps&nbsp;...&nbsp;minimal&nbsp;change&nbsp;in&nbsp;the&nbsp;norm&nbsp;of&nbsp;the&nbsp;optimized&nbsp;vector.&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;x&nbsp;=&nbsp;rbfpreimg(&nbsp;model,&nbsp;options,&nbsp;init_point&nbsp;&nbsp;)&nbsp;use&nbsp;to&nbsp;set&nbsp;up</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;starting&nbsp;point&nbsp;of&nbsp;the&nbsp;optimization&nbsp;otherwise&nbsp;it&nbsp;is&nbsp;seleceted&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;randomly.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Kernel&nbsp;expansion:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;1]&nbsp;Coefficients&nbsp;of&nbsp;the&nbsp;kernel&nbsp;expansion.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;nsv]&nbsp;Vectors&nbsp;of&nbsp;defining&nbsp;the&nbsp;expansion.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options.ker&nbsp;[string]&nbsp;Must&nbsp;be&nbsp;equl&nbsp;to&nbsp;'rbf'.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options.arg&nbsp;[1x1]&nbsp;Argument&nbsp;of&nbsp;the&nbsp;RBF&nbsp;kernel.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Control&nbsp;parameters:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;(default&nbsp;1e6).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.eps&nbsp;[1x1]&nbsp;Minimal&nbsp;change&nbsp;of&nbsp;the&nbsp;optimized&nbsp;vector&nbsp;x.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;init_point&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Initial&nbsp;point&nbsp;of&nbsp;optimization.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;x&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Pre-image&nbsp;of&nbsp;the&nbsp;RBF&nbsp;kernel&nbsp;expansion.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;RBFPREIMG2,&nbsp;RBFPREIMG3,&nbsp;RSRBF,&nbsp;KPCAREC.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;4-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;1-July-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;30-June-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;input&nbsp;arguments</span><br>
+<span class=comment>%-------------------------------</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;options&nbsp;=&nbsp;[];&nbsp;<span class=keyword>else</span>&nbsp;options&nbsp;=&nbsp;c2s(&nbsp;options);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'tmax'</span>),&nbsp;options.tmax&nbsp;=&nbsp;1e6;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'eps'</span>),&nbsp;options.eps&nbsp;=&nbsp;1e-12;&nbsp;<span class=keyword>end</span><br>
+[dim,nsv]&nbsp;=&nbsp;size(model.sv.X);<br>
+<br>
+<span class=comment>%&nbsp;select&nbsp;initial&nbsp;point&nbsp;</span><br>
+<span class=comment>%-----------------------</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;==&nbsp;3,<br>
+&nbsp;&nbsp;x&nbsp;=&nbsp;init_point;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;x&nbsp;=&nbsp;model.sv.X*(2*rand(nsv,1)-ones(nsv,1));<br>
+<span class=keyword>end</span><br>
+old_x&nbsp;=&nbsp;x;<br>
+<br>
+step=0;<br>
+change&nbsp;=&nbsp;inf;<br>
+<br>
+<span class=comment>%&nbsp;main&nbsp;loop</span><br>
+<span class=comment>%----------------------</span><br>
+<span class=keyword>while</span>&nbsp;step&nbsp;&lt;&nbsp;options.tmax&nbsp;&&nbsp;change&nbsp;&gt;&nbsp;options.eps,<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;step&nbsp;=&nbsp;step&nbsp;+&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;k&nbsp;=&nbsp;kernel(model.sv.X,&nbsp;x,&nbsp;model.options.ker,&nbsp;model.options.arg&nbsp;);<br>
+<br>
+&nbsp;&nbsp;&nbsp;ka&nbsp;=&nbsp;k.*model.Alpha(:);<br>
+<br>
+&nbsp;&nbsp;&nbsp;den=sum(ka);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;den&nbsp;&gt;&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x&nbsp;=&nbsp;model.sv.X*ka/den;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;reinit</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x&nbsp;=&nbsp;model.sv.X*(2*rand(nsv,1)-ones(nsv,1));<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;change&nbsp;=&nbsp;sum((old_x-x).^2);<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;old_x&nbsp;=&nbsp;x;<br>
+<span class=keyword>end</span><br>
+&nbsp;<br>
+<span class=jump>return</span>;<br>
+</code>

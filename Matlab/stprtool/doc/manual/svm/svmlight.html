@@ -1,0 +1,102 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">SVMLIGHT</b>
+<td valign="baseline" align="right" class="function"><a href="../svm/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Interface to SVM^{light} software.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;svmlight(data)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;svmlight(data,options)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;function&nbsp;serves&nbsp;as&nbsp;an&nbsp;interface&nbsp;between&nbsp;Matlab&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;and&nbsp;SVM^{light}&nbsp;(Version:&nbsp;5.00)&nbsp;optimizer&nbsp;which&nbsp;trains&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;the&nbsp;Support&nbsp;Vector&nbsp;Machines&nbsp;classifier.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;executable&nbsp;file&nbsp;'svm_learn'&nbsp;must&nbsp;be&nbsp;in&nbsp;the&nbsp;path.&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;SVM^{light}&nbsp;software&nbsp;can&nbsp;be&nbsp;downloaded&nbsp;from:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://svmlight.joachims.org/</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;function&nbsp;creates&nbsp;temporary&nbsp;files&nbsp;'tmp_alphaXX.txt',&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;'tmp_examplesXX.txt',&nbsp;'tmp_modelXX.txt'&nbsp;and&nbsp;'tmp_verbXX.txt'&nbsp;for&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;comunication&nbsp;with&nbsp;the&nbsp;SVM^{light}&nbsp;software.&nbsp;The&nbsp;XX=datestr(now)</span><br>
+<span class=help>&nbsp;&nbsp;is&nbsp;string&nbsp;consisting&nbsp;of&nbsp;current&nbsp;date&nbsp;and&nbsp;time.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Labeled&nbsp;binary&nbsp;data:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;of&nbsp;training&nbsp;data&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Control&nbsp;parameters:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.ker&nbsp;[string]&nbsp;Kernel&nbsp;identifier:&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'linear'&nbsp;(default),'rbf'&nbsp;and&nbsp;'poly'.&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.arg&nbsp;[1x1]&nbsp;Kernel&nbsp;argument&nbsp;(default&nbsp;[]).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.C&nbsp;[1x1]&nbsp;SVM&nbsp;regularization&nbsp;constant&nbsp;(default&nbsp;C=inf).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.mC&nbsp;[1x1]&nbsp;if&nbsp;mC&nbsp;is&nbsp;given&nbsp;then&nbsp;C&nbsp;is&nbsp;set&nbsp;to&nbsp;mC/length(data.y).&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.j&nbsp;[1x1]&nbsp;Cost-factor,&nbsp;by&nbsp;which&nbsp;training&nbsp;errors&nbsp;on&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;positive&nbsp;examples&nbsp;outweight&nbsp;errors&nbsp;on&nbsp;negative&nbsp;examples&nbsp;(default&nbsp;1).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.eps&nbsp;[1x1]&nbsp;Tolerance&nbsp;of&nbsp;KKT-conditions&nbsp;(default&nbsp;eps=0.001).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;if&nbsp;1&nbsp;(default)&nbsp;then&nbsp;finds&nbsp;w'*x&nbsp;+b&nbsp;else&nbsp;b&nbsp;=&nbsp;0;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.keep_files&nbsp;[1x1]&nbsp;If&nbsp;==1&nbsp;then&nbsp;keeps&nbsp;temporary&nbsp;files&nbsp;otherwise</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;erase&nbsp;them.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.svm_command&nbsp;[string]&nbsp;Path&nbsp;to&nbsp;SVM^{light}&nbsp;solver&nbsp;(default&nbsp;"svm_learn")</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Binary&nbsp;SVM&nbsp;classifier:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;1]&nbsp;Weights&nbsp;of&nbsp;support&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;decision&nbsp;function.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;nsv]&nbsp;Support&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.sv.inx&nbsp;[1&nbsp;x&nbsp;nsv]&nbsp;Indices&nbsp;of&nbsp;SVs&nbsp;(model.sv.X&nbsp;=&nbsp;data.X(:,inx)).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.nsv&nbsp;[int]&nbsp;Number&nbsp;of&nbsp;Support&nbsp;Vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.kercnt&nbsp;[int]&nbsp;Number&nbsp;of&nbsp;kernel&nbsp;evaluations&nbsp;used&nbsp;by&nbsp;the&nbsp;SVM^{light}.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.trnerr&nbsp;[real]&nbsp;Classification&nbsp;error&nbsp;on&nbsp;training&nbsp;data.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.margin&nbsp;[real]&nbsp;Margin&nbsp;of&nbsp;found&nbsp;classifier.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.options&nbsp;[struct]&nbsp;Copy&nbsp;of&nbsp;used&nbsp;options.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.cputime&nbsp;[real]&nbsp;Used&nbsp;CPU&nbsp;time&nbsp;in&nbsp;seconds.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;data=load('riply_trn');&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;model=svmlight(data,struct('ker','rbf','C',10,'arg',1))</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;ppatterns(data);&nbsp;psvm(model);</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../svm/svmclass.html" target="mdsbody">SVMCLASS</a>,&nbsp;<a href = "../svm/xy2svmlight.html" target="mdsbody">XY2SVMLIGHT</a>.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../svm/list/svmlight.html">svmlight.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 09-sep-2007, VF, -b option added<br>
+ 21-may-2007, VF, -q 42 (size of QP subproblem) added based on Soeren's suggestion<br>
+ 20-nov-2006, VF, added optional parameter mC<br>
+ 10-oct-2006, VF, "svm_command" option added<br>
+ 09-feb-2006, VF, added date_str(findstr(date_str,':')) = '.'; based on<br>
+   M.Urban comment.<br>
+ 16-may-2004, VF<br>
+ 15-jan-2004, VF, handling argument of poly kernel repared<br>
+ 10-oct-2003, VF, computation of lin model added<br>
+ 29-aug-2003, VF, seconds are added to the name of temporary files<br>
+ 12-may-2003, VF, 1st 3 lines of verb_file are skiped<br>
+ 31-jan-2003, VF, added option 'j' <br>
+ 28-Jan-2003, VF<br>
+ 20-jan-2003, VF, temporary files are unique and are deleted at the end<br>
+ 14-Jan-2003, VF<br>
+ 26-sep-2002, VF<br>
+ 3-Jun-2002, V.Franc<br>
+
+</body>
+</html>

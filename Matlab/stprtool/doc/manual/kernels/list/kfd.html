@@ -1,0 +1,130 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>kfd.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model</span>=<span class=defun_name>kfd</span>(<span class=defun_in>data,options</span>)<br>
+<span class=h1>%&nbsp;KFD&nbsp;Kernel&nbsp;Fisher&nbsp;Discriminat.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;kfd(&nbsp;data&nbsp;)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;kfd(&nbsp;data,&nbsp;options&nbsp;)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;is&nbsp;an&nbsp;implementation&nbsp;of&nbsp;the&nbsp;Kernel&nbsp;Fisher</span><br>
+<span class=help>%&nbsp;&nbsp;Discriminant&nbsp;(KFD)&nbsp;[Mika99a].&nbsp;The&nbsp;aim&nbsp;is&nbsp;to&nbsp;find&nbsp;a&nbsp;binary&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;kernel&nbsp;classifier&nbsp;which&nbsp;is&nbsp;the&nbsp;linear&nbsp;decision&nbsp;function&nbsp;in&nbsp;a&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;feature&nbsp;space&nbsp;induced&nbsp;by&nbsp;the&nbsp;selected&nbsp;kernel&nbsp;function.&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;bias&nbsp;is&nbsp;found&nbsp;decision&nbsp;function&nbsp;is&nbsp;trainined&nbsp;by&nbsp;the&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;linear&nbsp;SVM&nbsp;on&nbsp;the&nbsp;data&nbsp;projected&nbsp;on&nbsp;the&nbsp;optimal&nbsp;direction.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Training&nbsp;binary&nbsp;labeled&nbsp;data:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Control&nbsp;parameters:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.ker&nbsp;[string]&nbsp;Kernel&nbsp;identifier&nbsp;(default&nbsp;'linear').&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;See&nbsp;'help&nbsp;kernel'&nbsp;for&nbsp;more&nbsp;info.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.arg&nbsp;[1&nbsp;x&nbsp;nargs]&nbsp;Kernel&nbsp;argument(s).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.C&nbsp;[1x1]&nbsp;Regularization&nbsp;constant&nbsp;of&nbsp;the&nbsp;linear&nbsp;1-D&nbsp;SVM&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;used&nbsp;to&nbsp;optimize&nbsp;the&nbsp;bias&nbsp;(default&nbsp;C=inf).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.mu&nbsp;[1x1]&nbsp;Regularization&nbsp;constant&nbsp;added&nbsp;to&nbsp;the&nbsp;diagonal&nbsp;of&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;within&nbsp;scatter&nbsp;matrix&nbsp;(default&nbsp;1e-4).</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Binary&nbsp;SVM&nbsp;classifier:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[num_data&nbsp;x&nbsp;1]&nbsp;Weight&nbsp;vector.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;decision&nbsp;function.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;data&nbsp;(support&nbsp;vectors).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.trnerr&nbsp;[1x1]&nbsp;Training&nbsp;classification&nbsp;error.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.kercnt&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;kernel&nbsp;evaluations&nbsp;used&nbsp;during&nbsp;training.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.nsv&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;support&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options&nbsp;[struct]&nbsp;Copy&nbsp;of&nbsp;options.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.cputime&nbsp;[1x1]&nbsp;Used&nbsp;cputime.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;trn&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;=&nbsp;struct('ker','rbf','arg',1,'C',10,'mu',0.001);</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;kfd(trn,&nbsp;options)</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;ppatterns(trn);&nbsp;psvm(model);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;SVMCLASS,&nbsp;FLD,&nbsp;SVM.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;17-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;14-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;7-july-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;timer</span><br>
+tic;<br>
+<br>
+<span class=comment>%&nbsp;processing&nbsp;inputs</span><br>
+<span class=comment>%&nbsp;======================================</span><br>
+[dim,num_data]=size(data.X);<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;options=[];&nbsp;<span class=keyword>else</span>&nbsp;options=c2s(options);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'ker'</span>),&nbsp;options.ker&nbsp;=&nbsp;<span class=quotes>'linear'</span>;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'arg'</span>),&nbsp;options.arg&nbsp;=&nbsp;1;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'mu'</span>),&nbsp;options.mu&nbsp;=&nbsp;1e-4;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'C'</span>),&nbsp;options.C&nbsp;=&nbsp;inf;&nbsp;<span class=keyword>end</span><br>
+<br>
+<br>
+<span class=comment>%&nbsp;creates&nbsp;matrices&nbsp;M&nbsp;and&nbsp;N&nbsp;</span><br>
+<span class=comment>%=================================</span><br>
+inx1=find(data.y==1);<br>
+inx2=find(data.y==2);<br>
+l1=length(inx1);<br>
+l2=length(inx2);<br>
+<br>
+K&nbsp;=&nbsp;kernel(data.X,options.ker,options.arg);<br>
+<br>
+M1=sum(K(:,inx1),2)/l1;<br>
+M2=sum(K(:,inx2),2)/l2;<br>
+M=(M1-M2)*(M1-M2)';<br>
+<br>
+E1=eye(l1,l1);<br>
+E2=eye(l2,l2);<br>
+J1=ones(l1,l1)/l1;<br>
+J2=ones(l2,l2)/l2;<br>
+<br>
+N&nbsp;=&nbsp;K(:,inx1)*(E1-J1)*K(:,inx1)<span class=quotes>'&nbsp;+&nbsp;K(:,inx2)*(E2-J2)*K(:,inx2)'</span>;<br>
+<br>
+<span class=comment>%&nbsp;regularization</span><br>
+N&nbsp;=&nbsp;N&nbsp;+&nbsp;options.mu&nbsp;*&nbsp;eye(num_data,num_data);<br>
+<br>
+<span class=comment>%&nbsp;Optimization</span><br>
+<span class=comment>%==============================</span><br>
+<span class=comment>%%[Alpha,V,U]&nbsp;=&nbsp;svds(&nbsp;inv(N)*M,1);</span><br>
+Alpha=inv(N)*(M1-M2);&nbsp;<span class=comment>%&nbsp;It&nbsp;yields&nbsp;the&nbsp;same&nbsp;Alpha&nbsp;up&nbsp;to&nbsp;scale</span><br>
+<br>
+<span class=comment>%&nbsp;project&nbsp;data&nbsp;on&nbsp;the&nbsp;found&nbsp;direction</span><br>
+projx=(K*Alpha)';<br>
+<br>
+<span class=comment>%&nbsp;training&nbsp;bias&nbsp;of&nbsp;decision&nbsp;rule</span><br>
+lin_model&nbsp;=&nbsp;svm1d(struct(<span class=quotes>'X'</span>,projx,<span class=quotes>'y'</span>,data.y),struct(<span class=quotes>'C'</span>,options.C));<br>
+<br>
+<span class=comment>%&nbsp;fill&nbsp;output&nbsp;structure</span><br>
+<span class=comment>%===============================</span><br>
+model.Alpha&nbsp;=&nbsp;lin_model.W*Alpha(:);<br>
+model.b&nbsp;=&nbsp;lin_model.b;<br>
+model.sv&nbsp;=&nbsp;data;<br>
+<span class=keyword>if</span>&nbsp;strcmp(options.ker,<span class=quotes>'linear'</span>),<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;in&nbsp;the&nbsp;linar&nbsp;case&nbsp;compute&nbsp;normal&nbsp;vector&nbsp;explicitely</span><br>
+&nbsp;&nbsp;model.W&nbsp;=&nbsp;model.sv.X*model.Alpha;<br>
+<span class=keyword>end</span>&nbsp;&nbsp;<br>
+model.trnerr&nbsp;=&nbsp;lin_model.trnerr;<br>
+model.nsv&nbsp;=&nbsp;num_data;<br>
+model.kercnt&nbsp;=&nbsp;num_data*(num_data+1)/2;<br>
+model.options&nbsp;=&nbsp;options;<br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'svmclass'</span>;<br>
+model.cputime=toc;<br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

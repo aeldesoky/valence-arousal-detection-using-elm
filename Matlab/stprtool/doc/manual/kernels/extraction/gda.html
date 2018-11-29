@@ -1,0 +1,69 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">GDA</b>
+<td valign="baseline" align="right" class="function"><a href="../../kernels/extraction/index.html" target="mdsdir"><img border = 0 src="../../up.gif"></a></table>
+  <p><b>Generalized Discriminant Analysis.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;gda(data)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;gda(data,options)</span><br>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;function&nbsp;is&nbsp;implimentation&nbsp;of&nbsp;the&nbsp;Generalized&nbsp;Discriminant</span><br>
+<span class=help>&nbsp;&nbsp;Analysis&nbsp;(GDA)&nbsp;[<a href="../../references.html#Baudat01" title = "G.Baudat and F.Anouar. Generalized discriminant analysis using a kernel approach. Neural Computation, 12(10):2385--2404, 2000. citeseer.nj.nec.com/baudat00generalized.html." >Baudat01</a>].&nbsp;The&nbsp;GDA&nbsp;is&nbsp;kernelized&nbsp;version&nbsp;of</span><br>
+<span class=help>&nbsp;&nbsp;the&nbsp;Linear&nbsp;Discriminant&nbsp;Analysis&nbsp;(LDA).&nbsp;It&nbsp;produce&nbsp;the&nbsp;kernel&nbsp;data</span><br>
+<span class=help>&nbsp;&nbsp;projection&nbsp;which&nbsp;increases&nbsp;class&nbsp;separability&nbsp;of&nbsp;the&nbsp;projected&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;training&nbsp;data.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Labeled&nbsp;training&nbsp;data:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;(1,2,..,mclass).</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Defines&nbsp;kernel&nbsp;and&nbsp;a&nbsp;output&nbsp;dimension:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.ker&nbsp;[string]&nbsp;Kernel&nbsp;identifier&nbsp;(default&nbsp;'linear');&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;see&nbsp;'help&nbsp;kernel'&nbsp;for&nbsp;more&nbsp;info.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.arg&nbsp;[1&nbsp;x&nbsp;nargs]&nbsp;Kernel&nbsp;arguments&nbsp;(default&nbsp;1).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.new_dim&nbsp;[1x1]&nbsp;Output&nbsp;dimension&nbsp;(default&nbsp;dim).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Kernel&nbsp;projection:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[num_data&nbsp;x&nbsp;new_dim]&nbsp;Multipliers.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.b&nbsp;[new_dim&nbsp;x&nbsp;1]&nbsp;Bias.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;data.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.options&nbsp;[struct]&nbsp;Copy&nbsp;of&nbsp;used&nbsp;options.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.rankK&nbsp;[int]&nbsp;Rank&nbsp;of&nbsp;centered&nbsp;kernel&nbsp;matrix.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.nsv&nbsp;[int]&nbsp;Number&nbsp;of&nbsp;training&nbsp;data.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;in_data&nbsp;=&nbsp;load('iris');</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;gda(in_data,struct('ker','rbf','arg',1));</span><br>
+<span class=help>&nbsp;&nbsp;out_data&nbsp;=&nbsp;kernelproj(&nbsp;in_data,&nbsp;model&nbsp;);</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;ppatterns(&nbsp;out_data&nbsp;);</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../../kernels/kernelproj.html" target="mdsbody">KERNELPROJ</a>,&nbsp;<a href = "../../kernels/extraction/kpca.html" target="mdsbody">KPCA</a>.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../../kernels/extraction/list/gda.html">gda.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 24-may-2004, VF<br>
+ 4-may-2004, VF<br>
+
+</body>
+</html>

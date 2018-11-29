@@ -1,0 +1,86 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>roc.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[FP,FN,Theta]</span>=<span class=defun_name>roc</span>(<span class=defun_in>dfce,y</span>)<br>
+<span class=h1>%&nbsp;ROC&nbsp;computes&nbsp;Receiver&nbsp;Operating&nbsp;Characteristic&nbsp;(ROC)&nbsp;curves.&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;[FP,FN]=roc(dfce,y)</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;It&nbsp;computes&nbsp;false&nbsp;positive&nbsp;rate&nbsp;FP&nbsp;and&nbsp;false&nbsp;negative&nbsp;rate&nbsp;FN</span><br>
+<span class=help>%&nbsp;&nbsp;with&nbsp;rescpect&nbsp;to&nbsp;the&nbsp;shift&nbsp;of&nbsp;the&nbsp;bias&nbsp;of&nbsp;given&nbsp;binary&nbsp;decision&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;function.&nbsp;The&nbsp;values&nbsp;of&nbsp;the&nbsp;decision&nbsp;function&nbsp;are&nbsp;given&nbsp;in&nbsp;dfce&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;and&nbsp;y&nbsp;contains&nbsp;true&nbsp;labels&nbsp;(number&nbsp;1&nbsp;and/or&nbsp;2).&nbsp;The&nbsp;vectors&nbsp;dfce&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;and&nbsp;y&nbsp;must&nbsp;be&nbsp;of&nbsp;the&nbsp;same&nbsp;length.&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;bias&nbsp;is&nbsp;shifted&nbsp;from&nbsp;min(dfce)&nbsp;to&nbsp;max(dfce).&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;dfce&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Values&nbsp;of&nbsp;decision&nbsp;function&nbsp;returned&nbsp;by&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;a&nbsp;classifier.</span><br>
+<span class=help>%&nbsp;&nbsp;y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;True&nbsp;labels.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;FP&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;False&nbsp;positive&nbsp;rate.</span><br>
+<span class=help>%&nbsp;&nbsp;FN&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;False&nbsp;negative&nbsp;rate.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;fld(data);</span><br>
+<span class=help>%&nbsp;&nbsp;[y_pred,dfce]&nbsp;=&nbsp;linclass(data.X,model);</span><br>
+<span class=help>%&nbsp;&nbsp;[FP,FN]&nbsp;=&nbsp;roc(dfce,data.y);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;hold&nbsp;on;&nbsp;plot(FP,FN);</span><br>
+<span class=help>%&nbsp;&nbsp;xlabel('false&nbsp;positives');&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;ylabel('false&nbsp;negatives');</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;CERROR</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>(c)</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox,&nbsp;(C)&nbsp;1999-2003,</span><br>
+<span class=help1>%&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;engineering&lt;/a&gt;,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;26-aug-2005,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;17-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;6-June-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;24-Feb-2003,&nbsp;VF</span><br>
+<br>
+<br>
+<hr>
+num_data=length(dfce);<br>
+n1=length(find(y==1));<br>
+n2=length(find(y==2));<br>
+<br>
+[dfce,inx]=sort(dfce);<br>
+y&nbsp;=&nbsp;y(inx);<br>
+<br>
+FP=zeros(1,num_data);<br>
+FN=zeros(1,num_data);<br>
+<br>
+wrong1=0;<br>
+wrong2=n2;<br>
+<br>
+<span class=keyword>for</span>&nbsp;i=1:num_data,<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;y(i)&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;wrong1=wrong1+1;<br>
+&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;wrong2=wrong2-1;<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;FP(i)=wrong2/n2;<br>
+&nbsp;&nbsp;FN(i)=wrong1/n1;<br>
+<span class=keyword>end</span><br>
+<br>
+Theta&nbsp;=&nbsp;dfce;<br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

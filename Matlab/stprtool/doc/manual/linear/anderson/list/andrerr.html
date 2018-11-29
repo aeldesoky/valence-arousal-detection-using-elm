@@ -1,0 +1,78 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>andrerr.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[err,r,inx]&nbsp;</span>=&nbsp;<span class=defun_name>andrerr</span>(<span class=defun_in>&nbsp;model,&nbsp;distrib&nbsp;</span>)<br>
+<span class=h1>%&nbsp;ANDRERR&nbsp;Classification&nbsp;error&nbsp;of&nbsp;the&nbsp;Generalized&nbsp;Anderson's&nbsp;task.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;[err,r,inx]&nbsp;=&nbsp;andrerr(&nbsp;model,&nbsp;distrib&nbsp;)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;computes&nbsp;the&nbsp;classification&nbsp;error&nbsp;of</span><br>
+<span class=help>%&nbsp;&nbsp;the&nbsp;given&nbsp;linear&nbsp;classifier&nbsp;and&nbsp;underlying&nbsp;set&nbsp;of&nbsp;Gaussian&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;distributions&nbsp;as&nbsp;defined&nbsp;in&nbsp;the&nbsp;Generalized&nbsp;Anderson's&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;task&nbsp;[SH10].</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Linear&nbsp;classifier:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Normal&nbsp;vector&nbsp;the&nbsp;separating&nbsp;hyperplane.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[real]&nbsp;Bias&nbsp;the&nbsp;hyperplane.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;distrib&nbsp;[struct]&nbsp;Set&nbsp;of&nbsp;Gaussians&nbsp;with&nbsp;assigned&nbsp;binary&nbsp;labels:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Mean&nbsp;[dim&nbsp;x&nbsp;ncomp]&nbsp;Mean&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Cov&nbsp;[dim&nbsp;x&nbsp;dim&nbsp;x&nbsp;ncomp]&nbsp;Covariance&nbsp;matrices.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;ncomp]&nbsp;Lables&nbsp;of&nbsp;Gaussians&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;err&nbsp;[real]&nbsp;Probability&nbsp;of&nbsp;misclassification.</span><br>
+<span class=help>%&nbsp;&nbsp;r&nbsp;[real]&nbsp;Mahalanobis&nbsp;distance&nbsp;of&nbsp;the&nbsp;cloasest&nbsp;Gaussian.</span><br>
+<span class=help>%&nbsp;&nbsp;inx&nbsp;[int]&nbsp;Index&nbsp;of&nbsp;the&nbsp;cloasest&nbsp;Gaussian.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;distrib&nbsp;=&nbsp;load('mars');</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;eanders(distrib,{'err',0.06'});</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;pandr(&nbsp;model,&nbsp;distrib&nbsp;);</span><br>
+<span class=help>%&nbsp;&nbsp;error&nbsp;=&nbsp;andrerr(&nbsp;model,&nbsp;distrib&nbsp;)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;ANDRORIG,&nbsp;GANDERS,&nbsp;EANDERS,&nbsp;GGRADANDR.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;4-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;17-sep-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=keyword>if</span>&nbsp;~isfield(distrib,<span class=quotes>'y'</span>),&nbsp;distrib.y&nbsp;=&nbsp;[1,2];&nbsp;<span class=keyword>end</span><br>
+[dim,ncomp]&nbsp;=&nbsp;size(distrib.Mean);<br>
+<br>
+Radius&nbsp;=&nbsp;zeros(ncomp,1);<br>
+<br>
+<span class=keyword>for</span>&nbsp;i=1:ncomp,<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;distrib.y(i)&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Radius(i)&nbsp;=&nbsp;(model.W'*distrib.Mean(:,i)+model.b)/...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sqrt(model.W'*distrib.Cov(:,:,i)*model.W);<br>
+&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;Radius(i)&nbsp;=&nbsp;-(model.W'*distrib.Mean(:,i)+model.b)/...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sqrt(model.W'*distrib.Cov(:,:,i)*model.W);<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=keyword>end</span><br>
+<br>
+[r,inx]&nbsp;=&nbsp;min(&nbsp;Radius&nbsp;);<br>
+err=1-cdf(<span class=quotes>'norm'</span>,r,0,1);<br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

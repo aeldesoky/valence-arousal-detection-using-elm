@@ -1,0 +1,87 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">PERCEPTRON</b>
+<td valign="baseline" align="right" class="function"><a href="../../linear/finite/index.html" target="mdsdir"><img border = 0 src="../../up.gif"></a></table>
+  <p><b>Perceptron algorithm to train binary linear classifier. </b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;perceptron(data)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;perceptron(data,options)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;perceptron(data,options,init_model)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;perceptron(data)&nbsp;uses&nbsp;the&nbsp;Perceptron&nbsp;learning&nbsp;rule</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;to&nbsp;find&nbsp;separating&nbsp;hyperplane&nbsp;from&nbsp;given&nbsp;binary&nbsp;labeled&nbsp;data.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;perceptron(data,options)&nbsp;specifies&nbsp;stopping&nbsp;condition&nbsp;of</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;the&nbsp;algorithm&nbsp;in&nbsp;structure&nbsp;options:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]...&nbsp;maximal&nbsp;number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;If&nbsp;tmax==-1&nbsp;then&nbsp;it&nbsp;only&nbsp;returns&nbsp;index&nbsp;(model.last_update)</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;of&nbsp;data&nbsp;vector&nbsp;which&nbsp;should&nbsp;be&nbsp;used&nbsp;by&nbsp;the&nbsp;algorithm&nbsp;for&nbsp;updating</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;the&nbsp;linear&nbsp;rule&nbsp;in&nbsp;the&nbsp;next&nbsp;iteration.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;perceptron(data,options,init_model)&nbsp;specifies&nbsp;initial&nbsp;model</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;which&nbsp;must&nbsp;contain:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;...&nbsp;normal&nbsp;vector.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;...&nbsp;bias&nbsp;of&nbsp;hyperplane.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;(optional)&nbsp;...&nbsp;iteration&nbsp;number.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Labeled&nbsp;(binary)&nbsp;training&nbsp;data.&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Input&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;options&nbsp;[struct]&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;(default&nbsp;tmax=inf).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;tmax==-1&nbsp;then&nbsp;it&nbsp;does&nbsp;not&nbsp;perform&nbsp;any&nbsp;iteration&nbsp;but&nbsp;returns&nbsp;only&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;index&nbsp;of&nbsp;the&nbsp;point&nbsp;which&nbsp;should&nbsp;be&nbsp;used&nbsp;to&nbsp;update&nbsp;linear&nbsp;rule.</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;init_model&nbsp;[struct]&nbsp;Initial&nbsp;model;&nbsp;must&nbsp;contain&nbsp;items</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;.W,&nbsp;.b&nbsp;and&nbsp;.t&nbsp;(see&nbsp;above).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Binary&nbsp;linear&nbsp;classifier:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Normal&nbsp;vector&nbsp;of&nbsp;hyperplane.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;hyperplane.</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.exitflag&nbsp;[1x1]&nbsp;1&nbsp;...&nbsp;perceptron&nbsp;has&nbsp;converged.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;...&nbsp;number&nbsp;of&nbsp;iterations&nbsp;exceeded&nbsp;tmax.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.t&nbsp;[int]&nbsp;Number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.last_update&nbsp;[d&nbsp;x&nbsp;1]&nbsp;Index&nbsp;of&nbsp;the&nbsp;last&nbsp;point&nbsp;used&nbsp;for&nbsp;update.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;=&nbsp;genlsdata(&nbsp;2,&nbsp;50,&nbsp;1);</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;perceptron(data)</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;ppatterns(data);&nbsp;pline(model);&nbsp;</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../../linear/finite/ekozinec.html" target="mdsbody">EKOZINEC</a>,&nbsp;<a href = "../../linear/finite/mperceptron.html" target="mdsbody">MPERCEPTRON</a>,&nbsp;<a href = "../../linear/linclass.html" target="mdsbody">LINCLASS</a>.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../../linear/finite/list/perceptron.html">perceptron.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 17-sep-2003, VF<br>
+ 16-Feb-2003, VF<br>
+ 20-Jan-2003, VF<br>
+ 7-jan-2002, VF. A new coat.<br>
+ 24. 6.00 V. Hlavac, comments polished.<br>
+ 15-dec-2000, texts, returns bad point<br>
+
+</body>
+</html>

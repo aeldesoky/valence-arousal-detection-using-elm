@@ -1,0 +1,54 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>show_denois_tuning.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=h1>%&nbsp;SHOW_DENOIS_TUNING&nbsp;Plots&nbsp;curves&nbsp;of&nbsp;tuning&nbsp;stage&nbsp;of&nbsp;Kernel&nbsp;PCA&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;and&nbsp;liner&nbsp;PCA&nbsp;trained&nbsp;for&nbsp;denosing&nbsp;of&nbsp;UPSP&nbsp;handwritten&nbsp;numerals.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;06-jun-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;28-apr-2004,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;Models&nbsp;with&nbsp;results&nbsp;of&nbsp;tuning</span><br>
+<span class=comment>%-------------------------------------------------------</span><br>
+kpca_filename&nbsp;=&nbsp;<span class=quotes>'USPSModelGreedyKPCA.mat'</span>;&nbsp;&nbsp;<span class=comment>%&nbsp;kpca&nbsp;model</span><br>
+lpca_filename&nbsp;=&nbsp;<span class=quotes>'USPSModelLinPCA.mat'</span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;linear&nbsp;PCA&nbsp;model</span><br>
+<br>
+<span class=comment>%&nbsp;Kernel&nbsp;KPCA&nbsp;</span><br>
+<span class=comment>%-------------------------------------------------------</span><br>
+load(&nbsp;kpca_filename&nbsp;);<br>
+<br>
+<span class=graph>figure</span>;&nbsp;hold&nbsp;on;&nbsp;title(<span class=quotes>'Tuning&nbsp;greedy&nbsp;KPCA'</span>);<br>
+xlabel(<span class=quotes>'\sigma'</span>);&nbsp;ylabel(<span class=quotes>'\epsilon_{MS}'</span>);<br>
+<br>
+h&nbsp;=&nbsp;[];<br>
+clear&nbsp;Str;<br>
+<span class=keyword>for</span>&nbsp;i=1:length(New_Dim_Range),<br>
+&nbsp;&nbsp;h&nbsp;=&nbsp;[h,&nbsp;<span class=graph>plot</span>(Arg_Range,&nbsp;Mse(i,:),marker_color(i)&nbsp;)];<br>
+&nbsp;&nbsp;Str{i}&nbsp;=&nbsp;<span class=io>sprintf</span>(<span class=quotes>'dim&nbsp;=&nbsp;%d'</span>,&nbsp;New_Dim_Range(i));<br>
+<span class=keyword>end</span><br>
+legend(h,Str);<br>
+<br>
+<span class=comment>%&nbsp;Linear&nbsp;PCA&nbsp;</span><br>
+<span class=comment>%-------------------------------------------------------</span><br>
+load(&nbsp;lpca_filename&nbsp;);&nbsp;<br>
+<br>
+<span class=graph>figure</span>;&nbsp;hold&nbsp;on;&nbsp;title(<span class=quotes>'Tuning&nbsp;linear&nbsp;PCA'</span>);<br>
+xlabel(<span class=quotes>'dim'</span>);&nbsp;ylabel(<span class=quotes>'\epsilon_{MS}'</span>);<br>
+<br>
+<span class=graph>plot</span>(New_Dim_Range,Mse);<br>
+<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

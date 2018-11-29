@@ -1,0 +1,96 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">SVM2</b>
+<td valign="baseline" align="right" class="function"><a href="../svm/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Learning of binary SVM classifier with L2-soft margin.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;svm2(data)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;svm2(data,options)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;function&nbsp;learns&nbsp;binary&nbsp;Support&nbsp;Vector&nbsp;Machines</span><br>
+<span class=help>&nbsp;&nbsp;classifier&nbsp;with&nbsp;L2-soft&nbsp;margin.&nbsp;The&nbsp;corresponding&nbsp;quadratic&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;programming&nbsp;task&nbsp;is&nbsp;solved&nbsp;by&nbsp;one&nbsp;of&nbsp;the&nbsp;following&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;<span class=help_field>algorithms:</span></span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;mdm&nbsp;&nbsp;...&nbsp;Mitchell-Demyanov-Malozemov&nbsp;(MDM)&nbsp;algorithm.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;imdm&nbsp;...&nbsp;Improved&nbsp;MDM&nbsp;algorithm&nbsp;(IMDM)&nbsp;(defaut).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;For&nbsp;more&nbsp;info&nbsp;refer&nbsp;to&nbsp;V.Franc:&nbsp;Optimization&nbsp;Algorithms&nbsp;for&nbsp;Kernel&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;Methods.&nbsp;Research&nbsp;report.&nbsp;CTU-CMP-2005-22.&nbsp;CTU&nbsp;FEL&nbsp;Prague.&nbsp;2005.</span><br>
+<span class=help>&nbsp;&nbsp;ftp://cmp.felk.cvut.cz/pub/cmp/articles/franc/Franc-PhD.pdf&nbsp;.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Training&nbsp;data:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;must&nbsp;equal&nbsp;1&nbsp;and/or&nbsp;2.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Control&nbsp;parameters:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.ker&nbsp;[string]&nbsp;Kernel&nbsp;identifier.&nbsp;See&nbsp;'help&nbsp;kernel'.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.arg&nbsp;[1&nbsp;x&nbsp;nargs]&nbsp;Kernel&nbsp;argument(s).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.C&nbsp;[1x2]&nbsp;Regularization&nbsp;constants&nbsp;for&nbsp;class&nbsp;1&nbsp;and&nbsp;2;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;C&nbsp;is&nbsp;[1x1]&nbsp;then&nbsp;the&nbsp;same&nbsp;C&nbsp;is&nbsp;used&nbsp;for&nbsp;both&nbsp;classes.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.solver&nbsp;[string]&nbsp;Solver&nbsp;to&nbsp;be&nbsp;used:&nbsp;'mdm',&nbsp;'imdm'&nbsp;(default).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;(default&nbsp;inf).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.tolabs&nbsp;[1x1]&nbsp;Absolute&nbsp;tolerance&nbsp;stopping&nbsp;condition&nbsp;(default&nbsp;0.0).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.tolrel&nbsp;[1x1]&nbsp;Relative&nbsp;tolerance&nbsp;stopping&nbsp;condition&nbsp;(default&nbsp;1e-3).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.thlb&nbsp;[1x1]&nbsp;Threshold&nbsp;on&nbsp;lower&nbsp;bound&nbsp;(default&nbsp;inf).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.cache&nbsp;[1x1]&nbsp;#of&nbsp;columns&nbsp;of&nbsp;kernel&nbsp;matrix&nbsp;to&nbsp;be&nbsp;cached&nbsp;(default&nbsp;1000).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.verb&nbsp;[1x1]&nbsp;If&nbsp;&gt;&nbsp;0&nbsp;then&nbsp;some&nbsp;info&nbsp;is&nbsp;displayed&nbsp;(default&nbsp;0).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Binary&nbsp;SVM&nbsp;classifier:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;1]&nbsp;Weights&nbsp;of&nbsp;support&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;decision&nbsp;function.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;nsv]&nbsp;Support&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.sv.inx&nbsp;[1&nbsp;x&nbsp;nsv]&nbsp;Indices&nbsp;of&nbsp;SVs&nbsp;(model.sv.X&nbsp;=&nbsp;data.X(:,inx)).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.nsv&nbsp;[int]&nbsp;Number&nbsp;of&nbsp;Support&nbsp;Vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.kercnt&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;kernel&nbsp;evaluations.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.trnerr&nbsp;[1x1]&nbsp;Classification&nbsp;error&nbsp;on&nbsp;training&nbsp;data.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.margin&nbsp;[1x1]&nbsp;Margin.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.options&nbsp;[struct]&nbsp;Copy&nbsp;of&nbsp;used&nbsp;options.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.cputime&nbsp;[1x1]&nbsp;Used&nbsp;CPU&nbsp;time&nbsp;in&nbsp;seconds&nbsp;(meassured&nbsp;by&nbsp;tic-toc).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.stat&nbsp;[struct]&nbsp;Statistics&nbsp;about&nbsp;optimization:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.access&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;requested&nbsp;columns&nbsp;of&nbsp;matrix&nbsp;H.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.UB&nbsp;[1x1]&nbsp;Upper&nbsp;bound&nbsp;on&nbsp;the&nbsp;optimal&nbsp;value&nbsp;of&nbsp;criterion.&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.LB&nbsp;[1x1]&nbsp;Lower&nbsp;bound&nbsp;on&nbsp;the&nbsp;optimal&nbsp;value&nbsp;of&nbsp;criterion.&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.LB_History&nbsp;[1x(t+1)]&nbsp;LB&nbsp;with&nbsp;respect&nbsp;to&nbsp;iteration.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.UB_History&nbsp;[1x(t+1)]&nbsp;UB&nbsp;with&nbsp;respect&nbsp;to&nbsp;iteration.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.NA&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;non-zero&nbsp;entries&nbsp;in&nbsp;solution.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>&nbsp;&nbsp;options&nbsp;=&nbsp;struct('ker','rbf','arg',1,'C',1);</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;svm2(data,options&nbsp;)</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;ppatterns(data);&nbsp;psvm(&nbsp;model&nbsp;);</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;See&nbsp;also</span><br>
+<span class=help>&nbsp;&nbsp;SVMCLASS,&nbsp;SVMLIGHT,&nbsp;SMO,&nbsp;GNPP.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../svm/list/svm2.html">svm2.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2005, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 07-sep-2007, VF, now it is possible to use distinct reg. constants for both classes<br>
+ 09-sep-2005, VF<br>
+ 08-aug-2005, VF<br>
+ 24-jan-2005, VF<br>
+ 29-nov-2004, VF<br>
+
+</body>
+</html>

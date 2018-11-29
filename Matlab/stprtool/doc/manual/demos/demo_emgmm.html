@@ -1,0 +1,72 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">DEMO_EMGMM</b>
+<td valign="baseline" align="right" class="function"><a href="../demos/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Demo on Expectation-Maximization (EM) algorithm.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;demo_emgmm</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;demo&nbsp;shows&nbsp;the&nbsp;Expectation-Maximization&nbsp;(EM)&nbsp;algorithm</span><br>
+<span class=help>&nbsp;&nbsp;[<a href="../references.html#Schles68" title = "" >Schles68</a>][<a href="../references.html#DLR77" title = "" >DLR77</a>]&nbsp;for&nbsp;Gaussians&nbsp;mixture&nbsp;model&nbsp;(GMM).&nbsp;The&nbsp;EM&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;fits&nbsp;the&nbsp;GMM&nbsp;to&nbsp;i.i.d.&nbsp;sample&nbsp;data&nbsp;(in&nbsp;this&nbsp;case&nbsp;only&nbsp;2D)&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;such&nbsp;that&nbsp;the&nbsp;likelihood&nbsp;is&nbsp;maximized.&nbsp;</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;found&nbsp;model&nbsp;is&nbsp;described&nbsp;by&nbsp;ellipsoids&nbsp;(shape&nbsp;of&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;covariances)&nbsp;and&nbsp;a&nbsp;crosses&nbsp;(mean&nbsp;value&nbsp;vectors).&nbsp;The&nbsp;value</span><br>
+<span class=help>&nbsp;&nbsp;of&nbsp;the&nbsp;optimized&nbsp;log-likelihood&nbsp;function&nbsp;for&nbsp;the&nbsp;current&nbsp;estimate&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;is&nbsp;displayed&nbsp;in&nbsp;the&nbsp;bottom&nbsp;part.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Control:</span></span><br>
+<span class=help>&nbsp;&nbsp;Covariance&nbsp;&nbsp;-&nbsp;Determines&nbsp;type&nbsp;of&nbsp;the&nbsp;covariance&nbsp;matrix:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Diagonal&nbsp;(independent&nbsp;features),</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Full&nbsp;(correlated&nbsp;features).</span><br>
+<span class=help>&nbsp;&nbsp;Components&nbsp;&nbsp;-&nbsp;Number&nbsp;of&nbsp;components&nbsp;(Gaussians)&nbsp;in&nbsp;the&nbsp;mixture.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;Iterations&nbsp;&nbsp;-&nbsp;Number&nbsp;of&nbsp;iterations&nbsp;in&nbsp;one&nbsp;step.</span><br>
+<span class=help>&nbsp;&nbsp;Random&nbsp;init&nbsp;-&nbsp;the&nbsp;initial&nbsp;model&nbsp;is&nbsp;randomly&nbsp;generated&nbsp;and/or&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;first&nbsp;n&nbsp;training&nbsp;samples&nbsp;are&nbsp;taken&nbsp;as&nbsp;the</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mean&nbsp;vectors.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;FIG2EPS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Export&nbsp;screen&nbsp;to&nbsp;the&nbsp;PostScript&nbsp;file.</span><br>
+<span class=help>&nbsp;&nbsp;Save&nbsp;model&nbsp;&nbsp;-&nbsp;Save&nbsp;current&nbsp;model&nbsp;to&nbsp;file.</span><br>
+<span class=help>&nbsp;&nbsp;Load&nbsp;data&nbsp;&nbsp;&nbsp;-&nbsp;Load&nbsp;input&nbsp;point&nbsp;sets&nbsp;from&nbsp;file.</span><br>
+<span class=help>&nbsp;&nbsp;Create&nbsp;data&nbsp;-&nbsp;Invoke&nbsp;program&nbsp;for&nbsp;creating&nbsp;point&nbsp;sets.</span><br>
+<span class=help>&nbsp;&nbsp;Reset&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Set&nbsp;the&nbsp;tested&nbsp;algorithm&nbsp;to&nbsp;the&nbsp;initial&nbsp;state.</span><br>
+<span class=help>&nbsp;&nbsp;Play&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Run&nbsp;the&nbsp;tested&nbsp;algorithm.</span><br>
+<span class=help>&nbsp;&nbsp;Stop&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Stop&nbsp;the&nbsp;running&nbsp;algorithm.</span><br>
+<span class=help>&nbsp;&nbsp;Step&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Perform&nbsp;only&nbsp;one&nbsp;step.</span><br>
+<span class=help>&nbsp;&nbsp;Info&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Info&nbsp;box.</span><br>
+<span class=help>&nbsp;&nbsp;Close&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Close&nbsp;the&nbsp;program.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also><a href = "../probab/estimation/emgmm.html" target="mdsbody">EMGMM</a>.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../demos/list/demo_emgmm.html">demo_emgmm.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 19-sep-2003, VF<br>
+ 11-june-2001, V.Franc, comments added.<br>
+ 27.02.00 V. Franc<br>
+  5. 4.00 V. Franc<br>
+ 23.06.00 V. Hlavac Comments polished. Message when no data loaded.<br>
+                    Export of the solution to global variables.<br>
+ 27-mar-2001, V.Franc, Graph og log-likelihood function added<br>
+
+</body>
+</html>

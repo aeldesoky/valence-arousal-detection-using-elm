@@ -1,0 +1,757 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>demo_mmgauss.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_name>demo_mmgauss</span>(<span class=defun_in>action,hfigure,varargin</span>)<br>
+<span class=h1>%&nbsp;DEMO_MMGAUSS&nbsp;Demo&nbsp;on&nbsp;minimax&nbsp;estimation&nbsp;for&nbsp;Gaussian.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;demo_mmgauss</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;demo_mmgauss&nbsp;demonstrates&nbsp;the&nbsp;minimax&nbsp;estimation&nbsp;algorithm&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;[SH10]&nbsp;for&nbsp;bivariate&nbsp;Gaussian&nbsp;distribution.&nbsp;The&nbsp;training&nbsp;data&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;is&nbsp;supposed&nbsp;to&nbsp;contain&nbsp;samples&nbsp;which&nbsp;well&nbsp;describing&nbsp;the&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;probability&nbsp;distribution&nbsp;function&nbsp;(pdf),&nbsp;i.e.,&nbsp;which&nbsp;have&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;high&nbsp;value&nbsp;of&nbsp;pdf.&nbsp;The&nbsp;samples&nbsp;do&nbsp;not&nbsp;have&nbsp;to&nbsp;be&nbsp;i.i.d.&nbsp;in&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;contrast&nbsp;to&nbsp;the&nbsp;ML&nbsp;estimation.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;estimated&nbsp;model&nbsp;is&nbsp;visualized&nbsp;as&nbsp;an&nbsp;ellipsoid:</span><br>
+<span class=help>%&nbsp;&nbsp;shape&nbsp;is&nbsp;influenced&nbsp;by&nbsp;the&nbsp;covariance&nbsp;matrix&nbsp;and&nbsp;the&nbsp;center</span><br>
+<span class=help>%&nbsp;&nbsp;corresponds&nbsp;to&nbsp;the&nbsp;mean&nbsp;vector.</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;lower&nbsp;(red)&nbsp;and&nbsp;upper&nbsp;(blue)&nbsp;bound&nbsp;on&nbsp;the&nbsp;optimal&nbsp;value&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;of&nbsp;the&nbsp;optimized&nbsp;minimax&nbsp;criterion&nbsp;is&nbsp;displayed&nbsp;at&nbsp;the&nbsp;bottom</span><br>
+<span class=help>%&nbsp;&nbsp;part&nbsp;of&nbsp;the&nbsp;window.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Control:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Epsilon&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Stopping&nbsp;condition.&nbsp;The&nbsp;algorithm&nbsp;stops&nbsp;if&nbsp;the&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;difference&nbsp;between&nbsp;lower&nbsp;and&nbsp;the&nbsp;upper&nbsp;bound</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;less&nbsp;then&nbsp;the&nbsp;epsilon.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;Iterations&nbsp;&nbsp;-&nbsp;Number&nbsp;of&nbsp;iterations&nbsp;after&nbsp;which&nbsp;the&nbsp;model&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;re-displayed.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;FIG2EPS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Exports&nbsp;figure&nbsp;to&nbsp;the&nbsp;PostScript&nbsp;file.</span><br>
+<span class=help>%&nbsp;&nbsp;Load&nbsp;data&nbsp;&nbsp;&nbsp;-&nbsp;Loads&nbsp;input&nbsp;data&nbsp;sample&nbsp;from&nbsp;file.</span><br>
+<span class=help>%&nbsp;&nbsp;Create&nbsp;data&nbsp;-&nbsp;Invokes&nbsp;program&nbsp;for&nbsp;creating&nbsp;data&nbsp;sample.</span><br>
+<span class=help>%&nbsp;&nbsp;Reset&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Resets&nbsp;the&nbsp;demo.</span><br>
+<span class=help>%&nbsp;&nbsp;Play&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Runs&nbsp;the&nbsp;algorithm.</span><br>
+<span class=help>%&nbsp;&nbsp;Stop&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Stops&nbsp;the&nbsp;running&nbsp;algorithm.</span><br>
+<span class=help>%&nbsp;&nbsp;Step&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Performs&nbsp;one&nbsp;iteration&nbsp;of&nbsp;the&nbsp;algorithm.</span><br>
+<span class=help>%&nbsp;&nbsp;Info&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Invokes&nbsp;the&nbsp;info&nbsp;box.</span><br>
+<span class=help>%&nbsp;&nbsp;Close&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Closes&nbsp;the&nbsp;program.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;MMGAUSS.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;2-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;19-sep-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;3-mar-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;11-june-2001,&nbsp;V.Franc,&nbsp;comments&nbsp;added.</span><br>
+<span class=help1>%&nbsp;24.&nbsp;6.00&nbsp;V.&nbsp;Hlavac,&nbsp;comments&nbsp;polished.</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;Used&nbsp;functions:&nbsp;PPOINTS,&nbsp;ELLIPS</span><br>
+<br>
+BORDER=0.25;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;space&nbsp;between&nbsp;window&nbsp;limits&nbsp;and&nbsp;the&nbsp;points</span><br>
+CENTERSIZE=10;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;size&nbsp;of&nbsp;center&nbsp;point</span><br>
+LINE_WIDTH=1;<br>
+AXIST_ADD=10;<br>
+DATA_IDENT=<span class=quotes>'Finite&nbsp;sets,&nbsp;Enumeration'</span>;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;file&nbsp;identifier</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;action&nbsp;=&nbsp;<span class=quotes>'initialize'</span>;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;what&nbsp;action&nbsp;is&nbsp;required&nbsp;?</span><br>
+<span class=keyword>switch</span>&nbsp;lower(action)<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'initialize'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Initialize&nbsp;user&nbsp;interface&nbsp;control&nbsp;and&nbsp;figure&nbsp;window&nbsp;================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Figure&nbsp;=============================================================</span><br>
+&nbsp;&nbsp;&nbsp;left=0.2;<br>
+&nbsp;&nbsp;&nbsp;width=0.6;<br>
+&nbsp;&nbsp;&nbsp;bottom=0.1;<br>
+&nbsp;&nbsp;&nbsp;height=0.8;<br>
+&nbsp;&nbsp;&nbsp;hfigure=<span class=graph>figure</span>(<span class=quotes>'Name'</span>,<span class=quotes>'Minimax&nbsp;learning'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'NumberTitle'</span>,<span class=quotes>'off'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'tag'</span>,<span class=quotes>'Demo_mmgauss'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'doublebuffer'</span>,<span class=quotes>'on'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'backingstore'</span>,<span class=quotes>'off'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Axes&nbsp;===============================================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;axes&nbsp;with&nbsp;prob.</span><br>
+&nbsp;&nbsp;&nbsp;left=0.1;<br>
+&nbsp;&nbsp;&nbsp;width=0.65;<br>
+&nbsp;&nbsp;&nbsp;bottom=0.1;<br>
+&nbsp;&nbsp;&nbsp;height=0.28;<br>
+&nbsp;&nbsp;&nbsp;haprob=<span class=graph>axes</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'NextPlot'</span>,<span class=quotes>'add'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height]);<br>
+&nbsp;&nbsp;&nbsp;title(<span class=quotes>'blue&nbsp;-&nbsp;log&nbsp;p(x),&nbsp;red&nbsp;-&nbsp;\Sigma&nbsp;\alpha(x)&nbsp;log&nbsp;p(x)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Parent'</span>,haprob,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'VerticalAlignment'</span>,<span class=quotes>'bottom'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'HorizontalAlignment'</span>,<span class=quotes>'left'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[0&nbsp;1&nbsp;0]);<br>
+&nbsp;&nbsp;&nbsp;htxsteps=xlabel(<span class=quotes>'step&nbsp;number'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;points</span><br>
+&nbsp;&nbsp;&nbsp;height=0.45;<br>
+&nbsp;&nbsp;&nbsp;bottom=0.5;<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'XTick',[],'YTick',[],&nbsp;...</span><br>
+&nbsp;&nbsp;&nbsp;haset=<span class=graph>axes</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'NextPlot'</span>,<span class=quotes>'add'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height]);<br>
+&nbsp;&nbsp;&nbsp;ylabel(<span class=quotes>'feature&nbsp;y'</span>);<br>
+&nbsp;&nbsp;&nbsp;xlabel(<span class=quotes>'feature&nbsp;x'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Buttons&nbsp;===========================================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;--&nbsp;Export&nbsp;to&nbsp;EPS&nbsp;---------</span><br>
+&nbsp;&nbsp;&nbsp;width=0.1;<br>
+&nbsp;&nbsp;&nbsp;left=0.75-width;<br>
+&nbsp;&nbsp;&nbsp;bottom=0.95;<br>
+&nbsp;&nbsp;&nbsp;height=0.04;<br>
+&nbsp;&nbsp;&nbsp;hbtclose&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'fig2eps(gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'FIG2EPS'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%----------------------------------</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Close&nbsp;button</span><br>
+&nbsp;&nbsp;&nbsp;left=0.8;<br>
+&nbsp;&nbsp;&nbsp;bottom=0.05;<br>
+&nbsp;&nbsp;&nbsp;height=0.05;<br>
+&nbsp;&nbsp;&nbsp;width=0.15;<br>
+&nbsp;&nbsp;&nbsp;hbtclose&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'close(gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Close'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Info&nbsp;button:&nbsp;call&nbsp;stanard&nbsp;info&nbsp;box</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+1.5*height;<br>
+&nbsp;&nbsp;&nbsp;hbtinfo&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_mmgauss('</span><span class=quotes>'info'</span><span class=quotes>',gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Info'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Step&nbsp;button:&nbsp;perform&nbsp;one&nbsp;adaptation&nbsp;step</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+1.5*height;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hbtstep&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Step'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Interruptible'</span>,<span class=quotes>'off'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_mmgauss('</span><span class=quotes>'step'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Stop&nbsp;button:&nbsp;stop&nbsp;process&nbsp;of&nbsp;adaptation</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+height;<br>
+&nbsp;&nbsp;&nbsp;hbtstop&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Stop'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'set(gcbo,'</span><span class=quotes>'UserData'</span><span class=quotes>',1)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Play&nbsp;button:&nbsp;start&nbsp;up&nbsp;adaptation</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+height;<br>
+&nbsp;&nbsp;&nbsp;hbtplay&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Play'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_mmgauss('</span><span class=quotes>'play'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Reset&nbsp;button:&nbsp;set&nbsp;up&nbsp;t&nbsp;=&nbsp;0</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+height;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hbtreset&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Reset'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_mmgauss('</span><span class=quotes>'reset'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Create&nbsp;data</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+1.5*height;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hbtcreat&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Create&nbsp;data'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_mmgauss('</span><span class=quotes>'creatdata'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Load&nbsp;data</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+1*height;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hbtload&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Load&nbsp;data'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_mmgauss('</span><span class=quotes>'getfile'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Edit&nbsp;line&nbsp;==========================================================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;epsilon</span><br>
+&nbsp;&nbsp;&nbsp;bottom=0.95-height;<br>
+&nbsp;&nbsp;&nbsp;htxeps=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'text'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;0.9*height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'epsilon'</span>);<br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-height;<br>
+&nbsp;&nbsp;&nbsp;hedeps&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'edit'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'0.1'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Iterations</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-1.5*height;<br>
+&nbsp;&nbsp;&nbsp;htxiter=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'text'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;0.9*height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Iterations'</span>);<br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-height;<br>
+&nbsp;&nbsp;&nbsp;hediter&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'edit'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'1'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Texts&nbsp;===========================================================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;htitle1=title(<span class=quotes>'No&nbsp;data&nbsp;loaded'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Parent'</span>,haset,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'VerticalAlignment'</span>,<span class=quotes>'bottom'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'HorizontalAlignment'</span>,<span class=quotes>'left'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[0&nbsp;1&nbsp;0]);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%=====================================================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Store&nbsp;handlers</span><br>
+&nbsp;&nbsp;&nbsp;handlers=struct(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ellipse'</span>,struct(<span class=quotes>'handler'</span>,-1,<span class=quotes>'center'</span>,-1,<span class=quotes>'mi'</span>,[],<span class=quotes>'sigma'</span>,[],<span class=quotes>'t'</span>,0,<span class=quotes>'N'</span>,[]),...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'plot1'</span>,struct(<span class=quotes>'handler'</span>,-1,<span class=quotes>'topps'</span>,[],<span class=quotes>'axist'</span>,0,<span class=quotes>'time'</span>,[]),...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'plot2'</span>,struct(<span class=quotes>'handler'</span>,-1,<span class=quotes>'minps'</span>,[]),...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'title1'</span>,htitle1,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btstep'</span>,hbtstep,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btstop'</span>,hbtstop,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btclose'</span>,hbtclose,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btplay'</span>,hbtplay,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btreset'</span>,hbtreset,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btinfo'</span>,hbtinfo,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btload'</span>,hbtload,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btcreat'</span>,hbtcreat,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'txsteps'</span>,htxsteps,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'txeps'</span>,htxeps,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'txiter'</span>,htxiter,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'aset'</span>,haset,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'aprob'</span>,haprob,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'editer'</span>,hediter,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'edeps'</span>,hedeps);<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'UserData'</span>,handlers)<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Reset</span><br>
+&nbsp;&nbsp;&nbsp;demo_mmgauss(<span class=quotes>'reset'</span>,hfigure);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Put&nbsp;figure&nbsp;on&nbsp;desktop</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'Visible'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;drawnow;<br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'play'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;One&nbsp;step&nbsp;learning&nbsp;==============================================</span><br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;data&nbsp;set</span><br>
+&nbsp;&nbsp;&nbsp;sets=<span class=graph>get</span>(h.aset,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;are&nbsp;data&nbsp;sets&nbsp;loaded&nbsp;?</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isempty(sets)==1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=jump>return</span>;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;disable&nbsp;button</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>([h.editer,h.edeps,h.btstep,h.btclose,h.btplay,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.btreset,h.btinfo,h.btload,h.btcreat,h.txeps,h.txiter],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;enable&nbsp;stop&nbsp;button</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.btstop,<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;#&nbsp;of&nbsp;iter&nbsp;and&nbsp;epsilon</span><br>
+&nbsp;&nbsp;&nbsp;iter=str2num(<span class=graph>get</span>(h.editer,<span class=quotes>'String'</span>));<br>
+&nbsp;&nbsp;&nbsp;epsilon=str2num(<span class=graph>get</span>(h.edeps,<span class=quotes>'String'</span>));<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;set&nbsp;stop&nbsp;button</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.btstop,<span class=quotes>'UserData'</span>,0);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;start&nbsp;point&nbsp;for&nbsp;plot</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;h.ellipse.t==0&nbsp;&&nbsp;iter&nbsp;&gt;&nbsp;1,<br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[mi,sigma,solution,minp,topp]=mmln(sets.X,epsilon,1,0);</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options.eps&nbsp;=&nbsp;epsilon;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options.tmax&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model=mmgauss(sets.X,options);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mi&nbsp;=&nbsp;model.Mean;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sigma&nbsp;=&nbsp;model.Cov;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minp&nbsp;=&nbsp;model.lower_bound(<span class=keyword>end</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;topp&nbsp;=&nbsp;model.upper_bound(<span class=keyword>end</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;solution&nbsp;=&nbsp;model.exitflag;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.plot1.time=[1];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.plot2.minps=[minp];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.plot1.topps=[topp];<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Play&nbsp;-&nbsp;adaptation&nbsp;process</span><br>
+&nbsp;&nbsp;&nbsp;play=1;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>while</span>&nbsp;play==1&nbsp;&&nbsp;<span class=graph>get</span>(h.btstop,<span class=quotes>'UserData'</span>)==0,<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;perform&nbsp;one&nbsp;learning&nbsp;step</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[mi,sigma,solution,minp,topp,h.ellipse.N,h.ellipse.t]=...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mmln(sets.X,epsilon,iter,h.ellipse.t,h.ellipse.N);</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;options.tmax&nbsp;=&nbsp;iter+h.ellipse.t;<br>
+&nbsp;&nbsp;&nbsp;options.eps&nbsp;=&nbsp;epsilon;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;h.ellipse.t&nbsp;==&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model=mmgauss(sets.X,options);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;init_model.t&nbsp;=&nbsp;h.ellipse.t;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;init_model.Alpha&nbsp;=&nbsp;h.ellipse.N;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model=mmgauss(sets.X,options,init_model);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;mi=&nbsp;model.Mean;<br>
+&nbsp;&nbsp;&nbsp;sigma&nbsp;=&nbsp;model.Cov;<br>
+&nbsp;&nbsp;&nbsp;solution&nbsp;=&nbsp;model.exitflag;<br>
+&nbsp;&nbsp;&nbsp;minp&nbsp;=&nbsp;model.lower_bound(<span class=keyword>end</span>);<br>
+&nbsp;&nbsp;&nbsp;topp&nbsp;=&nbsp;model.upper_bound(<span class=keyword>end</span>);<br>
+&nbsp;&nbsp;&nbsp;h.ellipse.N&nbsp;=&nbsp;model.Alpha;<br>
+&nbsp;&nbsp;&nbsp;h.ellipse.t&nbsp;=&nbsp;model.t;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text=<span class=io>sprintf</span>(<span class=quotes>'iteration&nbsp;t=%d&nbsp;'</span>,h.ellipse.t);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;solution==1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text=strcat(text,<span class=quotes>',&nbsp;algorithm&nbsp;has&nbsp;converged.'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;play=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;add&nbsp;new&nbsp;value&nbsp;to&nbsp;plot</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.plot1.time=[h.plot1.time,h.ellipse.t];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.plot2.minps=[h.plot2.minps,minp];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.plot1.topps=[h.plot1.topps,topp];<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;is&nbsp;axis&nbsp;to&nbsp;be&nbsp;changed&nbsp;?</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;h.ellipse.t&nbsp;&gt;&nbsp;h.plot1.axist,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.plot1.axist=h.ellipse.t+iter*AXIST_ADD;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.aprob,<span class=quotes>'XLim'</span>,[1&nbsp;h.plot1.axist]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.plot2.handler,<span class=quotes>'XData'</span>,h.plot1.time,<span class=quotes>'YData'</span>,h.plot2.minps,<span class=quotes>'Visible'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.plot1.handler,<span class=quotes>'XData'</span>,h.plot1.time,<span class=quotes>'YData'</span>,h.plot1.topps,<span class=quotes>'Visible'</span>,<span class=quotes>'on'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;erase&nbsp;old&nbsp;ellipse,&nbsp;compute&nbsp;and&nbsp;plot&nbsp;new&nbsp;one</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.ellipse.center,<span class=quotes>'XData'</span>,mi(1),<span class=quotes>'YData'</span>,mi(2),<span class=quotes>'Visible'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;r=sqrt(max(mahalan(sets.X,mi,sigma)));<br>
+<span class=comment>%%%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[x,y]=ellipse(inv(sigma),50,r,mi);</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[x,y]=ellips(mi,inv(sigma),r,40);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.ellipse.handler,<span class=quotes>'XData'</span>,x,<span class=quotes>'YData'</span>,y,<span class=quotes>'Visible'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;comment</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.txsteps,<span class=quotes>'String'</span>,text);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;store&nbsp;data</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'UserData'</span>,h);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;flush&nbsp;it&nbsp;on&nbsp;desktop</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;drawnow;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;disable&nbsp;button</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>([h.edeps,h.editer,h.btstep,h.btclose,h.btplay,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.btreset,h.btinfo,h.btload,h.btcreat,h.txeps,h.txiter],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;enable&nbsp;stop&nbsp;button</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.btstop,<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>);<br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'step'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;One&nbsp;step&nbsp;learning&nbsp;==============================================</span><br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;data&nbsp;set</span><br>
+&nbsp;&nbsp;&nbsp;sets=<span class=graph>get</span>(h.aset,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;are&nbsp;data&nbsp;sets&nbsp;loaded&nbsp;?</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isempty(sets)==1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=jump>return</span>;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;#&nbsp;of&nbsp;iter&nbsp;and&nbsp;epsilon</span><br>
+&nbsp;&nbsp;&nbsp;iter=str2num(<span class=graph>get</span>(h.editer,<span class=quotes>'String'</span>));<br>
+&nbsp;&nbsp;&nbsp;epsilon=str2num(<span class=graph>get</span>(h.edeps,<span class=quotes>'String'</span>));<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;start&nbsp;point&nbsp;for&nbsp;plot</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;h.ellipse.t==0&nbsp;&&nbsp;iter&nbsp;&gt;&nbsp;1,<br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[mi,sigma,solution,minp,topp]=mmln(sets.X,epsilon,1,0);</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options.eps&nbsp;=&nbsp;epsilon;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options.tmax&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model=mmgauss(sets.X,options);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mi&nbsp;=&nbsp;model.Mean;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sigma&nbsp;=&nbsp;model.Cov;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minp&nbsp;=&nbsp;model.lower_bound(<span class=keyword>end</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;topp&nbsp;=&nbsp;model.upper_bound(<span class=keyword>end</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;solution&nbsp;=&nbsp;model.exitflag;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.plot1.time=[1];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.plot2.minps=[minp];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.plot1.topps=[topp];<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;perform&nbsp;one&nbsp;learning&nbsp;step</span><br>
+<br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;[mi,sigma,solution,minp,topp,h.ellipse.N,h.ellipse.t]=...</span><br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mmln(sets.X,epsilon,iter,h.ellipse.t,h.ellipse.N);</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;options.tmax&nbsp;=&nbsp;iter+h.ellipse.t;<br>
+&nbsp;&nbsp;&nbsp;options.eps&nbsp;=&nbsp;epsilon;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;h.ellipse.t&nbsp;==&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model=mmgauss(sets.X,options);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;init_model.t&nbsp;=&nbsp;h.ellipse.t;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;init_model.Alpha&nbsp;=&nbsp;h.ellipse.N;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model=mmgauss(sets.X,options,init_model);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;mi=&nbsp;model.Mean;<br>
+&nbsp;&nbsp;&nbsp;sigma&nbsp;=&nbsp;model.Cov;<br>
+&nbsp;&nbsp;&nbsp;solution&nbsp;=&nbsp;model.exitflag;<br>
+&nbsp;&nbsp;&nbsp;minp&nbsp;=&nbsp;model.lower_bound(<span class=keyword>end</span>);<br>
+&nbsp;&nbsp;&nbsp;topp&nbsp;=&nbsp;model.upper_bound(<span class=keyword>end</span>);<br>
+&nbsp;&nbsp;&nbsp;h.ellipse.N&nbsp;=&nbsp;model.Alpha;<br>
+&nbsp;&nbsp;&nbsp;h.ellipse.t&nbsp;=&nbsp;model.t;<br>
+<br>
+&nbsp;&nbsp;&nbsp;text=<span class=io>sprintf</span>(<span class=quotes>'iteration&nbsp;t=%d&nbsp;'</span>,h.ellipse.t);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;solution==1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text=strcat(text,<span class=quotes>',solution&nbsp;was&nbsp;found.'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;add&nbsp;new&nbsp;value&nbsp;to&nbsp;plot</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.plot1.time=[h.plot1.time,h.ellipse.t];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.plot2.minps=[h.plot2.minps,minp];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.plot1.topps=[h.plot1.topps,topp];<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;is&nbsp;axis&nbsp;to&nbsp;be&nbsp;changed&nbsp;?</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;h.ellipse.t&nbsp;&gt;&nbsp;h.plot1.axist,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.plot1.axist=h.ellipse.t+iter*AXIST_ADD;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.aprob,<span class=quotes>'XLim'</span>,[1&nbsp;h.plot1.axist]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.plot2.handler,<span class=quotes>'XData'</span>,h.plot1.time,<span class=quotes>'YData'</span>,h.plot2.minps,<span class=quotes>'Visible'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.plot1.handler,<span class=quotes>'XData'</span>,h.plot1.time,<span class=quotes>'YData'</span>,h.plot1.topps,<span class=quotes>'Visible'</span>,<span class=quotes>'on'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;erase&nbsp;old&nbsp;ellipse,&nbsp;compute&nbsp;and&nbsp;plot&nbsp;new&nbsp;one</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.ellipse.center,<span class=quotes>'XData'</span>,mi(1),<span class=quotes>'YData'</span>,mi(2),<span class=quotes>'Visible'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;r=sqrt(max(mahalan(sets.X,mi,sigma)));<br>
+<span class=comment>%%%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[x,y]=ellipse(inv(sigma),50,r,mi);</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[x,y]=ellips(mi,inv(sigma),r,40);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.ellipse.handler,<span class=quotes>'XData'</span>,x,<span class=quotes>'YData'</span>,y,<span class=quotes>'Visible'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;comment</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.txsteps,<span class=quotes>'String'</span>,text);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;flush&nbsp;it&nbsp;on&nbsp;desktop</span><br>
+&nbsp;&nbsp;&nbsp;drawnow;<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'UserData'</span>,h);<br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'redraw'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Redraw&nbsp;contents&nbsp;of&nbsp;axes&nbsp;====================================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;uicontrol&nbsp;handlers</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;sets&nbsp;with&nbsp;points</span><br>
+&nbsp;&nbsp;&nbsp;sets=<span class=graph>get</span>(h.aset,<span class=quotes>'UserData'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isempty(sets)==1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=jump>return</span>;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;clears&nbsp;axes</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>axes</span>(h.aset);<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(<span class=graph>get</span>(h.aset,<span class=quotes>'Children'</span>),<span class=quotes>'EraseMode'</span>,<span class=quotes>'normal'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%%%&nbsp;&nbsp;&nbsp;cla;</span><br>
+&nbsp;&nbsp;&nbsp;clrchild(h.aset);<br>
+&nbsp;&nbsp;&nbsp;h.ellipse.handler=<span class=graph>plot</span>([0],[0],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Parent'</span>,h.aset,<span class=quotes>'LineWidth'</span>,LINE_WIDTH,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'EraseMode'</span>,<span class=quotes>'xor'</span>,<span class=quotes>'Color'</span>,<span class=quotes>'r'</span>,<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>);<br>
+&nbsp;&nbsp;&nbsp;h.ellipse.center=<span class=graph>line</span>(0,0,<span class=quotes>'Marker'</span>,<span class=quotes>'+'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'EraseMode'</span>,<span class=quotes>'xor'</span>,<span class=quotes>'Color'</span>,<span class=quotes>'r'</span>,<span class=quotes>'MarkerSize'</span>,CENTERSIZE,<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;win=cmpwin(min(sets.X<span class=quotes>'),max(sets.X'</span>),BORDER,BORDER);<br>
+<span class=comment>%%%&nbsp;&nbsp;&nbsp;axis(win);</span><br>
+&nbsp;&nbsp;&nbsp;setaxis(h.aset,win);<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>axes</span>(h.aset);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;plot&nbsp;mixture</span><br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;pplot(sets.X,sets.I);</span><br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;ppoints(sets.X,sets.I);</span><br>
+&nbsp;&nbsp;&nbsp;ppatterns(sets.X);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'UserData'</span>,h);<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'getfile'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Invoke&nbsp;standard&nbsp;open&nbsp;file&nbsp;dialog&nbsp;====================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Opens&nbsp;file&nbsp;and&nbsp;checks&nbsp;if&nbsp;contains&nbsp;appropriate&nbsp;data,&nbsp;if&nbsp;yes&nbsp;than&nbsp;loads&nbsp;data.</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;change&nbsp;path&nbsp;to&nbsp;directory</span><br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;wres=what('minimax');</span><br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;cd(wres.path);</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;[name,path]=uigetfile(<span class=quotes>'*.mat'</span>,<span class=quotes>'Open&nbsp;file'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;name~=0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.pathname=strcat(path,name);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.path=path;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.name=name;<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;checkdat(file.pathname,DATA_IDENT,2,[0])==1,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;check2ddata(file.pathname),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.btload,<span class=quotes>'UserData'</span>,file);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_mmgauss(<span class=quotes>'loadsets'</span>,hfigure);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;errordlg(<span class=quotes>'This&nbsp;file&nbsp;does&nbsp;not&nbsp;contain&nbsp;required&nbsp;data.'</span>,<span class=quotes>'Bad&nbsp;file'</span>,<span class=quotes>'modal'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'loadsets'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Load&nbsp;sets&nbsp;==================================================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Get&nbsp;file&nbsp;name&nbsp;from&nbsp;the&nbsp;pop&nbsp;up&nbsp;menu&nbsp;according&nbsp;to&nbsp;menu&nbsp;pointer.</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Get&nbsp;file&nbsp;name&nbsp;with&nbsp;sets</span><br>
+&nbsp;&nbsp;&nbsp;file=<span class=graph>get</span>(h.btload,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Load&nbsp;sets</span><br>
+&nbsp;&nbsp;&nbsp;sets=load(file.pathname);<br>
+&nbsp;&nbsp;&nbsp;sets.I&nbsp;=&nbsp;sets.y;<br>
+&nbsp;&nbsp;&nbsp;sets.K&nbsp;=&nbsp;size(sets.X,2);<br>
+&nbsp;&nbsp;&nbsp;sets.N&nbsp;=&nbsp;2;<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;store&nbsp;loaded&nbsp;sets</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.aset,<span class=quotes>'UserData'</span>,sets);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;call&nbsp;reset</span><br>
+&nbsp;&nbsp;&nbsp;demo_mmgauss(<span class=quotes>'reset'</span>,hfigure);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;call&nbsp;redraw</span><br>
+&nbsp;&nbsp;&nbsp;demo_mmgauss(<span class=quotes>'redraw'</span>,hfigure);<br>
+<br>
+&nbsp;&nbsp;&nbsp;drawnow;<br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'reset'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Reset&nbsp;adaptation&nbsp;process,&nbsp;set&nbsp;up&nbsp;t=0&nbsp;================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;handlers</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;file</span><br>
+&nbsp;&nbsp;&nbsp;file=<span class=graph>get</span>(h.btload,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;data&nbsp;set</span><br>
+&nbsp;&nbsp;&nbsp;sets=<span class=graph>get</span>(h.aset,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;zeroes&nbsp;parameters&nbsp;of&nbsp;the&nbsp;separation&nbsp;line</span><br>
+&nbsp;&nbsp;&nbsp;h.ellipse.mi=[];<br>
+&nbsp;&nbsp;&nbsp;h.ellipse.sigma=[];<br>
+&nbsp;&nbsp;&nbsp;h.ellipse.t=0;<br>
+&nbsp;&nbsp;&nbsp;h.ellipse.N=[];<br>
+&nbsp;&nbsp;&nbsp;h.plot1.topps=[];<br>
+&nbsp;&nbsp;&nbsp;h.plot2.minps=[];<br>
+&nbsp;&nbsp;&nbsp;h.plot1.time=[];<br>
+&nbsp;&nbsp;&nbsp;h.plot1.axist=0;<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;comment</span><br>
+&nbsp;&nbsp;&nbsp;text=<span class=io>sprintf</span>(<span class=quotes>'iteration&nbsp;t=0&nbsp;'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.txsteps,<span class=quotes>'String'</span>,text);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;hide&nbsp;ellipse</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;h.ellipse.handler==-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.ellipse.handler=<span class=graph>plot</span>([0],[0],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Parent'</span>,h.aset,<span class=quotes>'LineWidth'</span>,LINE_WIDTH,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'EraseMode'</span>,<span class=quotes>'xor'</span>,<span class=quotes>'Color'</span>,<span class=quotes>'k'</span>,<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.ellipse.center=<span class=graph>line</span>(0,0,<span class=quotes>'Marker'</span>,<span class=quotes>'x'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'EraseMode'</span>,<span class=quotes>'xor'</span>,<span class=quotes>'Color'</span>,<span class=quotes>'k'</span>,<span class=quotes>'MarkerSize'</span>,CENTERSIZE,<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.ellipse.handler,<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.ellipse.center,<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;<span class=comment>%&nbsp;if&nbsp;h.ellipse.handler~=-1</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;clear&nbsp;axes&nbsp;prob.</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>axes</span>(h.aprob);<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>cla</span>;<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>axis</span>&nbsp;auto;<br>
+&nbsp;&nbsp;&nbsp;h.plot1.handler=<span class=graph>plot</span>([0],[0],<span class=quotes>'b'</span>,<span class=quotes>'Parent'</span>,h.aprob,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'EraseMode'</span>,<span class=quotes>'background'</span>,<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>);<br>
+&nbsp;&nbsp;&nbsp;h.plot2.handler=<span class=graph>plot</span>([0],[0],<span class=quotes>'r'</span>,<span class=quotes>'Parent'</span>,h.aprob,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'EraseMode'</span>,<span class=quotes>'background'</span>,<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;set&nbsp;up&nbsp;handlers&nbsp;and&nbsp;flush&nbsp;queue&nbsp;with&nbsp;graph.&nbsp;objects</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'UserData'</span>,h);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;creat&nbsp;comment</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>axes</span>(h.aset);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isempty(sets)==0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.title1,<span class=quotes>'String'</span>,<span class=io>sprintf</span>(<span class=quotes>'Data&nbsp;file:&nbsp;%s,&nbsp;%d&nbsp;vectors'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.name,sum(sets.K)));&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.title1,<span class=quotes>'String'</span>,<span class=quotes>'No&nbsp;data&nbsp;loaded'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pos=<span class=graph>get</span>(h.aset,<span class=quotes>'Position'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fsize=min(pos(3),pos(4))/8;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>axis</span>([-1&nbsp;1&nbsp;-1&nbsp;1]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=eval>builtin</span>(<span class=quotes>'text'</span>,0,0,<span class=quotes>'Press&nbsp;'</span><span class=quotes>'Load&nbsp;data'</span><span class=quotes>'&nbsp;button.'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'HorizontalAlignment'</span>,<span class=quotes>'center'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'FontUnits'</span>,<span class=quotes>'normalized'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Clipping'</span>,<span class=quotes>'on'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'FontSize'</span>,fsize);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=eval>builtin</span>(<span class=quotes>'text'</span>,0,-fsize*2,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Load&nbsp;sample&nbsp;data&nbsp;from&nbsp;../toolboxroot/data/mm\_samples/&nbsp;'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'HorizontalAlignment'</span>,<span class=quotes>'center'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'FontUnits'</span>,<span class=quotes>'normalized'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Clipping'</span>,<span class=quotes>'on'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'FontSize'</span>,fsize*0.65);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;drawnow;<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'creatdata'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Invoke&nbsp;data&nbsp;set&nbsp;creator&nbsp;============================================</span><br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;creatset('finite',1,'demo_mmgauss','created',hfigure);</span><br>
+&nbsp;&nbsp;&nbsp;createdata(<span class=quotes>'finite'</span>,1,<span class=quotes>'demo_mmgauss'</span>,<span class=quotes>'created'</span>,hfigure);<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'created'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Load&nbsp;new&nbsp;created&nbsp;data&nbsp;set&nbsp;===========================================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;handler&nbsp;and&nbsp;make&nbsp;this&nbsp;figure&nbsp;active</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>figure</span>(hfigure);<br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;file&nbsp;name</span><br>
+&nbsp;&nbsp;&nbsp;path=<span class=stack>varargin</span>{1};<br>
+&nbsp;&nbsp;&nbsp;name=<span class=stack>varargin</span>{2};<br>
+&nbsp;&nbsp;&nbsp;pathname=strcat(path,name);<br>
+<br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;if&nbsp;checkdat(pathname,DATA_IDENT,2,[0])==1,</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;check2ddata(pathname),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.pathname=pathname;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.path=path;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.name=name;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.btload,<span class=quotes>'UserData'</span>,file);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_mmgauss(<span class=quotes>'loadsets'</span>,hfigure);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;errordlg(<span class=quotes>'This&nbsp;file&nbsp;does&nbsp;not&nbsp;contain&nbsp;required&nbsp;data.'</span>,<span class=quotes>'Bad&nbsp;file'</span>,<span class=quotes>'modal'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'info'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Call&nbsp;standard&nbsp;Matlab`s&nbsp;info&nbsp;box&nbsp;=========================================</span><br>
+&nbsp;&nbsp;&nbsp;helpwin(mfilename);<br>
+<span class=keyword>end</span>&nbsp;<span class=comment>%&nbsp;switch</span><br>
+<br>
+<span class=comment>%%%%%%%%%%%%%%%%%%%%</span><br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[]</span>=<span class=defun_name>clrchild</span>(<span class=defun_in>handle</span>)<br>
+<span class=comment>%&nbsp;function&nbsp;[]=clraxis(handle)</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;CLRCHILD&nbsp;clears&nbsp;children&nbsp;of&nbsp;an&nbsp;object&nbsp;with&nbsp;the&nbsp;given&nbsp;handle.</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;See&nbsp;also&nbsp;DELETE.</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox,&nbsp;Vojtech&nbsp;Franc,&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=comment>%&nbsp;(c)&nbsp;Czech&nbsp;Technical&nbsp;University&nbsp;Prague,&nbsp;http://cmp.felk.cvut.cz</span><br>
+<span class=comment>%&nbsp;Written&nbsp;Vojtech&nbsp;Franc&nbsp;(diploma&nbsp;thesis)&nbsp;02.01.2000</span><br>
+<span class=comment>%&nbsp;Modifications</span><br>
+<span class=comment>%&nbsp;24.&nbsp;6.00&nbsp;V.&nbsp;Hlavac,&nbsp;comments&nbsp;polished.</span><br>
+<br>
+delete(<span class=graph>get</span>(handle,<span class=quotes>'Children'</span>));<br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[win]</span>=<span class=defun_name>cmpwin</span>(<span class=defun_in>mins,maxs,xborder,yborder</span>)<br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;&nbsp;[win]=cmpwin(mins,maxs,xborder,yborder)</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;CMPWIN&nbsp;computes&nbsp;appropriate&nbsp;size&nbsp;of&nbsp;the&nbsp;axes.</span><br>
+<span class=comment>%</span><br>
+<br>
+<span class=comment>%&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox,&nbsp;Vojtech&nbsp;Franc,&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=comment>%&nbsp;(c)&nbsp;Czech&nbsp;Technical&nbsp;University&nbsp;Prague,&nbsp;http://cmp.felk.cvut.cz</span><br>
+<span class=comment>%&nbsp;Written&nbsp;Vojtech&nbsp;Franc&nbsp;(diploma&nbsp;thesis)&nbsp;02.01.2000</span><br>
+<span class=comment>%&nbsp;Modifications</span><br>
+<span class=comment>%&nbsp;24.&nbsp;6.00&nbsp;V.&nbsp;Hlavac,&nbsp;comments&nbsp;polished.</span><br>
+<br>
+dx=max(&nbsp;(maxs(1)-mins(1)),&nbsp;1&nbsp;)*xborder;<br>
+dy=max(&nbsp;(maxs(2)-mins(2)),&nbsp;1&nbsp;)*yborder;<br>
+<br>
+<span class=comment>%x1=floor(mins(1)-dx);</span><br>
+<span class=comment>%x2=ceil(maxs(1)+dx);</span><br>
+<span class=comment>%y1=floor(mins(2)-dy);</span><br>
+<span class=comment>%y2=ceil(maxs(2)+dx);</span><br>
+x1=(mins(1)-dx);<br>
+x2=(maxs(1)+dx);<br>
+y1=(mins(2)-dy);<br>
+y2=(maxs(2)+dx);<br>
+<br>
+win=[x1&nbsp;x2&nbsp;y1&nbsp;y2];<br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[]</span>=<span class=defun_name>setaxis</span>(<span class=defun_in>handle,rect</span>)<br>
+<span class=comment>%&nbsp;function&nbsp;[]=setaxis(handle,rect)</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;SETAXIS&nbsp;sets&nbsp;scaling&nbsp;for&nbsp;the&nbsp;x-&nbsp;and&nbsp;y-axes</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;on&nbsp;the&nbsp;plot&nbsp;with&nbsp;a&nbsp;given&nbsp;handle.</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;See&nbsp;also&nbsp;AXIS.</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox,&nbsp;Vojtech&nbsp;Franc,&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=comment>%&nbsp;(c)&nbsp;Czech&nbsp;Technical&nbsp;University&nbsp;Prague,&nbsp;http://cmp.felk.cvut.cz</span><br>
+<span class=comment>%&nbsp;Written&nbsp;Vojtech&nbsp;Franc&nbsp;(diploma&nbsp;thesis)&nbsp;02.01.2000</span><br>
+<span class=comment>%&nbsp;Modifications</span><br>
+<br>
+<span class=graph>set</span>(handle,<span class=quotes>'XLim'</span>,rect(1:2));<br>
+<span class=graph>set</span>(handle,<span class=quotes>'YLim'</span>,rect(3:4));<br>
+<br>
+<span class=keyword>if</span>&nbsp;size(rect,2)&gt;=6,<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(handle,<span class=quotes>'ZLim'</span>,rect(5:6));<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

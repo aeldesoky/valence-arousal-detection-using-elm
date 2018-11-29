@@ -1,0 +1,81 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>adaclass.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[y,dfce]&nbsp;</span>=&nbsp;<span class=defun_name>adaclass</span>(<span class=defun_in>X,model</span>)<br>
+<span class=h1>%&nbsp;ADACLASS&nbsp;AdaBoost&nbsp;classifier.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;[y,dfce]&nbsp;=&nbsp;adaclass(X,model)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;implements&nbsp;the&nbsp;AdaBoost&nbsp;classifier&nbsp;which</span><br>
+<span class=help>%&nbsp;&nbsp;its&nbsp;discriminant&nbsp;function&nbsp;is&nbsp;composed&nbsp;of&nbsp;a&nbsp;weighted&nbsp;sum</span><br>
+<span class=help>%&nbsp;&nbsp;of&nbsp;binary&nbsp;rules.&nbsp;It&nbsp;is&nbsp;assumed&nbsp;here&nbsp;that&nbsp;the&nbsp;binary&nbsp;rules</span><br>
+<span class=help>%&nbsp;&nbsp;respond&nbsp;with&nbsp;label&nbsp;1&nbsp;or&nbsp;2&nbsp;(not&nbsp;1&nbsp;and&nbsp;-1&nbsp;as&nbsp;used&nbsp;in&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;AdaBoost&nbsp;literature).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Vectors&nbsp;to&nbsp;be&nbsp;classified.</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;AdaBoost&nbsp;classifier:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.rule&nbsp;[cell&nbsp;1&nbsp;x&nbsp;T]&nbsp;Binary&nbsp;weak&nbsp;rules.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[1&nbsp;x&nbsp;T]&nbsp;Weights&nbsp;of&nbsp;the&nbsp;weak&nbsp;rules.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.fun&nbsp;=&nbsp;'adaclass'&nbsp;(optinal).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Predicted&nbsp;labels.</span><br>
+<span class=help>%&nbsp;&nbsp;dfce&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Values&nbsp;of&nbsp;weighted&nbsp;sum&nbsp;of&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;weak&nbsp;rules;&nbsp;y(i)&nbsp;=&nbsp;1&nbsp;if&nbsp;dfce(i)&nbsp;&gt;=&nbsp;0&nbsp;and</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;y(i)&nbsp;=&nbsp;2&nbsp;if&nbsp;dfce(i)&nbsp;&lt;&nbsp;0.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;trn_data&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>%&nbsp;&nbsp;tst_data&nbsp;=&nbsp;load('riply_tst');</span><br>
+<span class=help>%&nbsp;&nbsp;options.learner&nbsp;=&nbsp;'weaklearner';</span><br>
+<span class=help>%&nbsp;&nbsp;options.max_rules&nbsp;=&nbsp;50;</span><br>
+<span class=help>%&nbsp;&nbsp;options.verb&nbsp;=&nbsp;1;</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;adaboost(trn_data,&nbsp;options);</span><br>
+<span class=help>%&nbsp;&nbsp;ypred1&nbsp;=&nbsp;adaclass(trn_data.X,model);</span><br>
+<span class=help>%&nbsp;&nbsp;ypred2&nbsp;=&nbsp;adaclass(tst_data.X,model);</span><br>
+<span class=help>%&nbsp;&nbsp;trn_err&nbsp;=&nbsp;cerror(ypred1,trn_data.y)</span><br>
+<span class=help>%&nbsp;&nbsp;tst_err&nbsp;=&nbsp;cerror(ypred2,tst_data.y)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also:&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;ADABOOST,&nbsp;WEAKLEARNER.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2004,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;25-aug-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;11-aug-2004,&nbsp;VF</span><br>
+<br>
+<hr>
+dfce&nbsp;=&nbsp;[];<br>
+<span class=keyword>for</span>&nbsp;i=1:length(model.rule),<br>
+<br>
+&nbsp;&nbsp;curr_y&nbsp;=&nbsp;<span class=eval>feval</span>(model.rule{i}.fun,X,model.rule{i});<br>
+&nbsp;&nbsp;curr_y&nbsp;=&nbsp;3-2*curr_y;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isempty(dfce),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dfce&nbsp;=&nbsp;curr_y*model.Alpha(i);<br>
+&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;dfce&nbsp;=&nbsp;dfce&nbsp;+&nbsp;curr_y*model.Alpha(i);<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>end</span><br>
+<br>
+y&nbsp;=&nbsp;zeros(size(dfce));<br>
+y(find(dfce&gt;=0))&nbsp;=&nbsp;1;<br>
+y(find(dfce&lt;0))&nbsp;=&nbsp;2;<br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

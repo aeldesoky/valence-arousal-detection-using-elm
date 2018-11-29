@@ -1,0 +1,86 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>show_denoising.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=h1>%&nbsp;SHOW_DENOISING&nbsp;Image&nbsp;denosing&nbsp;of&nbsp;USPS&nbsp;hand-written&nbsp;numerals.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;input&nbsp;noisy&nbsp;images&nbsp;are&nbsp;denoised&nbsp;using&nbsp;the&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;kernel&nbsp;PCA&nbsp;model.&nbsp;The&nbsp;denosing&nbsp;based&nbsp;on&nbsp;linear&nbsp;PCA</span><br>
+<span class=help>%&nbsp;&nbsp;is&nbsp;also&nbsp;computed&nbsp;for&nbsp;comparision.&nbsp;Imgase&nbsp;of</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;-&nbsp;Ground&nbsp;truth&nbsp;numerlas</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;-&nbsp;Noisy&nbsp;numerals</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;-&nbsp;Numerals&nbsp;denoised&nbsp;by&nbsp;kernel&nbsp;PCA</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;-&nbsp;Numerals&nbsp;denoised&nbsp;by&nbsp;linear&nbsp;PCA</span><br>
+<span class=help>%&nbsp;&nbsp;are&nbsp;displayed.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also</span><br>
+<span class=help>%&nbsp;&nbsp;KPCAREC,&nbsp;PCAREC.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modification:</span></span><br>
+<span class=help1>%&nbsp;07-jun-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;05-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;22-apr-2004,&nbsp;VF</span><br>
+<br>
+<hr>
+help&nbsp;show_denoising;<br>
+<br>
+<span class=comment>%&nbsp;setting&nbsp;</span><br>
+<span class=comment>%-------------------------------------------------------</span><br>
+kpca_filename&nbsp;=&nbsp;<span class=quotes>'USPSModelGreedyKPCA.mat'</span>;&nbsp;<span class=comment>%&nbsp;kpca&nbsp;model</span><br>
+lpca_filename&nbsp;=&nbsp;<span class=quotes>'USPSModelLinPCA.mat'</span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;linear&nbsp;PCA&nbsp;model</span><br>
+<br>
+<span class=comment>%&nbsp;USPS&nbsp;databes&nbsp;with&nbsp;noisy&nbsp;images&nbsp;(see&nbsp;help&nbsp;make_noisy_usps).</span><br>
+input_data_file&nbsp;=&nbsp;<span class=quotes>'/home/xfrancv/data/usps/usps_noisy'</span>;<br>
+<br>
+<span class=comment>%&nbsp;loading</span><br>
+<span class=comment>%----------------------------------------</span><br>
+load(kpca_filename,<span class=quotes>'kpca_model'</span>);<br>
+load(lpca_filename,<span class=quotes>'lpca_model'</span>);<br>
+load(input_data_file,<span class=quotes>'tst'</span>);<br>
+<br>
+<span class=comment>%&nbsp;get&nbsp;indices&nbsp;of&nbsp;examples&nbsp;to&nbsp;be&nbsp;denoised</span><br>
+<span class=comment>%&nbsp;---------------------------------------</span><br>
+inx&nbsp;=&nbsp;[];<br>
+<span class=keyword>for</span>&nbsp;i=1:10,<br>
+&nbsp;&nbsp;tmp&nbsp;=&nbsp;find(tst.y&nbsp;==&nbsp;i);<br>
+&nbsp;&nbsp;inx&nbsp;=&nbsp;[inx,&nbsp;tmp(1)&nbsp;];<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;get&nbsp;noisy&nbsp;and&nbsp;ground&nbsp;truth&nbsp;numerals</span><br>
+<span class=comment>%----------------------------------------</span><br>
+noisy_X&nbsp;=&nbsp;tst.X(:,inx);&nbsp;&nbsp;<br>
+gnd_X&nbsp;=&nbsp;tst.gnd_X(:,inx);<br>
+<br>
+<span class=comment>%&nbsp;Kernel&nbsp;PCA&nbsp;and&nbsp;linear&nbsp;PCA&nbsp;denoising</span><br>
+<span class=comment>%----------------------------------------</span><br>
+kpca_X&nbsp;=&nbsp;kpcarec(&nbsp;noisy_X,&nbsp;kpca_model);<br>
+lpca_X&nbsp;=&nbsp;pcarec(&nbsp;noisy_X,&nbsp;lpca_model);<br>
+<br>
+<span class=comment>%&nbsp;display&nbsp;results</span><br>
+<span class=comment>%----------------------------------------</span><br>
+h=<span class=graph>figure</span>;&nbsp;<span class=graph>set</span>(h,<span class=quotes>'name'</span>,<span class=quotes>'Denoised&nbsp;by&nbsp;greedy&nbsp;KPCA'</span>);<br>
+showim(&nbsp;kpca_X);<br>
+<br>
+h=<span class=graph>figure</span>;&nbsp;<span class=graph>set</span>(h,<span class=quotes>'name'</span>,<span class=quotes>'Denoised&nbsp;by&nbsp;linear&nbsp;PCA'</span>);<br>
+showim(&nbsp;lpca_X);<br>
+<br>
+h=<span class=graph>figure</span>;&nbsp;<span class=graph>set</span>(h,<span class=quotes>'name'</span>,<span class=quotes>'Ground&nbsp;truth'</span>);<br>
+showim(&nbsp;gnd_X);<br>
+<br>
+h=<span class=graph>figure</span>;&nbsp;<span class=graph>set</span>(h,<span class=quotes>'name'</span>,<span class=quotes>'Noisy'</span>);<br>
+showim(&nbsp;noisy_X);<br>
+<br>
+<span class=comment>%EOF</span><br>
+</code>

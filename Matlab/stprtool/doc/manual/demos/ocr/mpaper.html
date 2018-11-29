@@ -1,0 +1,61 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">MPAPER</b>
+<td valign="baseline" align="right" class="function"><a href="../../demos/ocr/index.html" target="mdsdir"><img border = 0 src="../../up.gif"></a></table>
+  <p><b>Allows to enter handwritten characters by mouse.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;mpaper</span><br>
+<span class=help>&nbsp;&nbsp;mpaper(&nbsp;options&nbsp;)</span><br>
+<span class=help>&nbsp;&nbsp;mpaper({'param1',val1,...})</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;script&nbsp;allows&nbsp;a&nbsp;user&nbsp;to&nbsp;draw&nbsp;images&nbsp;by&nbsp;mouse&nbsp;to&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;figure&nbsp;with&nbsp;a&nbsp;grid.&nbsp;The&nbsp;drown&nbsp;images&nbsp;are&nbsp;normalized&nbsp;to</span><br>
+<span class=help>&nbsp;&nbsp;exactly&nbsp;fit&nbsp;the&nbsp;subwindows&nbsp;given&nbsp;by&nbsp;the&nbsp;grid.</span><br>
+<span class=help>&nbsp;&nbsp;<span class=help_field>Control:</span></span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;Left&nbsp;mouse&nbsp;button&nbsp;...&nbsp;draw&nbsp;line.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;Right&nbsp;mouse&nbsp;button&nbsp;...&nbsp;erase&nbsp;the&nbsp;focused&nbsp;subwindow.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;Middle&nbsp;mouse&nbsp;button&nbsp;...&nbsp;call&nbsp;function&nbsp;which&nbsp;proccess&nbsp;the</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;drawn&nbsp;data.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;function&nbsp;called&nbsp;to&nbsp;processed&nbsp;the&nbsp;drawn&nbsp;data&nbsp;is</span><br>
+<span class=help>&nbsp;&nbsp;prescribed&nbsp;by&nbsp;options.fun.&nbsp;The&nbsp;implicite&nbsp;setting&nbsp;is&nbsp;'ocr_fun'</span><br>
+<span class=help>&nbsp;&nbsp;which&nbsp;calls&nbsp;OCR&nbsp;trained&nbsp;for&nbsp;handwritten&nbsp;numerals&nbsp;and&nbsp;displays&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;the&nbsp;result&nbsp;of&nbsp;recognition.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;options.width&nbsp;[int]&nbsp;Width&nbsp;of&nbsp;a&nbsp;single&nbsp;image.</span><br>
+<span class=help>&nbsp;&nbsp;options.height&nbsp;[int]&nbsp;Height&nbsp;of&nbsp;a&nbsp;single&nbsp;image.</span><br>
+<span class=help>&nbsp;&nbsp;options.fun&nbsp;[string]&nbsp;If&nbsp;the&nbsp;middle&nbsp;mouse&nbsp;button&nbsp;is&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;pressed&nbsp;then&nbsp;feval(fun,data)&nbsp;is&nbsp;called&nbsp;where</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;structure&nbsp;data&nbsp;contains:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;data.X&nbsp;[dim&nbsp;x&nbsp;num_images]&nbsp;images&nbsp;stored&nbsp;as&nbsp;columns</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;size&nbsp;dim&nbsp;=&nbsp;width*height.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;data.img_size&nbsp;=&nbsp;[height,width].</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;open&nbsp;ocr_demo.fig</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../../demos/ocr/list/mpaper.html">mpaper.m</a>
+  <p><b class="info_field">(c) </b> Statistical Pattern Recognition Toolbox, (C) 1999-2003,<br>
+ Written by Vojtech Franc and Vaclav Hlavac,<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a>,<br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical engineering</a>,<br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+  9-sep-03, VF, <br>
+  8-sep-03, MM, Martin Matousek programmed the GUI enviroment.<br>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">QUADCLASS</b>
+<td valign="baseline" align="right" class="function"><a href="../quadrat/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Quadratic classifier.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;[y,dfce]&nbsp;=&nbsp;quadclass(X,model)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;function&nbsp;classifies&nbsp;input&nbsp;data&nbsp;X&nbsp;using&nbsp;quadratic</span><br>
+<span class=help>&nbsp;&nbsp;discriminant&nbsp;function:</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;y(i)&nbsp;=&nbsp;argmax&nbsp;X(:,i)'*A(:,:,y)*X(:,i)&nbsp;+&nbsp;X(:,i)'*B(:,y)&nbsp;+&nbsp;C(y)</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;where&nbsp;parameters&nbsp;A&nbsp;[dim&nbsp;x&nbsp;dim&nbsp;x&nbsp;nfun],&nbsp;B&nbsp;[dim&nbsp;x&nbsp;nfun]</span><br>
+<span class=help>&nbsp;&nbsp;and&nbsp;model&nbsp;C&nbsp;[1&nbsp;x&nbsp;nfun]&nbsp;are&nbsp;given&nbsp;in&nbsp;model&nbsp;and&nbsp;nfun&nbsp;is</span><br>
+<span class=help>&nbsp;&nbsp;number&nbsp;of&nbsp;discriminant&nbsp;functions.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;In&nbsp;the&nbsp;binary&nbsp;case&nbsp;(nfun=1)&nbsp;the&nbsp;classification&nbsp;rule&nbsp;is&nbsp;following</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;y(i)&nbsp;=&nbsp;1&nbsp;if&nbsp;X(:,i)'*A*X(:,i)&nbsp;+&nbsp;X(:,i)'*B&nbsp;+&nbsp;C&nbsp;&gt;=&nbsp;0</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;if&nbsp;X(:,i)'*A*X(:,i)&nbsp;+&nbsp;X(:,i)'*B&nbsp;+&nbsp;C&nbsp;&lt;&nbsp;0</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;where&nbsp;A&nbsp;[dim&nbsp;x&nbsp;dim],&nbsp;B&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;and&nbsp;C&nbsp;[1x1]&nbsp;are&nbsp;parameters</span><br>
+<span class=help>&nbsp;&nbsp;given&nbsp;in&nbsp;model.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Data&nbsp;to&nbsp;be&nbsp;classified.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Describes&nbsp;quadratic&nbsp;classifier:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.A&nbsp;[dim&nbsp;x&nbsp;dim&nbsp;x&nbsp;nfun]&nbsp;Parameter&nbsp;of&nbsp;quadratic&nbsp;term.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.B&nbsp;[dim&nbsp;x&nbsp;nfun]&nbsp;Parameter&nbsp;of&nbsp;linear&nbsp;term.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.C&nbsp;[1&nbsp;x&nbsp;nfun]&nbsp;Bias.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Predicted&nbsp;labels.</span><br>
+<span class=help>&nbsp;&nbsp;dfce&nbsp;[nfun&nbsp;x&nbsp;num_data]&nbsp;Values&nbsp;of&nbsp;discriminat&nbsp;function.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;trn&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>&nbsp;&nbsp;tst&nbsp;=&nbsp;load('riply_tst');</span><br>
+<span class=help>&nbsp;&nbsp;gauss_model&nbsp;=&nbsp;mlcgmm(trn);</span><br>
+<span class=help>&nbsp;&nbsp;quad_model&nbsp;=&nbsp;bayesdf(gauss_model);</span><br>
+<span class=help>&nbsp;&nbsp;ypred&nbsp;=&nbsp;quadclass(tst.X,&nbsp;quad_model);</span><br>
+<span class=help>&nbsp;&nbsp;cerror(ypred,&nbsp;tst.y)</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;ppatterns(trn);&nbsp;pboundary(quad_model);</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../quadrat/qmap.html" target="mdsbody">QMAP</a>,&nbsp;<a href = "../quadrat/lin2quad.html" target="mdsbody">LIN2QUAD</a>,&nbsp;<a href = "../linear/linclass.html" target="mdsbody">LINCLASS</a></span><br>
+<span class=help><span class=also></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../quadrat/list/quadclass.html">quadclass.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 2-may-2004, VF<br>
+
+</body>
+</html>

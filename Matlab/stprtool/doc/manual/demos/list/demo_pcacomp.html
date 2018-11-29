@@ -1,0 +1,99 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>demo_pcacomp.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=h1>%&nbsp;DEMO_PCACOMP&nbsp;Demo&nbsp;on&nbsp;image&nbsp;compression&nbsp;using&nbsp;PCA</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;PCA&nbsp;model&nbsp;is&nbsp;trained&nbsp;to&nbsp;model&nbsp;rectangular&nbsp;non-overlapping&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;patches&nbsp;of&nbsp;a&nbsp;specified&nbsp;input&nbsp;image.&nbsp;The&nbsp;compression&nbsp;phase&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;involves&nbsp;representation&nbsp;of&nbsp;the&nbsp;image&nbsp;patches&nbsp;in&nbsp;the&nbsp;lower&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;dimesional&nbsp;space&nbsp;trained&nbsp;by&nbsp;the&nbsp;PCA.&nbsp;The&nbsp;decompression&nbsp;consists&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;of&nbsp;reconstruction&nbsp;of&nbsp;the&nbsp;image&nbsp;patches&nbsp;from&nbsp;their&nbsp;low&nbsp;dimensional&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;representation.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;Note:&nbsp;This&nbsp;demo&nbsp;requires&nbsp;Images&nbsp;toolbox.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;PCA,&nbsp;LINPROJ,&nbsp;PCAREC.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;06-jun-2004,&nbsp;VF</span><br>
+<br>
+<hr>
+help&nbsp;demo_pcacomp;<br>
+<br>
+<span class=comment>%&nbsp;Setting</span><br>
+<span class=comment>%==========================================</span><br>
+img_file&nbsp;=&nbsp;<span class=quotes>'lena.jpg'</span>;<br>
+patch_size&nbsp;=&nbsp;16;<br>
+<br>
+<span class=io>fprintf</span>(<span class=quotes>'Input&nbsp;dimension:&nbsp;%d\n'</span>,&nbsp;patch_size^2);<br>
+new_dim=<span class=io>input</span>(<span class=quotes>'Output&nbsp;dimesion:'</span>);<br>
+<span class=keyword>if</span>&nbsp;isempty(new_dim),&nbsp;new_dim&nbsp;=&nbsp;20;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;load&nbsp;image</span><br>
+<span class=io>fprintf</span>(<span class=quotes>'Image:&nbsp;%s\n'</span>,&nbsp;img_file);<br>
+img&nbsp;=&nbsp;im2double(&nbsp;imread(&nbsp;img_file&nbsp;));<br>
+<span class=keyword>if</span>&nbsp;isrgb(img),&nbsp;img&nbsp;=&nbsp;rgb2grey(img);&nbsp;<span class=keyword>end</span><br>
+<span class=io>fprintf</span>(<span class=quotes>'Image&nbsp;size:&nbsp;[%d&nbsp;x&nbsp;%d]\n'</span>,&nbsp;size(img));<br>
+<br>
+<span class=comment>%&nbsp;image&nbsp;-&gt;&nbsp;patches&nbsp;stored&nbsp;as&nbsp;column&nbsp;vectors</span><br>
+X&nbsp;=&nbsp;im2col(&nbsp;img,&nbsp;patch_size*[1&nbsp;1],&nbsp;<span class=quotes>'distinct'</span>);<br>
+<br>
+<span class=comment>%&nbsp;train&nbsp;PCA</span><br>
+<span class=io>fprintf</span>(<span class=quotes>'Training&nbsp;PCA...'</span>);<br>
+pca_model&nbsp;=&nbsp;pca(X,new_dim&nbsp;);<br>
+<span class=io>fprintf</span>(<span class=quotes>'done\n'</span>);<br>
+<br>
+<span class=comment>%&nbsp;reconstruction</span><br>
+<span class=io>fprintf</span>(<span class=quotes>'Reconstructing&nbsp;image&nbsp;patches...'</span>);<br>
+Y&nbsp;=&nbsp;pcarec(&nbsp;X,&nbsp;pca_model&nbsp;);<br>
+<span class=io>fprintf</span>(<span class=quotes>'done\n'</span>);<br>
+<br>
+<span class=comment>%&nbsp;plot&nbsp;reconstruction&nbsp;error&nbsp;w.r.t.&nbsp;to&nbsp;dimension</span><br>
+<span class=graph>figure</span>;&nbsp;hold&nbsp;on;&nbsp;<br>
+title(<span class=quotes>'Reconstruction&nbsp;error'</span>);&nbsp;<br>
+xlabel(<span class=quotes>'output&nbsp;dimesion'</span>);&nbsp;ylabel(<span class=quotes>'MsErr'</span>);<br>
+<span class=graph>plot</span>(pca_model.MsErr);<br>
+<span class=graph>plot</span>(pca_model.new_dim,&nbsp;pca_model.mse,&nbsp;<span class=quotes>'or'</span>);<br>
+<br>
+<span class=comment>%&nbsp;patches&nbsp;-&gt;&nbsp;image</span><br>
+compressed_img&nbsp;=&nbsp;col2im(Y,patch_size*[1&nbsp;1],size(img),<span class=quotes>'distinct'</span>);<br>
+<br>
+<span class=comment>%&nbsp;display&nbsp;original&nbsp;and&nbsp;compresed&nbsp;image</span><br>
+<span class=graph>figure</span>;&nbsp;imshow(img);<br>
+hold&nbsp;on;&nbsp;title(<span class=quotes>'Original&nbsp;image'</span>);<br>
+<br>
+<span class=comment>%&nbsp;display&nbsp;original&nbsp;and&nbsp;compresed&nbsp;image</span><br>
+<span class=graph>figure</span>;&nbsp;imshow(img);<br>
+hold&nbsp;on;&nbsp;title(<span class=quotes>'Splitting&nbsp;to&nbsp;patches'</span>);<br>
+[h,w]=size(img);<br>
+<span class=keyword>for</span>&nbsp;x=1:16:w,&nbsp;<span class=graph>plot</span>([x&nbsp;x],[1&nbsp;h],<span class=quotes>'b'</span>);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>for</span>&nbsp;y=1:16:w,&nbsp;<span class=graph>plot</span>([1&nbsp;w],[y&nbsp;y],<span class=quotes>'b'</span>);&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=graph>figure</span>;&nbsp;imshow(compressed_img);<br>
+hold&nbsp;on;&nbsp;title(<span class=quotes>'Compressed&nbsp;image'</span>);<br>
+<br>
+<span class=comment>%&nbsp;display&nbsp;statistics</span><br>
+[dim,num_data]=size(X);<br>
+new_dim=pca_model.new_dim;<br>
+cr&nbsp;=&nbsp;((new_dim*num_data)+(new_dim*dim))/(dim*num_data);<br>
+<br>
+<span class=io>fprintf</span>(<span class=quotes>'new_dim=%d\n'</span>,new_dim);<br>
+<span class=io>fprintf</span>(<span class=quotes>'Compression&nbsp;ratio&nbsp;(compressed_size/original_size)=&nbsp;%f%%\n'</span>,cr*100);<br>
+<span class=io>fprintf</span>(<span class=quotes>'MsErr=%f\n'</span>,&nbsp;pca_model.mse);<br>
+<br>
+<span class=comment>%EOF</span><br>
+</code>

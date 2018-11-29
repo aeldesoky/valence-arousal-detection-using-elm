@@ -1,0 +1,120 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>clipline.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[x1,y1,x2,y2,inside]&nbsp;</span>=&nbsp;<span class=defun_name>clipline</span>(<span class=defun_in>W,b,window</span>)<br>
+<span class=h1>%&nbsp;CLIPLINE&nbsp;clips&nbsp;line&nbsp;into&nbsp;given&nbsp;window.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;[x1,y1,x2,y2,inside]&nbsp;=&nbsp;clipline(W,b,window)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;returns&nbsp;2d&nbsp;points&nbsp;(x1,y1)&nbsp;and&nbsp;(x2,y2)&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;of&nbsp;a&nbsp;line&nbsp;segment&nbsp;given&nbsp;by&nbsp;line</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;W'*x&nbsp;+&nbsp;b&nbsp;=&nbsp;0</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;clipped&nbsp;to&nbsp;the&nbsp;given&nbsp;window.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;W&nbsp;[2x1]&nbsp;Normal&nbsp;of&nbsp;line.</span><br>
+<span class=help>%&nbsp;&nbsp;b&nbsp;[1x1]&nbsp;Line&nbsp;threshold.</span><br>
+<span class=help>%&nbsp;&nbsp;window&nbsp;[4x1]&nbsp;Contains&nbsp;[left&nbsp;right&nbsp;top&nbsp;bottom].</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;x1&nbsp;[1x1],&nbsp;y1&nbsp;[1x1]&nbsp;The&nbsp;first&nbsp;point&nbsp;of&nbsp;line&nbsp;segment.</span><br>
+<span class=help>%&nbsp;&nbsp;x2&nbsp;[1x1],&nbsp;y2&nbsp;[1x1]&nbsp;The&nbsp;second&nbsp;point&nbsp;of&nbsp;line&nbsp;segment.</span><br>
+<span class=help>%&nbsp;&nbsp;inside&nbsp;[1x1]&nbsp;1&nbsp;if&nbsp;line&nbsp;W'*x+b=0&nbsp;intersects&nbsp;the&nbsp;window.&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;hold&nbsp;on;</span><br>
+<span class=help>%&nbsp;&nbsp;axis([-1&nbsp;1&nbsp;-1&nbsp;1]);</span><br>
+<span class=help>%&nbsp;&nbsp;window&nbsp;=&nbsp;0.5*axis;</span><br>
+<span class=help>%&nbsp;&nbsp;[x1,y1,x2,y2]=clipline([-1;1],0,window);</span><br>
+<span class=help>%&nbsp;&nbsp;plot([x1&nbsp;x2],[y1&nbsp;y2]);</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;30-apr-2004,&nbsp;VF</span><br>
+<br>
+<br>
+<hr>
+theta&nbsp;=&nbsp;-b;<br>
+alpha&nbsp;=&nbsp;W;<br>
+minx=window(1);<br>
+maxx=window(2);<br>
+miny=window(3);<br>
+maxy=window(4);<br>
+<br>
+x=zeros(4,1);<br>
+y=zeros(4,1);<br>
+<br>
+<span class=keyword>if</span>&nbsp;alpha(1)==0,<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;alpha(2)~=0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1=minx;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y1=theta/alpha(2);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x2=maxx;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y2=y1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inside=1;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;if&nbsp;alpha&nbsp;==&nbsp;0&nbsp;then&nbsp;it&nbsp;means&nbsp;the&nbsp;bad&nbsp;input.</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y1=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x2=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y2=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inside=0;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>elseif</span>&nbsp;alpha(2)==0,<br>
+&nbsp;&nbsp;&nbsp;x1=theta/alpha(1);<br>
+&nbsp;&nbsp;&nbsp;y1=miny;<br>
+&nbsp;&nbsp;&nbsp;x2=x1;<br>
+&nbsp;&nbsp;&nbsp;y2=maxy;<br>
+&nbsp;&nbsp;&nbsp;inside=1;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;y(1)=maxy;<br>
+&nbsp;&nbsp;&nbsp;x(1)=(theta-alpha(2)*y(1))/alpha(1);<br>
+&nbsp;&nbsp;&nbsp;y(2)=miny;<br>
+&nbsp;&nbsp;&nbsp;x(2)=(theta-alpha(2)*y(2))/alpha(1);<br>
+<br>
+&nbsp;&nbsp;&nbsp;x(3)=maxx;<br>
+&nbsp;&nbsp;&nbsp;y(3)=(theta-alpha(1)*x(3))/alpha(2);<br>
+&nbsp;&nbsp;&nbsp;x(4)=minx;<br>
+&nbsp;&nbsp;&nbsp;y(4)=(theta-alpha(1)*x(4))/alpha(2);<br>
+<br>
+&nbsp;&nbsp;&nbsp;j=0;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i=1:4,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;x(i)&nbsp;&lt;=&nbsp;maxx&nbsp;&&nbsp;x(i)&nbsp;&gt;=&nbsp;minx&nbsp;&&nbsp;y(i)&nbsp;&lt;=&nbsp;maxy&nbsp;&&nbsp;y(i)&nbsp;&gt;=&nbsp;miny,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;j==0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;j=j+1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1=x(i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y1=y(i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>elseif</span>&nbsp;j==1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;j=j+1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x2=x(i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y2=y(i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;j&lt;2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y1=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x2=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y2=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inside=0;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inside=1;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>end</span>&nbsp;<span class=comment>%&nbsp;elseif&nbsp;alpha(2)==0</span><br>
+&nbsp;<br>
+<span class=jump>return</span>;&nbsp;<br>
+</code>

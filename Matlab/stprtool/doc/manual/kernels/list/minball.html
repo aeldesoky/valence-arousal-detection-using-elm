@@ -1,0 +1,127 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>minball.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model&nbsp;</span>=&nbsp;<span class=defun_name>minball</span>(<span class=defun_in>X,options</span>)<br>
+<span class=h1>%&nbsp;MINBALL&nbsp;Minimal&nbsp;enclosing&nbsp;ball&nbsp;in&nbsp;kernel&nbsp;feature&nbsp;space.&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;minball(X)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;minball(X,options)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;It&nbsp;computes&nbsp;center&nbsp;and&nbsp;radius&nbsp;of&nbsp;the&nbsp;minimal&nbsp;ball</span><br>
+<span class=help>%&nbsp;&nbsp;enclosing&nbsp;data&nbsp;X&nbsp;mapped&nbsp;into&nbsp;a&nbsp;feature&nbsp;space&nbsp;induced&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;by&nbsp;a&nbsp;given&nbsp;kernel.&nbsp;The&nbsp;problem&nbsp;leads&nbsp;to&nbsp;a&nbsp;special&nbsp;instance&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;of&nbsp;the&nbsp;Quadratic&nbsp;Programming&nbsp;task&nbsp;which&nbsp;is&nbsp;solved&nbsp;by&nbsp;the&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;GMNP&nbsp;solver&nbsp;(see&nbsp;'help&nbsp;gmnp').</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Input&nbsp;data.</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Control&nbsp;parameters:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.ker&nbsp;[string]&nbsp;Kernel&nbsp;identifier&nbsp;(default&nbsp;'linear').&nbsp;See&nbsp;'help&nbsp;kernel'.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.arg&nbsp;[1&nbsp;x&nbsp;nargs]&nbsp;Kernel&nbsp;arguments.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.solver&nbsp;[string]&nbsp;Solver&nbsp;to&nbsp;be&nbsp;used&nbsp;(see&nbsp;'help&nbsp;gmnp');&nbsp;default&nbsp;'imdm';</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.C&nbsp;[1x1]&nbsp;Regularization&nbsp;constant&nbsp;(default&nbsp;[]);&nbsp;If&nbsp;C&nbsp;&gt;&nbsp;0&nbsp;it&nbsp;is&nbsp;equivalent&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;the&nbsp;Support&nbsp;Vector&nbsp;Data&nbsp;Description&nbsp;(or&nbsp;1-class&nbsp;SVM)&nbsp;by&nbsp;Tax-Duin&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;quadratric&nbsp;penalization&nbsp;of&nbsp;overlapping&nbsp;data.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Center&nbsp;of&nbsp;the&nbsp;ball&nbsp;in&nbsp;the&nbsp;kernel&nbsp;feature&nbsp;space:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;nsv]&nbsp;Data&nbsp;determining&nbsp;the&nbsp;center.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;1]&nbsp;Data&nbsp;weights.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.r&nbsp;[1x1]&nbsp;Radius&nbsp;of&nbsp;the&nbsp;minimal&nbsp;enclosing&nbsp;ball.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Squared&nbsp;norm&nbsp;of&nbsp;the&nbsp;center&nbsp;equal&nbsp;to&nbsp;Alpha'*K*Alpha.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options&nbsp;[struct]&nbsp;Copy&nbsp;of&nbsp;used&nbsp;options.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.stat&nbsp;[struct]&nbsp;Statistics&nbsp;about&nbsp;optimization:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.access&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;requested&nbsp;columns&nbsp;of&nbsp;matrix&nbsp;H.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.UB&nbsp;[1x1]&nbsp;Upper&nbsp;bound&nbsp;on&nbsp;the&nbsp;optimal&nbsp;value&nbsp;of&nbsp;criterion.&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.LB&nbsp;[1x1]&nbsp;Lower&nbsp;bound&nbsp;on&nbsp;the&nbsp;optimal&nbsp;value&nbsp;of&nbsp;criterion.&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.LB_History&nbsp;[1x(t+1)]&nbsp;LB&nbsp;with&nbsp;respect&nbsp;to&nbsp;iteration.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.UB_History&nbsp;[1x(t+1)]&nbsp;UB&nbsp;with&nbsp;respect&nbsp;to&nbsp;iteration.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.NA&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;non-zero&nbsp;entries&nbsp;in&nbsp;solution.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;=&nbsp;struct('ker','rbf','arg',1);</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;minball(data.X,options);</span><br>
+<span class=help>%&nbsp;&nbsp;[Ax,Ay]&nbsp;=&nbsp;meshgrid(linspace(-5,5,100),linspace(-5,5,100));</span><br>
+<span class=help>%&nbsp;&nbsp;dist&nbsp;=&nbsp;kdist([Ax(:)';Ay(:)'],model);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;hold&nbsp;on;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;ppatterns(data.X);&nbsp;ppatterns(model.sv.X,'ro',12);</span><br>
+<span class=help>%&nbsp;&nbsp;contour(&nbsp;Ax,&nbsp;Ay,&nbsp;reshape(dist,100,100),[model.r&nbsp;model.r]);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;KDIST.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2005,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;24-july-2008,&nbsp;VF:&nbsp;fixed&nbsp;problem&nbsp;with&nbsp;computing&nbsp;r;&nbsp;pointed&nbsp;out&nbsp;by&nbsp;Daewon&nbsp;Lee&nbsp;(MPI,&nbsp;Tuebingen)</span><br>
+<span class=help1>%&nbsp;09-nov-2006,&nbsp;VF,&nbsp;added&nbsp;C;&nbsp;requested&nbsp;by&nbsp;Hsiung,&nbsp;Chang</span><br>
+<span class=help1>%&nbsp;24-jan-2005,&nbsp;VF,&nbsp;Fast&nbsp;GMNP&nbsp;solver&nbsp;used.</span><br>
+<span class=help1>%&nbsp;25-aug-2004,&nbsp;VF,&nbsp;added&nbsp;model.fun&nbsp;=&nbsp;'kdist'&nbsp;and&nbsp;.diag_add&nbsp;changed&nbsp;to&nbsp;.mu&nbsp;</span><br>
+<span class=help1>%&nbsp;16-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;15-jun-2002,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;process&nbsp;input&nbsp;arguments</span><br>
+<span class=comment>%-----------------------------------------</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;options&nbsp;=&nbsp;[];&nbsp;<span class=keyword>else</span>&nbsp;options=c2s(options);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'ker'</span>),&nbsp;options.ker&nbsp;=&nbsp;<span class=quotes>'linear'</span>;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'arg'</span>),&nbsp;options.arg&nbsp;=&nbsp;1;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'solver'</span>),&nbsp;options.solver&nbsp;=&nbsp;<span class=quotes>'imdm'</span>;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'C'</span>),&nbsp;options.C&nbsp;=&nbsp;[];&nbsp;<span class=keyword>end</span><br>
+<br>
+<br>
+[dim,num_data]&nbsp;=&nbsp;size(X);<br>
+<br>
+<span class=comment>%&nbsp;set&nbsp;up&nbsp;QP&nbsp;problem</span><br>
+<span class=comment>%-----------------------------------------</span><br>
+K&nbsp;=&nbsp;kernel(&nbsp;X,&nbsp;options.ker,&nbsp;options.arg&nbsp;);<br>
+f&nbsp;=&nbsp;-diag(K);<br>
+<br>
+<span class=keyword>if</span>&nbsp;isempty(options.C),&nbsp;H=2*K;&nbsp;<span class=keyword>else</span>&nbsp;H=2*K+eye(size(K))/(2*options.C);&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;call&nbsp;GMNP&nbsp;solver</span><br>
+<span class=comment>%----------------------------</span><br>
+[Alpha,fval,stat]&nbsp;=&nbsp;gmnp(H,f,options);<br>
+<br>
+<span class=comment>%&nbsp;take&nbsp;non-zero&nbsp;Alpha's</span><br>
+<span class=comment>%---------------------</span><br>
+inx=&nbsp;find(Alpha&nbsp;&gt;&nbsp;0);<br>
+model.Alpha&nbsp;=&nbsp;Alpha(inx);<br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;radius</span><br>
+<span class=comment>%---------------------</span><br>
+K&nbsp;=&nbsp;K(inx,inx);<br>
+model.b&nbsp;=&nbsp;model.Alpha'*K*model.Alpha;<br>
+<span class=comment>%&nbsp;model.r&nbsp;=&nbsp;sum(&nbsp;sqrt(&nbsp;diag(K)&nbsp;-&nbsp;2*K*model.Alpha&nbsp;+&nbsp;model.b&nbsp;))/length(inx);</span><br>
+<span class=keyword>if</span>&nbsp;isempty(options.C)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;model.r&nbsp;=&nbsp;sum(&nbsp;sqrt(&nbsp;diag(K)&nbsp;-&nbsp;2*K*model.Alpha&nbsp;+&nbsp;model.b&nbsp;))/length(inx);<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;model.r&nbsp;=&nbsp;sum(&nbsp;sqrt(&nbsp;diag(K)&nbsp;-&nbsp;2*K*model.Alpha&nbsp;+&nbsp;model.b&nbsp;-&nbsp;model.Alpha/(2*options.C)&nbsp;))/length(inx);<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;setup&nbsp;model</span><br>
+<span class=comment>%---------------------</span><br>
+model.sv.X=&nbsp;X(:,inx);<br>
+model.sv.inx&nbsp;=&nbsp;inx;<br>
+model.nsv&nbsp;=&nbsp;length(inx);<br>
+model.options=options;<br>
+model.stat&nbsp;=&nbsp;stat;<br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'kdist'</span>;<br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

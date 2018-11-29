@@ -1,0 +1,145 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>mlsigmoid.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>varargout</span>=<span class=defun_name>mlsigmoid</span>(<span class=defun_in>arg1,arg2,arg3</span>)<br>
+<span class=h1>%&nbsp;MLSIGMOID&nbsp;Fitting&nbsp;a&nbsp;sigmoid&nbsp;function&nbsp;using&nbsp;ML&nbsp;estimation.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;mlsigmoid(data,options)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;mlsigmoid(data,options)&nbsp;computes&nbsp;Maximum-Likelihood</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;estimation&nbsp;of&nbsp;parameters&nbsp;of&nbsp;sigmoid&nbsp;function&nbsp;[Platt99a]</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p(y==1|x)&nbsp;=&nbsp;1/(1+exp(A(1)*x+A(2))),</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;used&nbsp;to&nbsp;describe&nbsp;a&nbsp;posteriory&nbsp;probability&nbsp;of&nbsp;a&nbsp;hidden&nbsp;binary&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;state&nbsp;y&nbsp;from&nbsp;{1,2}.&nbsp;The&nbsp;conditional&nbsp;probabilities&nbsp;p(x|y)&nbsp;are&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;assumed&nbsp;&nbsp;to&nbsp;be&nbsp;uni-variate&nbsp;Gaussian&nbsp;distribution.&nbsp;The&nbsp;training&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;samples&nbsp;{(X(1),y(1)),...,(X(num_data),y(num_data))}&nbsp;assumed&nbsp;to&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;be&nbsp;i.i.d.&nbsp;are&nbsp;given&nbsp;in&nbsp;data.X&nbsp;and&nbsp;data.y.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Input&nbsp;sample:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.X&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Values&nbsp;of&nbsp;discriminant&nbsp;function.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Corresponding&nbsp;class&nbsp;label&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Control&nbsp;parameters:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.regul&nbsp;[1x1]&nbsp;If&nbsp;1&nbsp;then&nbsp;fitting&nbsp;is&nbsp;regularized&nbsp;to&nbsp;prevent&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;overfitting&nbsp;(default&nbsp;1).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.verb&nbsp;[1x1]&nbsp;If&nbsp;1&nbsp;then&nbsp;progress&nbsp;info&nbsp;is&nbsp;displayed&nbsp;(default&nbsp;0).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model.A&nbsp;[1x2]&nbsp;Parameters&nbsp;of&nbsp;sigmoid&nbsp;function.</span><br>
+<span class=help>%&nbsp;&nbsp;model.logl&nbsp;[1x1]&nbsp;Value&nbsp;of&nbsp;the&nbsp;log-likelihood&nbsp;criterion.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;help&nbsp;demo_svmpout;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;SIGMOID.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;28-apr-2008,&nbsp;VF;&nbsp;fixed&nbsp;incorrect&nbsp;regularization&nbsp;for&nbsp;the&nbsp;positive&nbsp;labels</span><br>
+<span class=help1>%&nbsp;03-jun-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;11-oct-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;20-sep-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;08-may-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&gt;&nbsp;2,<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;evaluates&nbsp;log-likelihood&nbsp;(objective&nbsp;function)</span><br>
+&nbsp;&nbsp;[L,grad]&nbsp;=&nbsp;sigmoidlogl(arg1,arg2,arg3);<br>
+&nbsp;&nbsp;<span class=stack>varargout</span>{1}&nbsp;=&nbsp;L;<br>
+&nbsp;&nbsp;<span class=stack>varargout</span>{2}&nbsp;=&nbsp;grad;<br>
+&nbsp;&nbsp;<span class=jump>return</span>;<br>
+<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;process&nbsp;inputs&nbsp;</span><br>
+<span class=comment>%-------------------------------------------------------</span><br>
+data&nbsp;=&nbsp;c2s(arg1);<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;==&nbsp;1,&nbsp;options=[];&nbsp;<span class=keyword>else</span>&nbsp;options=c2s(arg2);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'verb'</span>),&nbsp;options.verb=0;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'regul'</span>),&nbsp;options.regul=1;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;values&nbsp;of&nbsp;discriminant&nbsp;function</span><br>
+<span class=comment>%-------------------------------------------------------</span><br>
+outs&nbsp;=&nbsp;data.X(:);<br>
+<br>
+<span class=comment>%&nbsp;targets&nbsp;</span><br>
+<span class=comment>%-------------------------------------------------------</span><br>
+N1=length(find(data.y==1));<br>
+N2=length(find(data.y==2));<br>
+<span class=keyword>if</span>&nbsp;options.regul,<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;use&nbsp;regularization</span><br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;T1=(N1+1)/(N1+2);&nbsp;&nbsp;<span class=comment>%&nbsp;corrected&nbsp;28.&nbsp;apr&nbsp;2008;&nbsp;pointed&nbsp;out&nbsp;by&nbsp;Stijn&nbsp;Vanderlooy</span><br>
+&nbsp;&nbsp;T2=1/(N2+2);<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;T1=1;&nbsp;<br>
+&nbsp;&nbsp;T2=0;<br>
+<span class=keyword>end</span><br>
+<br>
+targets=zeros(N1+N2,1);<br>
+targets(find(data.y==1))=T1;<br>
+targets(find(data.y==2))=T2;<br>
+<br>
+<span class=comment>%&nbsp;set&nbsp;options&nbsp;of&nbsp;Matlab&nbsp;optimizer</span><br>
+<span class=comment>%-------------------------------------------------------</span><br>
+<span class=keyword>if</span>&nbsp;options.verb,&nbsp;<br>
+&nbsp;&nbsp;opt=optimset(<span class=quotes>'Display'</span>,<span class=quotes>'on'</span>,<span class=quotes>'GradObj'</span>,<span class=quotes>'on'</span>);<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;opt=optimset(<span class=quotes>'Display'</span>,<span class=quotes>'off'</span>,<span class=quotes>'GradObj'</span>,<span class=quotes>'on'</span>);<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;run&nbsp;optimizer&nbsp;to&nbsp;maximize&nbsp;the&nbsp;log-likelihood</span><br>
+<span class=comment>%------------------------------------------------------------</span><br>
+x0=[1&nbsp;1];<br>
+[model.A,model.logl]&nbsp;=&nbsp;fminunc(<span class=quotes>'mlsigmoid'</span>,x0,opt,targets,outs);<br>
+<br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'sigmoid'</span>;<br>
+<span class=stack>varargout</span>{1}&nbsp;=&nbsp;model;<br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+<br>
+<span class=comment>%=======================================================</span><br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[L,grad]&nbsp;</span>=&nbsp;<span class=defun_name>sigmoidlogl</span>(<span class=defun_in>A,targets,outs</span>)<br>
+<span class=comment>%&nbsp;SIGMOIDLOGL&nbsp;Returns&nbsp;log-likelihood&nbsp;of&nbsp;sigmoid&nbsp;model.</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;[L,grad]&nbsp;=&nbsp;sigmoidlogl(A,targets,outs)</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;Description:</span><br>
+<span class=comment>%&nbsp;&nbsp;It&nbsp;evaluates&nbsp;log-likelihood&nbsp;function</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;L&nbsp;=&nbsp;-sum(&nbsp;targets(i)*log(p_i)+(1-targets(i))*log(1-p_i)),</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;where&nbsp;p_i&nbsp;=&nbsp;1/(1+exp(A(1)*outs(i)+A(2)))&nbsp;is&nbsp;a&nbsp;sigmoid&nbsp;function.</span><br>
+<span class=comment>%</span><br>
+<br>
+tmp=exp(A(1)*outs+A(2));<br>
+<br>
+p=1./(1+tmp);&nbsp;<br>
+<br>
+<span class=comment>%&nbsp;prevents&nbsp;dividing&nbsp;by&nbsp;0</span><br>
+inx=find(p==0);&nbsp;p(inx)=1e-12;<br>
+inx=find(p==1);&nbsp;p(inx)=1-1e-12;<br>
+<br>
+L&nbsp;=&nbsp;-&nbsp;sum(&nbsp;targets.*log(p)+(1-targets).*log(1-p));<br>
+<br>
+grad(1)=sum(targets.*outs+(outs.*tmp)./(1+tmp)&nbsp;-&nbsp;outs);<br>
+grad(2)=sum(targets&nbsp;+&nbsp;tmp./(1+tmp&nbsp;)&nbsp;-&nbsp;1);<br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

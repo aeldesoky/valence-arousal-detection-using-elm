@@ -1,0 +1,66 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">LIN2SVM</b>
+<td valign="baseline" align="right" class="function"><a href="../kernels/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Merges linear rule and kernel projection.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;svm_model&nbsp;=&nbsp;lin2svm(kfe_model,lin_model)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;function&nbsp;merges&nbsp;kernel&nbsp;feature&nbsp;extraction&nbsp;model</span><br>
+<span class=help>&nbsp;&nbsp;(data-type&nbsp;kernel&nbsp;projection)&nbsp;and&nbsp;linear&nbsp;classifier&nbsp;to&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;create&nbsp;kernel&nbsp;(SVM)&nbsp;classifier.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;kfe_model&nbsp;[struct]&nbsp;Kernel&nbsp;data&nbsp;projection:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;new_dim]&nbsp;Weight&nbsp;vector.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.b&nbsp;[new_dim&nbsp;x&nbsp;1]&nbsp;Biases.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.oprions.ker&nbsp;[string]&nbsp;Kernel&nbsp;identifier&nbsp;(see&nbsp;'help&nbsp;kernel').</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.options.arg&nbsp;[1xnargs]&nbsp;Kernel&nbsp;arguments.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;lin_model&nbsp;[struct]&nbsp;Linear&nbsp;classifier:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;nfun]&nbsp;Weight&nbsp;vector(s).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.b&nbsp;[nfun&nbsp;x&nbsp;1]&nbsp;Bias(es).</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;svm_model&nbsp;[struct]&nbsp;Kernel&nbsp;classifer:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;nfun]&nbsp;Weight&nbsp;vector(s).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.b&nbsp;[nfun&nbsp;x&nbsp;1]&nbsp;Bias(es).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.options&nbsp;[struct]&nbsp;Copy&nbsp;of&nbsp;kfe_model.options.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>&nbsp;&nbsp;options&nbsp;=&nbsp;struct('ker','rbf','arg',1,'new_dim',10);</span><br>
+<span class=help>&nbsp;&nbsp;kpca_model&nbsp;=&nbsp;greedykpca(data.X,options);</span><br>
+<span class=help>&nbsp;&nbsp;proj_data&nbsp;=&nbsp;kernelproj(data,kpca_model);</span><br>
+<span class=help>&nbsp;&nbsp;lin_model&nbsp;=&nbsp;fld(proj_data);</span><br>
+<span class=help>&nbsp;&nbsp;kfd_model&nbsp;=&nbsp;lin2svm(kpca_model,lin_model);</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;ppatterns(data);&nbsp;pboundary(kfd_model);</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../quadrat/lin2quad.html" target="mdsbody">LIN2QUAD</a>,&nbsp;<a href = "../svm/svmclass.html" target="mdsbody">SVMCLASS</a>,&nbsp;<a href = "../linear/linclass.html" target="mdsbody">LINCLASS</a>.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../kernels/list/lin2svm.html">lin2svm.m</a>
+  <p><b class="info_field">(c) </b> Statistical Pattern Recognition Toolbox, (C) 1999-2003,<br>
+ Written by Vojtech Franc and Vaclav Hlavac,<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a>,<br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical engineering</a>,<br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 10-jun-2004, VF<br>
+ 02-Feb-2003, VF<br>
+
+</body>
+</html>

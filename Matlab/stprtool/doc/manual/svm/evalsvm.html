@@ -1,0 +1,82 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">EVALSVM</b>
+<td valign="baseline" align="right" class="function"><a href="../svm/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Trains and evaluates Support Vector Machines classifier.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;[model,Errors]&nbsp;=&nbsp;evalsvm(data,options)</span><br>
+<span class=help>&nbsp;&nbsp;[model,Errors]&nbsp;=&nbsp;evalsvm(trn_data,val_data,options)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;[model,Errors]&nbsp;=&nbsp;evalsvm(data,options)&nbsp;uses&nbsp;cross-validation</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;assess&nbsp;SVM&nbsp;classifiers&nbsp;with&nbsp;given&nbsp;kernel&nbsp;arguments&nbsp;and&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;regularization&nbsp;constants.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;kernel&nbsp;type&nbsp;is&nbsp;given&nbsp;in&nbsp;options.ker&nbsp;(see&nbsp;'help&nbsp;kernel').</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;SVM&nbsp;solver&nbsp;to&nbsp;be&nbsp;used&nbsp;is&nbsp;specified&nbsp;by&nbsp;field&nbsp;options.solver&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;(default&nbsp;'smo').&nbsp;Both&nbsp;binary&nbsp;and&nbsp;multi-class&nbsp;SVM&nbsp;solvers&nbsp;are&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;allowed.&nbsp;The&nbsp;input&nbsp;data&nbsp;have&nbsp;the&nbsp;following&nbsp;format:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;used&nbsp;with&nbsp;regards&nbsp;to&nbsp;the&nbsp;number&nbsp;of&nbsp;labels&nbsp;of&nbsp;training&nbsp;data&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;...&nbsp;training&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;...&nbsp;labels.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;set&nbsp;of&nbsp;SVM&nbsp;parameters&nbsp;to&nbsp;be&nbsp;evaluated&nbsp;are&nbsp;specified&nbsp;in:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options.arg&nbsp;[dimarg&nbsp;x&nbsp;nargs]&nbsp;...&nbsp;enumeration&nbsp;of&nbsp;&nbsp;kernel&nbsp;arguments;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dimarg&nbsp;determins&nbsp;number&nbsp;of&nbsp;kernel&nbsp;argumens&nbsp;(e.g.,&nbsp;dimarg&nbsp;=&nbsp;1&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;'rbf'&nbsp;kernel&nbsp;and&nbsp;dimarg&nbsp;=&nbsp;2&nbsp;for&nbsp;'sigmoid').</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options.C&nbsp;[1&nbsp;x&nbsp;nc]&nbsp;...&nbsp;enumeration&nbsp;of&nbsp;regularization&nbsp;constants.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;Some&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;the&nbsp;selected&nbsp;SVM&nbsp;solver&nbsp;can&nbsp;be</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;specified&nbsp;in&nbsp;the&nbsp;field&nbsp;options.solver_options.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;Each&nbsp;configuration&nbsp;of&nbsp;SVM&nbsp;paramaters&nbsp;is&nbsp;evaluated&nbsp;using&nbsp;the</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;cross-validation.&nbsp;The&nbsp;number&nbsp;of&nbsp;folds&nbsp;is&nbsp;given&nbsp;in&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;optios.num_folds&nbsp;(default&nbsp;5).&nbsp;The&nbsp;trained&nbsp;SVM&nbsp;model&nbsp;with&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;smallest&nbsp;cross-validation&nbsp;error&nbsp;is&nbsp;returned.&nbsp;The&nbsp;computed</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;cross-validation&nbsp;errors&nbsp;with&nbsp;respect&nbsp;to&nbsp;SVM&nbsp;parametes&nbsp;are&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;returned&nbsp;in&nbsp;Errors&nbsp;[nc&nbsp;x&nbsp;nargs].</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;progress&nbsp;info&nbsp;is&nbsp;displayed&nbsp;if&nbsp;options.verb&nbsp;is&nbsp;set&nbsp;to&nbsp;1</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;(default&nbsp;0).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;[model,Errors]&nbsp;=&nbsp;evalsvm(trn_data,val_data,options)&nbsp;each</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;SVM&nbsp;is&nbsp;trained&nbsp;on&nbsp;the&nbsp;trn_data&nbsp;and&nbsp;evaluated&nbsp;on&nbsp;the&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;validation&nbsp;val_data&nbsp;instead&nbsp;of&nbsp;using&nbsp;cross-validation.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;trn&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>&nbsp;&nbsp;tst&nbsp;=&nbsp;load('riply_tst');</span><br>
+<span class=help>&nbsp;&nbsp;options.ker&nbsp;=&nbsp;'rbf';</span><br>
+<span class=help>&nbsp;&nbsp;options.arg&nbsp;=&nbsp;[0.1&nbsp;0.5&nbsp;1&nbsp;5];</span><br>
+<span class=help>&nbsp;&nbsp;options.C&nbsp;=&nbsp;[1&nbsp;10&nbsp;100];</span><br>
+<span class=help>&nbsp;&nbsp;options.solver&nbsp;=&nbsp;'smo';</span><br>
+<span class=help>&nbsp;&nbsp;options.num_folds&nbsp;=&nbsp;5;</span><br>
+<span class=help>&nbsp;&nbsp;options.verb&nbsp;=&nbsp;1;</span><br>
+<span class=help>&nbsp;&nbsp;[model,Errors]&nbsp;=&nbsp;evalsvm(trn,options);</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;mesh(options.arg,options.C,Errors);</span><br>
+<span class=help>&nbsp;&nbsp;hold&nbsp;on;&nbsp;xlabel('arg');&nbsp;ylabel('C');</span><br>
+<span class=help>&nbsp;&nbsp;ypred&nbsp;=&nbsp;svmclass(tst.X,model);</span><br>
+<span class=help>&nbsp;&nbsp;cerror(ypred,tst.y)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;See&nbsp;also:&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;SMO,&nbsp;SVMLIGHT,&nbsp;SVMCLASS.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../svm/list/evalsvm.html">evalsvm.m</a>
+  <p><b class="info_field">Modifications: </b> <br>
+ 17-sep-2004, VF, Help improved. Info about training stage added.<br>
+ 18-aug-2004, VF, svm_options changed to solver_options<br>
+ 4-june-2004, VF<br>
+ 3-jun-2004, VF<br>
+
+</body>
+</html>

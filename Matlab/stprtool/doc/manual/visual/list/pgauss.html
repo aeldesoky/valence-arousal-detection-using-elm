@@ -1,0 +1,168 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>pgauss.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>varargout</span>=<span class=defun_name>pgauss</span>(<span class=defun_in>model,options</span>)<br>
+<span class=h1>%&nbsp;PGAUSS&nbsp;Vizualizes&nbsp;set&nbsp;of&nbsp;bivariate&nbsp;Gaussians.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;pgauss(model)</span><br>
+<span class=help>%&nbsp;&nbsp;pgauss(model,options)</span><br>
+<span class=help>%&nbsp;&nbsp;h&nbsp;=&nbsp;pgauss(...)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;pgauss(model)&nbsp;visualizes&nbsp;a&nbsp;set&nbsp;of&nbsp;bivariate&nbsp;Gaussians&nbsp;as</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;isolines&nbsp;(ellipse)&nbsp;with&nbsp;equal&nbsp;probability&nbsp;density&nbsp;functions.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;The&nbsp;Gaussians&nbsp;are&nbsp;given&nbsp;by&nbsp;mean&nbsp;vectors&nbsp;model.Mean&nbsp;[2xncomp]</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;and&nbsp;covariance&nbsp;matrices&nbsp;model.Cov&nbsp;[2x2xncomp].&nbsp;If&nbsp;labels</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;model.y&nbsp;[1xncomp]&nbsp;are&nbsp;given&nbsp;then&nbsp;the&nbsp;Gaussians&nbsp;are&nbsp;distinguished</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;by&nbsp;colors&nbsp;correspoding&nbsp;to&nbsp;labels.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;pgauss(model,options)&nbsp;structure&nbsp;options&nbsp;controls&nbsp;visualization;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;If&nbsp;options.fill&nbsp;equals&nbsp;1&nbsp;then&nbsp;Ellipses&nbsp;are&nbsp;filled&nbsp;otherwise&nbsp;only</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;contours&nbsp;are&nbsp;plotted.&nbsp;The&nbsp;isolines&nbsp;to&nbsp;be&nbsp;drawn&nbsp;are&nbsp;given&nbsp;by&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;values&nbsp;of&nbsp;probability&nbsp;distribution&nbsp;function&nbsp;in&nbsp;field&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;options.p&nbsp;[1xncomp].&nbsp;If&nbsp;length(option.p)==1&nbsp;then&nbsp;isolines&nbsp;for</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;all&nbsp;Gaussians&nbsp;are&nbsp;drawn&nbsp;for&nbsp;the&nbsp;same&nbsp;value.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;h&nbsp;=&nbsp;pgauss(...)&nbsp;returns&nbsp;handles&nbsp;of&nbsp;used&nbsp;graphics&nbsp;objects.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Parameters&nbsp;of&nbsp;Gaussian&nbsp;distributions:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Mean&nbsp;[2&nbsp;x&nbsp;ncomp]&nbsp;Mean&nbsp;vectors&nbsp;of&nbsp;ncomp&nbsp;Gaussians.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Cov&nbsp;[2&nbsp;x&nbsp;2&nbsp;x&nbsp;ncomp]&nbsp;Covariance&nbsp;matrices.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;ncomp]&nbsp;(optional)&nbsp;Labels&nbsp;of&nbsp;Gaussians&nbsp;used&nbsp;to&nbsp;distingush&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;them&nbsp;by&nbsp;colors.&nbsp;If&nbsp;y&nbsp;is&nbsp;not&nbsp;given&nbsp;then&nbsp;y&nbsp;=&nbsp;1:ncomp&nbsp;is&nbsp;used.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;options.p&nbsp;[1&nbsp;x&nbsp;ncomp]&nbsp;Value&nbsp;of&nbsp;p.d.f&nbsp;on&nbsp;the&nbsp;draw&nbsp;isolines.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;If&nbsp;not&nbsp;given&nbsp;then&nbsp;p&nbsp;is&nbsp;computed&nbsp;to&nbsp;make&nbsp;non-overlapping&nbsp;isolines.</span><br>
+<span class=help>%&nbsp;&nbsp;options.fill&nbsp;[int]&nbsp;If&nbsp;1&nbsp;then&nbsp;ellipses&nbsp;are&nbsp;filled&nbsp;(default&nbsp;0).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;h&nbsp;[1&nbsp;x&nbsp;nobjects]&nbsp;Handles&nbsp;of&nbsp;used&nbsp;graphics&nbsp;objects.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;mlcgmm(&nbsp;data&nbsp;);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;hold&nbsp;on;</span><br>
+<span class=help>%&nbsp;&nbsp;ppatterns(data);</span><br>
+<span class=help>%&nbsp;&nbsp;pgauss(&nbsp;model&nbsp;);</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;23-aug-2004,&nbsp;VF,&nbsp;uses&nbsp;model.y&nbsp;to&nbsp;color&nbsp;plots&nbsp;in&nbsp;1D&nbsp;case</span><br>
+<span class=help1>%&nbsp;30-apr-2004,&nbsp;VF</span><br>
+<br>
+<hr>
+[dim,ncomp]=size(model.Mean);<br>
+<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;options=[];&nbsp;<span class=keyword>else</span>&nbsp;options=c2s(options);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(&nbsp;options,&nbsp;<span class=quotes>'fill'</span>),&nbsp;options.fill=&nbsp;0;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(&nbsp;options,&nbsp;<span class=quotes>'interp'</span>),&nbsp;options.interp&nbsp;=&nbsp;30;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(model,<span class=quotes>'y'</span>),&nbsp;model.y&nbsp;=&nbsp;1:ncomp;&nbsp;<span class=keyword>end</span><br>
+<br>
+oldhold=ishold;<br>
+hold&nbsp;on;<br>
+h=[];<br>
+<br>
+<span class=keyword>if</span>&nbsp;dim&nbsp;==&nbsp;1,<br>
+&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;univariate&nbsp;variances&nbsp;can&nbsp;be&nbsp;given&nbsp;as&nbsp;a&nbsp;vector</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;size(model.Cov,1)&nbsp;~=&nbsp;size(model.Cov,2),&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;model.Cov&nbsp;=&nbsp;reshape(model.Cov,1,1,ncomp);&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;a&nbsp;=&nbsp;<span class=graph>axis</span>;<br>
+&nbsp;&nbsp;x&nbsp;=&nbsp;linspace(a(1),a(2),options.interp*3);<br>
+&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i=1:ncomp,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;y&nbsp;=&nbsp;pdfgauss(x,&nbsp;model.Mean(i),model.Cov(:,:,i));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;h&nbsp;=&nbsp;[h,&nbsp;<span class=graph>plot</span>(x,y,marker_color(model.y(i)))];<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+<span class=keyword>else</span><br>
+<br>
+&nbsp;<span class=comment>%&nbsp;computes&nbsp;isolines&nbsp;values&nbsp;automatically</span><br>
+&nbsp;<span class=keyword>if</span>&nbsp;~isfield(&nbsp;options,&nbsp;<span class=quotes>'p'</span>),&nbsp;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;minr=inf;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;ncomp&nbsp;&gt;&nbsp;1,<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i=1:ncomp-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;j=i+1:ncomp,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;distr.Mean=[model.Mean(:,i),model.Mean(:,j)];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;distr.Cov(:,:,1)=model.Cov(:,:,i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;distr.Cov(:,:,2)=model.Cov(:,:,j);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fld&nbsp;=&nbsp;androrig(&nbsp;distr&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;minr&nbsp;&gt;&nbsp;fld.r,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minr&nbsp;=&nbsp;fld.r;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minCov&nbsp;=&nbsp;0.5*(model.Cov(:,:,j)+model.Cov(:,:,i));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i=1:ncomp,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options.p(i)&nbsp;=&nbsp;exp(-0.5*(minr*0.95)^2)/...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2*pi*sqrt(det(model.Cov(:,:,i))));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;minr&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;options.p&nbsp;=&nbsp;exp(-0.5*(minr*0.95)^2)/...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2*pi*sqrt(det(model.Cov)));<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;<span class=keyword>elseif</span>&nbsp;length(options.p)&nbsp;==&nbsp;1&nbsp;,&nbsp;<br>
+&nbsp;&nbsp;options.p&nbsp;=&nbsp;options.p*ones(ncomp,1);&nbsp;<br>
+&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;<span class=keyword>for</span>&nbsp;i=1:ncomp,<br>
+<br>
+&nbsp;&nbsp;r&nbsp;=&nbsp;sqrt(&nbsp;-2*log(options.p(i)*2*pi*sqrt(det(model.Cov(:,:,i))))&nbsp;);<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;[x,y]&nbsp;=&nbsp;ellips(model.Mean(:,i),inv(model.Cov(:,:,i)),...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;r,options.interp&nbsp;);<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.fill,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;h=[h,fill(x,y,marker_color(model.y(i)))];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;h=[h,<span class=graph>plot</span>(model.Mean(1,i),model.Mean(2,i),<span class=quotes>'k+'</span>)];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;h=[h,text(model.Mean(1,i),model.Mean(2,i),[<span class=quotes>'gauss&nbsp;'</span>&nbsp;num2str(i)])];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h(<span class=keyword>end</span>),<span class=quotes>'HorizontalAlignment'</span>,<span class=quotes>'center'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'VerticalAlignment'</span>,<span class=quotes>'bottom'</span>,<span class=quotes>'fontsize'</span>,12&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;T&nbsp;=&nbsp;[[options.p(i);length(x)]&nbsp;[x;y]];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tmp1=clabel(T,<span class=quotes>'fontsize'</span>,12);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;h&nbsp;=&nbsp;[h,tmp1(:)'];<br>
+&nbsp;&nbsp;<span class=keyword>else</span>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;h=[h,<span class=graph>plot</span>(x,y,marker_color(model.y(i)))];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;h=[h,<span class=graph>plot</span>(model.Mean(1,i),model.Mean(2,i),[<span class=quotes>'+'</span>&nbsp;marker_color(model.y(i))])];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;h=[h,text(model.Mean(1,i),model.Mean(2,i),[<span class=quotes>'gauss&nbsp;'</span>&nbsp;num2str(i)])];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h(<span class=keyword>end</span>),<span class=quotes>'HorizontalAlignment'</span>,<span class=quotes>'center'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'VerticalAlignment'</span>,<span class=quotes>'bottom'</span>,<span class=quotes>'fontsize'</span>,12,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'color'</span>,marker_color(model.y(i)));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;T&nbsp;=&nbsp;[[options.p(i);length(x)]&nbsp;[x;y]];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tmp1=clabel(T,<span class=quotes>'fontsize'</span>,12);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(tmp1,<span class=quotes>'Color'</span>,marker_color(model.y(i)));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;h&nbsp;=&nbsp;[h,tmp1(:)'];<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;drawnow;<br>
+&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>end</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;~oldhold,&nbsp;hold&nbsp;off;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargout</span>&nbsp;&gt;&nbsp;0,&nbsp;<span class=stack>varargout</span>{1}&nbsp;=&nbsp;h;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

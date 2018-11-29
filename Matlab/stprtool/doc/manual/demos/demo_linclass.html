@@ -1,0 +1,76 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">DEMO_LINCLASS</b>
+<td valign="baseline" align="right" class="function"><a href="../demos/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Demo on the algorithms learning linear classifiers.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;demo_linclass</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;DEMO_LINCLASS&nbsp;demonstrates&nbsp;use&nbsp;of&nbsp;the&nbsp;algorithms&nbsp;which&nbsp;find&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;linear&nbsp;decision&nbsp;hyperplane&nbsp;between&nbsp;two&nbsp;(dichotomy)</span><br>
+<span class=help>&nbsp;&nbsp;vector&nbsp;sets.&nbsp;The&nbsp;demo&nbsp;requires&nbsp;2D&nbsp;input&nbsp;training&nbsp;data.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;program&nbsp;vizualizes&nbsp;found&nbsp;hyperplane&nbsp;in&nbsp;the&nbsp;current&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;algorithm&nbsp;step.&nbsp;The&nbsp;missclassified&nbsp;vector&nbsp;used&nbsp;by&nbsp;the</span><br>
+<span class=help>&nbsp;&nbsp;demonstrated&nbsp;iterative&nbsp;algorithms&nbsp;for&nbsp;update&nbsp;is&nbsp;vizualized</span><br>
+<span class=help>&nbsp;&nbsp;as&nbsp;well.&nbsp;Text&nbsp;description&nbsp;of&nbsp;the&nbsp;found&nbsp;solution&nbsp;is</span><br>
+<span class=help>&nbsp;&nbsp;printed&nbsp;at&nbsp;the&nbsp;bottom&nbsp;part&nbsp;of&nbsp;window.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;Following&nbsp;algorithms&nbsp;can&nbsp;be&nbsp;tested:</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;Perceptron&nbsp;&nbsp;-&nbsp;Perceptron&nbsp;learning&nbsp;rule&nbsp;(see&nbsp;'help&nbsp;perceptron').</span><br>
+<span class=help>&nbsp;&nbsp;Kozinec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Kozinec's&nbsp;algorithm&nbsp;(see&nbsp;'help&nbsp;ekozinec',&nbsp;eps=-1).&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;e-Kozinec&nbsp;&nbsp;&nbsp;-&nbsp;Kozinec's&nbsp;algorithm&nbsp;finding&nbsp;eps-optimal&nbsp;hyperplane</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(see&nbsp;'help&nbsp;ekozinec',&nbsp;eps&nbsp;&gt;&nbsp;0).</span><br>
+<span class=help>&nbsp;&nbsp;Linear&nbsp;SVM&nbsp;&nbsp;&nbsp;-&nbsp;Linear&nbsp;Supprot&nbsp;Vector&nbsp;Machines&nbsp;for&nbsp;separable&nbsp;data</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(see&nbsp;'help&nbsp;smo',&nbsp;C=inf,&nbsp;ker='linear').</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Control:</span></span><br>
+<span class=help>&nbsp;&nbsp;Algorithm&nbsp;&nbsp;-&nbsp;Dselects&nbsp;algorithm&nbsp;for&nbsp;testing.</span><br>
+<span class=help>&nbsp;&nbsp;Epsilon&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Input&nbsp;parameter&nbsp;of&nbsp;'ekozinec'&nbsp;algorithm&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(see&nbsp;'help&nbsp;ekozinec').</span><br>
+<span class=help>&nbsp;&nbsp;Iterations&nbsp;-&nbsp;Number&nbsp;of&nbsp;iterations&nbsp;in&nbsp;one&nbsp;step.</span><br>
+<span class=help>&nbsp;&nbsp;Animation&nbsp;&nbsp;-&nbsp;Enables/dissables&nbsp;animation&nbsp;-&nbsp;smooth&nbsp;changeover&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;between&nbsp;two&nbsp;algorithm&nbsp;states.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;FIG2EPS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Exports&nbsp;screen&nbsp;to&nbsp;the&nbsp;PostScript&nbsp;file.</span><br>
+<span class=help>&nbsp;&nbsp;Load&nbsp;data&nbsp;&nbsp;&nbsp;-&nbsp;Loads&nbsp;input&nbsp;training&nbsp;data&nbsp;from&nbsp;file.</span><br>
+<span class=help>&nbsp;&nbsp;Create&nbsp;data&nbsp;-&nbsp;Invokes&nbsp;program&nbsp;for&nbsp;creating&nbsp;training&nbsp;data.</span><br>
+<span class=help>&nbsp;&nbsp;Reset&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Sets&nbsp;the&nbsp;algorithm&nbsp;to&nbsp;the&nbsp;initial&nbsp;state.</span><br>
+<span class=help>&nbsp;&nbsp;Play&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Runs&nbsp;the&nbsp;algorithm.</span><br>
+<span class=help>&nbsp;&nbsp;Stop&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Stops&nbsp;the&nbsp;running&nbsp;algorithm.</span><br>
+<span class=help>&nbsp;&nbsp;Step&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Perform&nbsp;one&nbsp;step&nbsp;of&nbsp;the&nbsp;algorithm.</span><br>
+<span class=help>&nbsp;&nbsp;Info&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Invoke&nbsp;the&nbsp;info&nbsp;box.</span><br>
+<span class=help>&nbsp;&nbsp;Close&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Close&nbsp;the&nbsp;program.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../linear/finite/perceptron.html" target="mdsbody">PERCEPTRON</a>,&nbsp;<a href = "../linear/finite/ekozinec.html" target="mdsbody">EKOZINEC</a>,&nbsp;SVM.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../demos/list/demo_linclass.html">demo_linclass.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 19-sep-2003, VF<br>
+ 17-Feb-2003, VF<br>
+ 24. 6.00 V. Hlavac, comments polished.<br>
+ 11-dec-2000 V. Franc, a little increasing of code readibility<br>
+ 15-dec-2000<br>
+
+</body>
+</html>

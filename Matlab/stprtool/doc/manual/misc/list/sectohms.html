@@ -1,0 +1,32 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>sectohms.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[h,m,s]&nbsp;</span>=&nbsp;<span class=defun_name>sectohms</span>(<span class=defun_in>sec</span>)<br>
+<span class=h1>%&nbsp;SECTOHMS&nbsp;Converts&nbsp;seconds&nbsp;to&nbsp;HOUR:MIN:SEC&nbsp;format.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;[h,m,s]&nbsp;=&nbsp;sectohms(sec)</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;2-jul-2007,&nbsp;VF,&nbsp;created</span><br>
+<br>
+<br>
+<hr>
+h&nbsp;=&nbsp;floor(sec/60/60);<br>
+<br>
+sec&nbsp;=&nbsp;sec&nbsp;-&nbsp;h*60*60;<br>
+<br>
+m&nbsp;=&nbsp;floor(sec/60);<br>
+<br>
+sec&nbsp;=&nbsp;sec&nbsp;-&nbsp;m*60;<br>
+<br>
+s&nbsp;=&nbsp;sec;<br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

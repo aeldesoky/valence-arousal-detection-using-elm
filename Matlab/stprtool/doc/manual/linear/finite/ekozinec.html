@@ -1,0 +1,99 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">EKOZINEC</b>
+<td valign="baseline" align="right" class="function"><a href="../../linear/finite/index.html" target="mdsdir"><img border = 0 src="../../up.gif"></a></table>
+  <p><b>Kozinec's algorithm for eps-optimal separating hyperplane.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;ekozinec(data)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;ekozinec(data,options)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;ekozinec(data,options,init_model)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;function&nbsp;is&nbsp;implementation&nbsp;of&nbsp;the&nbsp;Kozinec's&nbsp;algorithm</span><br>
+<span class=help>&nbsp;&nbsp;with&nbsp;eps-optimality&nbsp;stopping&nbsp;condition&nbsp;[<a href="../../references.html#SH10" title = "M.I.Schlesinger and V.Hlavac. Ten lectures on statistical and structural pattern recognition. Kluwer Academic Publishers, 2002." >SH10</a>].&nbsp;The&nbsp;algorithm&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;finds&nbsp;the&nbsp;eps-optimal&nbsp;separating&nbsp;hyperplane.</span><br>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;model=ekozinec(data)&nbsp;the&nbsp;Kozinec's&nbsp;rule&nbsp;is&nbsp;used&nbsp;to&nbsp;find&nbsp;the&nbsp;closest&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;points&nbsp;w1,&nbsp;w2&nbsp;from&nbsp;the&nbsp;convex&nbsp;hulls&nbsp;of&nbsp;the&nbsp;vectors&nbsp;from&nbsp;the&nbsp;first&nbsp;and&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;the&nbsp;second&nbsp;class.&nbsp;The&nbsp;found&nbsp;points&nbsp;determine&nbsp;the&nbsp;optimal&nbsp;separating&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;hyperplane.&nbsp;</span><br>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;model=ekozinec(data,options)&nbsp;specifies&nbsp;stopping&nbsp;conditions&nbsp;of</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;the&nbsp;algorithm&nbsp;in&nbsp;structure&nbsp;options:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;.eps&nbsp;[1x1]&nbsp;...&nbsp;controls&nbsp;how&nbsp;close&nbsp;is&nbsp;the&nbsp;found&nbsp;solution&nbsp;to</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;optimal&nbsp;hyperplane&nbsp;in&nbsp;terms&nbsp;of&nbsp;margin&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(default&nbsp;eps=0.01).&nbsp;The&nbsp;options&nbsp;for&nbsp;eps&nbsp;are:&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps&nbsp;&gt;&nbsp;0&nbsp;...&nbsp;eps-optimal&nbsp;hyperplane&nbsp;is&nbsp;sought&nbsp;for.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps&nbsp;==&nbsp;0&nbsp;...&nbsp;algorithm&nbsp;converges&nbsp;to&nbsp;the&nbsp;optimal&nbsp;hyperplane&nbsp;(but&nbsp;it</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;does&nbsp;not&nbsp;have&nbsp;to&nbsp;stop&nbsp;in&nbsp;finite&nbsp;number&nbsp;of&nbsp;iterations).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eps&nbsp;&lt;&nbsp;0&nbsp;...&nbsp;algorithm&nbsp;stops&nbsp;when&nbsp;the&nbsp;separating&nbsp;hyperplane&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;found&nbsp;(zero&nbsp;training&nbsp;error)&nbsp;regardless&nbsp;the&nbsp;margin&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;so&nbsp;it&nbsp;solves&nbsp;the&nbsp;same&nbsp;task&nbsp;as&nbsp;the&nbsp;ordinary&nbsp;Perceptron.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]...&nbsp;maximal&nbsp;number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;ekozinec(data,options,init_model)&nbsp;specifies&nbsp;initial&nbsp;model</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;which&nbsp;must&nbsp;contain:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;.W1&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;...&nbsp;Vector&nbsp;from&nbsp;the&nbsp;first&nbsp;convex&nbsp;hull.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;.W2&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;...&nbsp;Vector&nbsp;from&nbsp;the&nbsp;second&nbsp;convex&nbsp;hull.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Labeled&nbsp;(binary)&nbsp;training&nbsp;data.&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Input&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;options&nbsp;[struct]&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.eps&nbsp;[real]&nbsp;Controls&nbsp;how&nbsp;closeness&nbsp;to&nbsp;the&nbsp;optimal&nbsp;hypeprlane&nbsp;(see&nbsp;above).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;(default&nbsp;tmax=inf).</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;init_model&nbsp;[struct]&nbsp;Initial&nbsp;model;&nbsp;must&nbsp;contain&nbsp;items</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;.W1&nbsp;[dim&nbsp;x&nbsp;1],&nbsp;.W2&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;see&nbsp;above.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Binary&nbsp;linear&nbsp;classifier:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Normal&nbsp;vector&nbsp;of&nbsp;hyperplane.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;hyperplane.</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.W1&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;The&nbsp;nearest&nbsp;vector&nbsp;of&nbsp;the&nbsp;first&nbsp;convex&nbsp;hull.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.W2&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;The&nbsp;nearest&nbsp;vector&nbsp;of&nbsp;the&nbsp;second&nbsp;convex&nbsp;hull.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.margin&nbsp;[1x1]&nbsp;Margin&nbsp;of&nbsp;the&nbsp;found&nbsp;hyperplane.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.exitflag&nbsp;[1x1]&nbsp;1&nbsp;...&nbsp;eps-optimality&nbsp;condition&nbsp;satisfied&nbsp;or&nbsp;separating</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hyperplane&nbsp;has&nbsp;been&nbsp;found&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;...&nbsp;number&nbsp;of&nbsp;iterations&nbsp;exceeded&nbsp;tmax.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;=&nbsp;genlsdata(&nbsp;2,&nbsp;50,&nbsp;1);</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;ekozinec(data,&nbsp;struct('eps',0.01));</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;ppatterns(data);&nbsp;pline(model);&nbsp;</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../../linear/finite/perceptron.html" target="mdsbody">PERCEPTRON</a>,&nbsp;<a href = "../../linear/finite/mperceptron.html" target="mdsbody">MPERCEPTRON</a>,&nbsp;<a href = "../../linear/linclass.html" target="mdsbody">LINCLASS</a>.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../../linear/finite/list/ekozinec.html">ekozinec.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 19-may-2004, VF<br>
+ 3-may-2004, VF<br>
+ 17-Sep-2003, VF<br>
+ 17-Feb-2003, VF<br>
+ 16-Feb-2003, VF<br>
+ 21-apr-2001, V.Franc, created<br>
+
+</body>
+</html>

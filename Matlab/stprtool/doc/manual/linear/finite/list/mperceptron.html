@@ -1,0 +1,129 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>mperceptron.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model&nbsp;</span>=&nbsp;<span class=defun_name>mpeceptron</span>(<span class=defun_in>&nbsp;data,&nbsp;options,&nbsp;init_model&nbsp;</span>)<br>
+<span class=h1>%&nbsp;MPERCEPTRON&nbsp;Perceptron&nbsp;algorithm&nbsp;to&nbsp;train&nbsp;linear&nbsp;machine.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;mpeceptron(data)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;mpeceptron(data,options)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;mpeceptron(data,options,init_model)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;mperceptron(data)&nbsp;uses&nbsp;the&nbsp;Perceptron&nbsp;learning&nbsp;rule</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;to&nbsp;train&nbsp;linear&nbsp;machine&nbsp;(multi-class&nbsp;linear&nbsp;classitfier).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;The&nbsp;multi-class&nbsp;problem&nbsp;is&nbsp;transformed&nbsp;to&nbsp;the&nbsp;single-class</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;one&nbsp;using&nbsp;the&nbsp;Kessler's&nbsp;construction&nbsp;[DHS01][SH10].</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;mperceptron(data,options)&nbsp;specifies&nbsp;stopping&nbsp;condition&nbsp;of</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;the&nbsp;algorithm&nbsp;in&nbsp;structure&nbsp;options:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]...&nbsp;maximal&nbsp;number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;mperceptron(data,options,init_model)&nbsp;specifies&nbsp;initial&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;model&nbsp;which&nbsp;must&nbsp;contain:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;nclass]&nbsp;...&nbsp;Normal&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;.b&nbsp;[nclass&nbsp;x&nbsp;1]&nbsp;...&nbsp;Biases.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Labeled&nbsp;training&nbsp;data:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;(1,2,...,nclass).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;[struct]&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;(default&nbsp;tmax=inf).</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;init_model&nbsp;[struct]&nbsp;Initial&nbsp;model;&nbsp;must&nbsp;contain&nbsp;items&nbsp;.W,&nbsp;.b.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Multi-class&nbsp;linear&nbsp;classifier:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;nclass]&nbsp;Normal&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[nclass&nbsp;x&nbsp;1]&nbsp;Biases.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.exitflag&nbsp;[1x1]&nbsp;1&nbsp;...&nbsp;perceptron&nbsp;has&nbsp;converged.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;...&nbsp;number&nbsp;of&nbsp;iterations&nbsp;exceeded&nbsp;tmax.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;=&nbsp;load('pentagon');</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;mperceptron(&nbsp;data&nbsp;);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;ppatterns(&nbsp;data&nbsp;);&nbsp;pboundary(&nbsp;model&nbsp;);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;PERCEPTRON,&nbsp;LINCLASS,&nbsp;EKOZINEC.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;21-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;18-may-2004,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;input&nbsp;arguments</span><br>
+<span class=comment>%----------------------------------------</span><br>
+[dim,num_data]&nbsp;=&nbsp;size(data.X);<br>
+nclass&nbsp;=&nbsp;max(data.y);<br>
+<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;options&nbsp;=&nbsp;[];&nbsp;<span class=keyword>else</span>&nbsp;options&nbsp;=&nbsp;c2s(options);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'tmax'</span>),&nbsp;options.tmax&nbsp;=&nbsp;inf;&nbsp;<span class=keyword>end</span>&nbsp;<br>
+<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;==&nbsp;3,<br>
+&nbsp;&nbsp;model&nbsp;=&nbsp;init_model;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;model.W&nbsp;=&nbsp;zeros(dim,nclass);<br>
+&nbsp;&nbsp;model.b&nbsp;=&nbsp;zeros(nclass,1);<br>
+<span class=keyword>end</span><br>
+model.t&nbsp;=&nbsp;0;<br>
+<br>
+<span class=comment>%&nbsp;main&nbsp;loop</span><br>
+<span class=comment>%&nbsp;-----------------------------------</span><br>
+model.exitflag&nbsp;=&nbsp;0;<br>
+<span class=keyword>while</span>&nbsp;options.tmax&nbsp;&gt;&nbsp;model.t&nbsp;&&nbsp;model.exitflag&nbsp;==&nbsp;0,<br>
+<br>
+&nbsp;&nbsp;model.t&nbsp;=&nbsp;model.t+1;<br>
+<br>
+&nbsp;&nbsp;model.exitflag&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;search&nbsp;for&nbsp;misclassified&nbsp;vector</span><br>
+&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i=1:nclass,<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class_i&nbsp;=&nbsp;find(&nbsp;data.y&nbsp;==&nbsp;i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dfce_i&nbsp;=&nbsp;model.W(:,i)'*data.X(:,class_i)&nbsp;+&nbsp;model.b(i);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;j=setdiff([1:nclass],&nbsp;i),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dfce_j&nbsp;=&nbsp;model.W(:,j)'*data.X(:,class_i)&nbsp;+&nbsp;model.b(j);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[min_diff,inx]&nbsp;=&nbsp;min(&nbsp;dfce_i&nbsp;-&nbsp;dfce_j);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;min_diff&nbsp;&lt;=&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Perceptron&nbsp;rule</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;take&nbsp;index&nbsp;of&nbsp;misclassified&nbsp;vector</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inx=class_i(inx(1));<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.W(:,i)&nbsp;=&nbsp;model.W(:,i)&nbsp;+&nbsp;data.X(:,inx);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.b(i)&nbsp;=&nbsp;model.b(i)&nbsp;+&nbsp;1;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.W(:,j)&nbsp;=&nbsp;model.W(:,j)&nbsp;-&nbsp;data.X(:,inx);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.b(j)&nbsp;=&nbsp;model.b(j)&nbsp;-&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;error&nbsp;was&nbsp;found</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.exitflag&nbsp;=&nbsp;0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=jump>break</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;model.exitflag&nbsp;==&nbsp;0,&nbsp;<span class=jump>break</span>;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+<span class=keyword>end</span><br>
+<br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'linclass'</span>;<br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

@@ -1,0 +1,47 @@
+% Demonstration of image restoration on USPS database.
+%
+% Linear PCA and Kernel PCA models are learnt from files.
+%
+
+% Modification:
+% 5-may-2004, VF
+% 22-apr-2004, VF
+
+% == input files ======================
+kpca_filename = 'GreedyKpcaMoldeUsps5.mat';  % kpca model
+lpca_filename = 'LinearPCAModelUSPS.mat';       % linear PCA model
+
+input_data_file = '/home.dokt/xfrancv/data/usps_noisy';  % USPS 
+
+% loading ...
+load(kpca_filename,'kpca_model');
+load(lpca_filename,'lpca_model');
+load(input_data_file);
+
+% get indices of examples to denoise
+inx = [];
+for i=1:10,
+  tmp = find(tst.y == i);
+  inx = [inx, tmp(1) ];
+end
+
+% get noisy and ground truth numerals
+noisy_X = tst.X(:,inx);  
+gnd_X = tst.gnd_X(:,inx);
+
+% Kernel PCA denoising
+kpca_X = kpimage( noisy_X, kpca_model);
+lpca_X = lpimage( noisy_X, lpca_model);
+
+% display results
+h=figure; set(h,'name','Denoised by greedy KPCA');
+showim( kpca_X);
+
+h=figure; set(h,'name','Denoised by linear PCA');
+showim( lpca_X);
+
+h=figure; set(h,'name','Ground truth');
+showim( gnd_X);
+
+h=figure; set(h,'name','Noisy');
+showim( noisy_X);

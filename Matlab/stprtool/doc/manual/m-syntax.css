@@ -1,0 +1,26 @@
+            body { background-color: white; }
+	    .comment { color: darkgreen;font-style: italic; }
+	    .help    { color: darkgreen; font-weight: bold  } 
+            .help_field  { color: black; font-weight: bold } 
+            .help1    { color: darkgreen; } 
+            .help1_field { color: darkgreen; font-weight: bold  } 
+            .h1      { color: darkgreen; font-weight: bold; 
+              text-decoration: underline } 
+            .quotes  { color: gray } 
+
+            .keyword  { color: blue; font-weight: bold } 
+            .jump   { color: brown; font-weight: bold }
+            .label  { color: darkgreen; font-weight: bold } 
+            .eval   { color: orange; font-weight: bold } 
+            .graph  { color: darkred;  } 
+            .type   { color: blue; } 
+            .error  { color: red } 
+            .debug  { color: red } 
+            .io     { color: black; font-weight: bold } 
+
+
+            .defun_kw  { color: brown; font-weight: bold } 
+            .defun_out  { color: blue;  } 
+            .defun_name  { color: brown; text-decoration: underline } 
+            .defun_in   { color: blue; } 
+            .stack  { color: magenta; } 

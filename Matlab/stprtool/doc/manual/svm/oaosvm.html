@@ -1,0 +1,80 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">OAOSVM</b>
+<td valign="baseline" align="right" class="function"><a href="../svm/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Multi-class SVM using One-Against-One decomposition.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;oaosvm(&nbsp;data&nbsp;)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;oaosvm(&nbsp;data,&nbsp;options&nbsp;)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;oaosvm(&nbsp;data&nbsp;)&nbsp;uses&nbsp;one-agains-one&nbsp;deconposition</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;to&nbsp;train&nbsp;the&nbsp;multi-class&nbsp;Support&nbsp;Vector&nbsp;Machines&nbsp;(SVM)</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;classifier.&nbsp;The&nbsp;classification&nbsp;into&nbsp;nclass&nbsp;classes&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;is&nbsp;decomposed&nbsp;into&nbsp;nrule&nbsp;=&nbsp;(nclass-1)*nclass/2&nbsp;binary&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;problems.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;oaosvm(&nbsp;data,&nbsp;options)&nbsp;allows&nbsp;to&nbsp;specify&nbsp;the</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;binary&nbsp;SVM&nbsp;solver&nbsp;and&nbsp;its&nbsp;paramaters.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Training&nbsp;data:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;of&nbsp;training&nbsp;data&nbsp;(1,2,...,nclass).&nbsp;</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Control&nbsp;parameters:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.bin_svm&nbsp;[string]&nbsp;Function&nbsp;which&nbsp;implements&nbsp;the&nbsp;binary&nbsp;SVM&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;solver;&nbsp;(default&nbsp;'smo').</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.verb&nbsp;[1x1]&nbsp;If&nbsp;1&nbsp;then&nbsp;a&nbsp;progress&nbsp;info&nbsp;is&nbsp;displayed&nbsp;(default&nbsp;0).</span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;other&nbsp;fields&nbsp;of&nbsp;options&nbsp;specifies&nbsp;the&nbsp;options&nbsp;of&nbsp;the&nbsp;binary</span><br>
+<span class=help>&nbsp;&nbsp;solver&nbsp;(e.g.,&nbsp;ker,&nbsp;arg,&nbsp;C).&nbsp;See&nbsp;help&nbsp;of&nbsp;the&nbsp;selected&nbsp;solver.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Multi-class&nbsp;SVM&nbsp;majority&nbsp;voting&nbsp;classifier:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;nrule]&nbsp;Weights&nbsp;(Lagrangeans).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.bin_y&nbsp;[2&nbsp;x&nbsp;nrule]&nbsp;Translation&nbsp;between&nbsp;binary&nbsp;responses&nbsp;of</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;discriminant&nbsp;functions&nbsp;and&nbsp;class&nbsp;labels.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.b&nbsp;[nrule&nbsp;x&nbsp;1]&nbsp;Biases&nbsp;of&nbsp;discriminant&nbsp;functions.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;nsv]&nbsp;Support&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.nsv&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;support&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.trnerr&nbsp;[1x1]&nbsp;Training&nbsp;error.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.kercnt&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;kernel&nbsp;evaluations.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.options&nbsp;[struct[&nbsp;Copy&nbsp;of&nbsp;input&nbsp;argument&nbsp;options.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;=&nbsp;load('pentagon');</span><br>
+<span class=help>&nbsp;&nbsp;options&nbsp;=&nbsp;struct('ker','rbf','arg',1,'C',1000,'verb',1);</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;oaosvm(&nbsp;data,&nbsp;options&nbsp;);</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;ppatterns(data);&nbsp;ppatterns(model.sv.X,'ok',13);</span><br>
+<span class=help>&nbsp;&nbsp;pboundary(&nbsp;model&nbsp;);</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../svm/mvsvmclass.html" target="mdsbody">MVSVMCLASS</a>,&nbsp;<a href = "../svm/oaasvm.html" target="mdsbody">OAASVM</a>.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../svm/list/oaosvm.html">oaosvm.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2005, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 25-jan-2005, VF, option solver replaced by bin_svm <br>
+ 26-may-2004, VF<br>
+ 4-feb-2004, VF<br>
+ 9-Feb-2003, VF<br>
+
+</body>
+</html>

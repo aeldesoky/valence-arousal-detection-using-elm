@@ -1,0 +1,77 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>pkernelproj.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_name>pkernelproj</span>(<span class=defun_in>model,options</span>)<br>
+<span class=h1>%&nbsp;PKERNELPROJ&nbsp;Plots&nbsp;isolines&nbsp;of&nbsp;kernel&nbsp;projection.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;pkernelproj(model)</span><br>
+<span class=help>%&nbsp;&nbsp;pkernelproj(model,options)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;plots&nbsp;isolines&nbsp;corresponding&nbsp;to&nbsp;points</span><br>
+<span class=help>%&nbsp;&nbsp;having&nbsp;equal&nbsp;value&nbsp;of&nbsp;projection&nbsp;onto&nbsp;kernel&nbsp;basis</span><br>
+<span class=help>%&nbsp;&nbsp;(e.g.&nbsp;onto&nbsp;principal&nbsp;component&nbsp;in&nbsp;Kernel&nbsp;PCA).&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;See&nbsp;'help&nbsp;kernelproj'&nbsp;for&nbsp;more&nbsp;help&nbsp;on&nbsp;kernel&nbsp;projection.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Defines&nbsp;kernel&nbsp;data&nbsp;projection.&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;options&nbsp;[struct]&nbsp;Controls&nbsp;apperance:</span><br>
+<span class=help>%&nbsp;&nbsp;.contours&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;plotted&nbsp;contours&nbsp;(Default&nbsp;10).</span><br>
+<span class=help>%&nbsp;&nbsp;.xgrid&nbsp;[1x1]&nbsp;Density&nbsp;of&nbsp;sampling&nbsp;in&nbsp;x-axis&nbsp;(default&nbsp;25).x</span><br>
+<span class=help>%&nbsp;&nbsp;.ygrid&nbsp;[1x1]&nbsp;Density&nbsp;of&nbsp;sampling&nbsp;in&nbsp;y-axis&nbsp;(default&nbsp;25).</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;help&nbsp;kpca;</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;KERNELPROJ,&nbsp;KPCA,&nbsp;GDA.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;4-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;22-jan-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;8-July-2001,&nbsp;V.Franc&nbsp;</span><br>
+<br>
+<hr>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;options&nbsp;=&nbsp;[];&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'contours'</span>),&nbsp;options.contours=10;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'xgrid'</span>),&nbsp;options.xgrid=25;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'ygrid'</span>),&nbsp;options.ygrid=25;&nbsp;<span class=keyword>end</span><br>
+<br>
+oldhold=ishold;&nbsp;<br>
+hold&nbsp;on;<br>
+<br>
+<span class=comment>%&nbsp;Testing&nbsp;points&nbsp;-&nbsp;grid&nbsp;[xgrid&nbsp;x&nbsp;ygrid].</span><br>
+w&nbsp;=&nbsp;<span class=graph>axis</span>;<br>
+xrange=w(1):(w(2)-w(1))/options.xgrid:w(2);<br>
+yrange=w(3):(w(4)-w(3))/options.ygrid:w(4);<br>
+<br>
+[X,Y]&nbsp;=&nbsp;meshgrid(xrange,yrange);<br>
+Xtst=[reshape(X,1,prod(size(X)));reshape(Y,1,prod(size(Y)))];<br>
+<span class=comment>%&nbsp;</span><br>
+Z&nbsp;=&nbsp;kernelproj(Xtst,model);<br>
+<br>
+<span class=comment>%&nbsp;Plot&nbsp;contours&nbsp;of&nbsp;selected&nbsp;features.</span><br>
+<span class=keyword>for</span>&nbsp;i=1:size(Z,1),<br>
+&nbsp;&nbsp;map&nbsp;=&nbsp;reshape(Z(i,:),&nbsp;length(yrange),&nbsp;length(xrange));<br>
+&nbsp;&nbsp;contour(xrange,&nbsp;yrange,&nbsp;map,&nbsp;options.contours,&nbsp;marker_color(i));<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;</span><br>
+<span class=keyword>if</span>&nbsp;~oldhold,&nbsp;hold&nbsp;off;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

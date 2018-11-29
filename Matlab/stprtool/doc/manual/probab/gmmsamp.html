@@ -1,0 +1,62 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">GMMSAMP</b>
+<td valign="baseline" align="right" class="function"><a href="../probab/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Generates sample from Gaussian mixture model.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;=&nbsp;gmmsamp(model,num_data)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;function&nbsp;generates&nbsp;num_data&nbsp;samples&nbsp;from&nbsp;a&nbsp;Gaussian&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;mixture&nbsp;given&nbsp;by&nbsp;structure&nbsp;model.&nbsp;It&nbsp;returnes&nbsp;samples&nbsp;X&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;and&nbsp;a&nbsp;vector&nbsp;y&nbsp;of&nbsp;Gaussian&nbsp;component&nbsp;responsible&nbsp;for&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;generating&nbsp;corresponding&nbsp;sample.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;model</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Mean&nbsp;[dim&nbsp;x&nbsp;ncomp]&nbsp;Mean&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Cov&nbsp;[dim&nbsp;x&nbsp;dim&nbsp;x&nbsp;ncomp]&nbsp;Covariance&nbsp;matrices.&nbsp;In&nbsp;the&nbsp;case&nbsp;of&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;univariate&nbsp;mixture&nbsp;(dim=0)&nbsp;the&nbsp;variances&nbsp;can&nbsp;enter&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;as&nbsp;a&nbsp;vector&nbsp;Cov=[var1&nbsp;var2&nbsp;...&nbsp;var_ncomp].</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Prior&nbsp;[ncomp&nbsp;x&nbsp;1]&nbsp;Weighting&nbsp;coefficients&nbsp;of&nbsp;Gaussians.</span><br>
+<span class=help>&nbsp;&nbsp;num_data&nbsp;[int]&nbsp;Number&nbsp;of&nbsp;samples.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;data.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Generated&nbsp;sample&nbsp;data.</span><br>
+<span class=help>&nbsp;&nbsp;data.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Identifier&nbsp;of&nbsp;Gaussian&nbsp;which&nbsp;generated&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;given&nbsp;vector.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;struct('Mean',[-2&nbsp;3],'Cov',[1&nbsp;0.5],'Prior',[0.4&nbsp;0.6]);</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;hold&nbsp;on;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;plot([-4:0.1:5],&nbsp;pdfgmm([-4:0.1:5],model),'r');</span><br>
+<span class=help>&nbsp;&nbsp;sample&nbsp;=&nbsp;gmmsamp(model,500);</span><br>
+<span class=help>&nbsp;&nbsp;[Y,X]&nbsp;=&nbsp;hist(sample.X,10);</span><br>
+<span class=help>&nbsp;&nbsp;bar(X,Y/500);</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;PDFGMM,&nbsp;GSAMP.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../probab/list/gmmsamp.html">gmmsamp.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 28-apr-2004, VF<br>
+
+</body>
+</html>

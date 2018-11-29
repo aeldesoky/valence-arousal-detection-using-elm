@@ -1,0 +1,187 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>bsvm2.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model&nbsp;</span>=&nbsp;<span class=defun_name>bsvm2</span>(<span class=defun_in>&nbsp;data,&nbsp;options&nbsp;</span>)<br>
+<span class=h1>%&nbsp;BSVM2&nbsp;Multi-class&nbsp;BSVM&nbsp;with&nbsp;L2-soft&nbsp;margin.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;bsvm2(&nbsp;data,&nbsp;options&nbsp;)&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;trains&nbsp;the&nbsp;multi-class&nbsp;SVM&nbsp;classifier&nbsp;based</span><br>
+<span class=help>%&nbsp;&nbsp;on&nbsp;BSVM&nbsp;formulation&nbsp;(bias&nbsp;added&nbsp;to&nbsp;the&nbsp;objective&nbsp;function)&nbsp;and</span><br>
+<span class=help>%&nbsp;&nbsp;L2-soft&nbsp;margin&nbsp;penalization&nbsp;of&nbsp;misclassifications.</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;quadratic&nbsp;programming&nbsp;task&nbsp;is&nbsp;optimized&nbsp;by&nbsp;one&nbsp;of&nbsp;the</span><br>
+<span class=help>%&nbsp;&nbsp;following&nbsp;algorithms:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;mdm&nbsp;&nbsp;...&nbsp;Mitchell-Demyanov-Malozemov</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;imdm&nbsp;&nbsp;...&nbsp;Mitchell-Demyanov-Malozemov&nbsp;Improved&nbsp;1.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;iimdm&nbsp;&nbsp;...&nbsp;Mitchell-Demyanov-Malozemov&nbsp;Improved&nbsp;2.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;kozinec&nbsp;...&nbsp;Kozinec&nbsp;algorithm.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;keerthi&nbsp;...&nbsp;NPA&nbsp;algorithm&nbsp;by&nbsp;Keerthi&nbsp;et&nbsp;al.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;kowalczyk&nbsp;...&nbsp;Based&nbsp;on&nbsp;Kowalczyk's&nbsp;maximal&nbsp;margin&nbsp;perceptron.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;For&nbsp;more&nbsp;info&nbsp;refer&nbsp;to&nbsp;V.Franc:&nbsp;Optimization&nbsp;Algorithms&nbsp;for&nbsp;Kernel&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;Methods.&nbsp;Research&nbsp;report.&nbsp;CTU-CMP-2005-22.&nbsp;CTU&nbsp;FEL&nbsp;Prague.&nbsp;2005.</span><br>
+<span class=help>%&nbsp;&nbsp;ftp://cmp.felk.cvut.cz/pub/cmp/articles/franc/Franc-PhD.pdf&nbsp;.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Training&nbsp;data:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;(1,2,...,nclass).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Control&nbsp;parameters:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.ker&nbsp;[string]&nbsp;Kernel&nbsp;identifier.&nbsp;See&nbsp;'help&nbsp;kernel'.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.arg&nbsp;[1&nbsp;x&nbsp;nargs]&nbsp;Kernel&nbsp;argument(s).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.C&nbsp;[1x1]&nbsp;Regularization&nbsp;constant.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.solver&nbsp;[string]&nbsp;Solver&nbsp;to&nbsp;be&nbsp;used:&nbsp;'mdm',&nbsp;'imdm'&nbsp;(default),&nbsp;'iimdm',&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'kozinec',&nbsp;'kowalczyk','keerthi'.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;(default&nbsp;inf).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.tolabs&nbsp;[1x1]&nbsp;Absolute&nbsp;tolerance&nbsp;stopping&nbsp;condition&nbsp;(default&nbsp;0.0).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.tolrel&nbsp;[1x1]&nbsp;Relative&nbsp;tolerance&nbsp;stopping&nbsp;condition&nbsp;(default&nbsp;0.001).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.thlb&nbsp;[1x1]&nbsp;Thereshold&nbsp;on&nbsp;the&nbsp;lower&nbsp;bound&nbsp;(default&nbsp;inf).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.cache&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;columns&nbsp;of&nbsp;kernel&nbsp;matrix&nbsp;to&nbsp;be&nbsp;cached&nbsp;(default&nbsp;1000).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.verb&nbsp;[1x1]&nbsp;If&nbsp;&gt;&nbsp;0&nbsp;then&nbsp;some&nbsp;info&nbsp;is&nbsp;printed&nbsp;(default&nbsp;0).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Multi-class&nbsp;SVM&nbsp;classifier:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[nsv&nbsp;x&nbsp;nclass]&nbsp;Weights.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[nclass&nbsp;x&nbsp;1]&nbsp;Biases.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;nsv]&nbsp;Support&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.nsv&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;support&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options&nbsp;[struct]&nbsp;Copy&nbsp;of&nbsp;input&nbsp;options.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.UB&nbsp;[1x1]&nbsp;Upper&nbsp;bound&nbsp;on&nbsp;the&nbsp;optimal&nbsp;solution.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.LB&nbsp;[1x1]&nbsp;Lower&nbsp;bound&nbsp;on&nbsp;the&nbsp;optimal&nbsp;solution.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.History&nbsp;[2&nbsp;x&nbsp;(t+1)]&nbsp;UB&nbsp;and&nbsp;LB&nbsp;with&nbsp;respect&nbsp;to&nbsp;t.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.trnerr&nbsp;[1x1]&nbsp;Training&nbsp;classification&nbsp;error.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.kercnt&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;kernel&nbsp;evaluations.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.cputime&nbsp;[1x1]&nbsp;CPU&nbsp;time&nbsp;(measured&nbsp;by&nbsp;tic-toc).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.stat&nbsp;[struct]&nbsp;Statistics&nbsp;about&nbsp;optimization:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.access&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;requested&nbsp;columns&nbsp;of&nbsp;matrix&nbsp;H.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.UB&nbsp;[1x1]&nbsp;Upper&nbsp;bound&nbsp;on&nbsp;the&nbsp;optimal&nbsp;value&nbsp;of&nbsp;criterion.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.LB&nbsp;[1x1]&nbsp;Lower&nbsp;bound&nbsp;on&nbsp;the&nbsp;optimal&nbsp;value&nbsp;of&nbsp;criterion.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.LB_History&nbsp;[1x(t+1)]&nbsp;LB&nbsp;with&nbsp;respect&nbsp;to&nbsp;t.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.UB_History&nbsp;[1x(t+1)]&nbsp;UB&nbsp;with&nbsp;respect&nbsp;to&nbsp;t.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.NA&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;non-zero&nbsp;elements&nbsp;in&nbsp;solution.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;=&nbsp;load('pentagon');</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;=&nbsp;struct('ker','rbf','arg',1,'C',10);</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;bsvm2(data,options&nbsp;)</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;ppatterns(data);&nbsp;ppatterns(model.sv.X,'ok',12);</span><br>
+<span class=help>%&nbsp;&nbsp;pboundary(model);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;SVMCLASS,&nbsp;OAASVM,&nbsp;OAOSVM,&nbsp;GMNP.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2005,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;09-sep-2005,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;24-jan-2005,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;29-nov-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;26-nov-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;16-Nov-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;31-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;23-jan-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+tic;<br>
+<br>
+<span class=comment>%&nbsp;process&nbsp;inputs&nbsp;</span><br>
+<span class=comment>%-------------------------------------------------------</span><br>
+data=c2s(data);<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;options=[];&nbsp;<span class=keyword>else</span>&nbsp;options=c2s(options);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'ker'</span>),&nbsp;options.ker=<span class=quotes>'linear'</span>;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'arg'</span>),&nbsp;options.arg=1;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'C'</span>),&nbsp;options.C=inf;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'tmax'</span>),&nbsp;options.tmax=inf;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'tolabs'</span>),&nbsp;options.tolabs=0;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'tolrel'</span>),&nbsp;options.tolrel=0.001;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'thlb'</span>),&nbsp;options.thlb=inf;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'solver'</span>),&nbsp;options.solver=<span class=quotes>'imdm'</span>;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'cache'</span>),&nbsp;options.cache&nbsp;=&nbsp;1000;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'verb'</span>),&nbsp;options.verb=0;&nbsp;<span class=keyword>end</span><br>
+<br>
+[dim,num_data]=size(data.X);<br>
+nclass&nbsp;=&nbsp;max(data.y);<br>
+<br>
+<span class=comment>%&nbsp;display&nbsp;info</span><br>
+<span class=comment>%---------------------</span><br>
+<span class=keyword>if</span>&nbsp;options.verb&nbsp;&gt;&nbsp;0,<br>
+&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'Binary&nbsp;rules:&nbsp;%d\n'</span>,&nbsp;nclass);<br>
+&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'Training&nbsp;data:&nbsp;%d\n'</span>,&nbsp;num_data);<br>
+&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'Dimension:&nbsp;%d\n'</span>,&nbsp;dim);<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isfield(&nbsp;options,&nbsp;<span class=quotes>'ker'</span>),&nbsp;<span class=io>fprintf</span>(<span class=quotes>'Kernel:&nbsp;%s\n'</span>,&nbsp;options.ker);&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isfield(&nbsp;options,&nbsp;<span class=quotes>'arg'</span>),&nbsp;<span class=io>fprintf</span>(<span class=quotes>'arg:&nbsp;%f\n'</span>,&nbsp;options.arg(1));&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isfield(&nbsp;options,&nbsp;<span class=quotes>'C'</span>),&nbsp;<span class=io>fprintf</span>(<span class=quotes>'C:&nbsp;%f\n'</span>,&nbsp;options.C);&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'Solver:&nbsp;%s\n'</span>,&nbsp;options.solver);<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;call&nbsp;MEX&nbsp;implementation</span><br>
+[Alpha,b,exitflag,kercnt,access,trnerr,t,NA,UB,LB,History]&nbsp;=&nbsp;bsvm2_mex(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data.X,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data.y,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;options.ker,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;options.arg,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;options.C,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;options.solver,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;options.tmax,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;options.tolabs,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;options.tolrel,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;options.thlb,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;options.cache,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;options.verb&nbsp;);<br>
+<br>
+<span class=comment>%&nbsp;set&nbsp;up&nbsp;model</span><br>
+<span class=comment>%-------------------------</span><br>
+sv_inx&nbsp;=&nbsp;find(&nbsp;sum(abs(Alpha),1)&nbsp;~=&nbsp;0&nbsp;);<br>
+<span class=comment>%sv_inx&nbsp;=&nbsp;find(&nbsp;sum(abs(Alpha),1)&nbsp;~=&nbsp;inf&nbsp;);</span><br>
+Alpha&nbsp;=&nbsp;Alpha(:,sv_inx)';<br>
+<span class=comment>%for&nbsp;i&nbsp;=&nbsp;1:size(Alpha,2),</span><br>
+<span class=comment>%&nbsp;&nbsp;inx&nbsp;=&nbsp;find(&nbsp;data.y(sv_inx)&nbsp;~=&nbsp;i);</span><br>
+<span class=comment>%&nbsp;&nbsp;Alpha(inx,i)&nbsp;=&nbsp;-Alpha(inx,i);</span><br>
+<span class=comment>%end</span><br>
+<br>
+model.Alpha&nbsp;=&nbsp;Alpha;<br>
+model.b&nbsp;=&nbsp;b;<br>
+model.sv.X&nbsp;=&nbsp;data.X(:,sv_inx);<br>
+model.sv.y&nbsp;=&nbsp;data.y(sv_inx);<br>
+model.sv.inx&nbsp;=&nbsp;sv_inx;<br>
+model.nsv&nbsp;=&nbsp;length(sv_inx);<br>
+model.options&nbsp;=&nbsp;options;<br>
+model.exitflag&nbsp;=&nbsp;exitflag;<br>
+<span class=comment>%model.trnerr&nbsp;=&nbsp;trnerr;</span><br>
+model.kercnt&nbsp;=&nbsp;kercnt;<br>
+model.stat.access&nbsp;=&nbsp;access;<br>
+model.stat.t&nbsp;=&nbsp;t;<br>
+model.stat.UB&nbsp;=&nbsp;UB;<br>
+model.stat.LB&nbsp;=&nbsp;LB;<br>
+model.stat.LB_History&nbsp;=&nbsp;History(1,:);<br>
+model.stat.UB_History&nbsp;=&nbsp;History(2,:);<br>
+model.stat.NA&nbsp;=&nbsp;NA;<br>
+model.cputime&nbsp;=&nbsp;toc;<br>
+<br>
+<span class=keyword>if</span>&nbsp;strcmpi(<span class=quotes>'linear'</span>,options.ker)&nbsp;==&nbsp;1,<br>
+&nbsp;&nbsp;model.W&nbsp;=&nbsp;model.sv.X*model.Alpha;<br>
+&nbsp;&nbsp;model.fun&nbsp;=&nbsp;<span class=quotes>'linclass'</span>;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;model.fun&nbsp;=&nbsp;<span class=quotes>'svmclass'</span>;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

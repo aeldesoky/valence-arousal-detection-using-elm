@@ -1,0 +1,102 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>weaklearner_fast.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model&nbsp;</span>=&nbsp;<span class=defun_name>weaklearner_fast</span>(<span class=defun_in>data</span>)<br>
+<span class=h1>%&nbsp;WEAKLEARNER&nbsp;Produce&nbsp;classifier&nbsp;thresholding&nbsp;single&nbsp;feature.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;weaklearner(data)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;produce&nbsp;a&nbsp;weak&nbsp;binary&nbsp;classifier&nbsp;which&nbsp;assigns</span><br>
+<span class=help>%&nbsp;&nbsp;input&nbsp;vector&nbsp;x&nbsp;to&nbsp;classes&nbsp;[1,2]&nbsp;based&nbsp;on&nbsp;thresholding&nbsp;a&nbsp;single&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;feature.&nbsp;The&nbsp;output&nbsp;is&nbsp;a&nbsp;model&nbsp;which&nbsp;defines&nbsp;the&nbsp;threshold&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;and&nbsp;feature&nbsp;index&nbsp;such&nbsp;that&nbsp;the&nbsp;weighted&nbsp;error&nbsp;is&nbsp;minimized.</span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;weak&nbsp;learner&nbsp;can&nbsp;be&nbsp;used&nbsp;with&nbsp;the&nbsp;AdaBoost&nbsp;classifier</span><br>
+<span class=help>%&nbsp;&nbsp;(see&nbsp;'help&nbsp;adaboost')&nbsp;as&nbsp;a&nbsp;feature&nbsp;selection&nbsp;method.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Training&nbsp;data:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Binary&nbsp;labels&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.D&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Weights&nbsp;of&nbsp;training&nbsp;vectors&nbsp;(optional).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;not&nbsp;given&nbsp;then&nbsp;D&nbsp;is&nbsp;set&nbsp;to&nbsp;be&nbsp;uniform&nbsp;distribution.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Binary&nbsp;linear&nbsp;classifier:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Normal&nbsp;vector&nbsp;of&nbsp;hyperplane.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;the&nbsp;hyperplane.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.fun&nbsp;=&nbsp;'linclass'.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;help&nbsp;adaboost</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also:&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;ADABOOST,&nbsp;ADACLASS.</span><br>
+<span class=help>%&nbsp;</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2004,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;31-jan-2007,&nbsp;VF,&nbsp;careful&nbsp;handling&nbsp;the&nbsp;bias&nbsp;value</span><br>
+<span class=help1>%&nbsp;01-dec-2006,&nbsp;SC,&nbsp;sharat@mit.edu;&nbsp;wrote&nbsp;fast&nbsp;version</span><br>
+<span class=help1>%&nbsp;25-aug-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;11-aug-2004,&nbsp;VF</span><br>
+<br>
+<br>
+<hr>
+[dim,num_data]&nbsp;=&nbsp;size(data.X);<br>
+<span class=keyword>if</span>(~isfield(data,<span class=quotes>'D'</span>))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data.D&nbsp;=&nbsp;ones(1,num_data)/num_data;<br>
+<span class=keyword>end</span>;<br>
+<br>
+W&nbsp;=&nbsp;zeros(dim,1);<br>
+Errors&nbsp;=&nbsp;zeros(dim,1);<br>
+<br>
+<span class=keyword>for</span>&nbsp;i=1:dim,<br>
+&nbsp;&nbsp;[x,idx]&nbsp;=&nbsp;sort(data.X(i,:));<br>
+&nbsp;&nbsp;y&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;data.y(idx);<br>
+&nbsp;&nbsp;D&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;data.D(idx);<br>
+&nbsp;&nbsp;Sp=&nbsp;zeros(1,num_data);<br>
+&nbsp;&nbsp;Sn=&nbsp;zeros(1,num_data);<br>
+&nbsp;&nbsp;Sp(y==1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;D(y==1);<br>
+&nbsp;&nbsp;Sn(y==2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;D(y==2);&nbsp;<br>
+&nbsp;&nbsp;Sp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;cumsum(Sp);&nbsp;<br>
+&nbsp;&nbsp;Sn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;cumsum(Sn);<br>
+&nbsp;&nbsp;Tp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;Sp(<span class=keyword>end</span>);<br>
+&nbsp;&nbsp;Tn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;Sn(<span class=keyword>end</span>);<br>
+&nbsp;&nbsp;err&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;(Sp+Tn-Sn);<br>
+&nbsp;&nbsp;[minerr1,inx1]=&nbsp;min(err);<br>
+&nbsp;&nbsp;[minerr2,inx2]&nbsp;=&nbsp;min(Tp+Tn-err);<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;minerr1&nbsp;&lt;&nbsp;minerr2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;W(i)&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Errors(i)&nbsp;=&nbsp;minerr1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;inx1&nbsp;&lt;&nbsp;num_data,&nbsp;b(i)&nbsp;=&nbsp;-(x(inx1)+x(inx1+1))*0.5;&nbsp;<span class=keyword>else</span>&nbsp;b(i)=-(x(inx1)+1);&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;W(i)&nbsp;=&nbsp;-&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Errors(i)&nbsp;=&nbsp;minerr2;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;inx2&nbsp;&lt;&nbsp;num_data,&nbsp;&nbsp;b(i)&nbsp;=&nbsp;(x(inx2)+x(inx2+1))*0.5;&nbsp;<span class=keyword>else</span>&nbsp;b(i)&nbsp;=&nbsp;x(inx2)+1;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>end</span><br>
+<br>
+[dummy,inx]&nbsp;=&nbsp;min(Errors);<br>
+model.W&nbsp;=&nbsp;zeros(dim,1);<br>
+model.W(inx)&nbsp;=&nbsp;W(inx);<br>
+model.b&nbsp;=&nbsp;b(inx);<br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'linclass'</span>;<br>
+model.dim&nbsp;=&nbsp;inx;<br>
+<br>
+y&nbsp;=&nbsp;linclass(data.X,model);<br>
+<span class=comment>%err&nbsp;=&nbsp;sum((y(:)~=data.y(:)).*data.D(:));</span><br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

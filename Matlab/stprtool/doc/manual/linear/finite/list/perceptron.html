@@ -1,0 +1,157 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>perceptron.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model</span>=<span class=defun_name>perceptron</span>(<span class=defun_in>data,options,init_model</span>)<br>
+<span class=h1>%&nbsp;PERCEPTRON&nbsp;Perceptron&nbsp;algorithm&nbsp;to&nbsp;train&nbsp;binary&nbsp;linear&nbsp;classifier.&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;perceptron(data)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;perceptron(data,options)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;perceptron(data,options,init_model)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;perceptron(data)&nbsp;uses&nbsp;the&nbsp;Perceptron&nbsp;learning&nbsp;rule</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;to&nbsp;find&nbsp;separating&nbsp;hyperplane&nbsp;from&nbsp;given&nbsp;binary&nbsp;labeled&nbsp;data.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;perceptron(data,options)&nbsp;specifies&nbsp;stopping&nbsp;condition&nbsp;of</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;the&nbsp;algorithm&nbsp;in&nbsp;structure&nbsp;options:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]...&nbsp;maximal&nbsp;number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;If&nbsp;tmax==-1&nbsp;then&nbsp;it&nbsp;only&nbsp;returns&nbsp;index&nbsp;(model.last_update)</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;of&nbsp;data&nbsp;vector&nbsp;which&nbsp;should&nbsp;be&nbsp;used&nbsp;by&nbsp;the&nbsp;algorithm&nbsp;for&nbsp;updating</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;the&nbsp;linear&nbsp;rule&nbsp;in&nbsp;the&nbsp;next&nbsp;iteration.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;perceptron(data,options,init_model)&nbsp;specifies&nbsp;initial&nbsp;model</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;which&nbsp;must&nbsp;contain:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;...&nbsp;normal&nbsp;vector.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;...&nbsp;bias&nbsp;of&nbsp;hyperplane.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;(optional)&nbsp;...&nbsp;iteration&nbsp;number.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Labeled&nbsp;(binary)&nbsp;training&nbsp;data.&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Input&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;[struct]&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;(default&nbsp;tmax=inf).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;tmax==-1&nbsp;then&nbsp;it&nbsp;does&nbsp;not&nbsp;perform&nbsp;any&nbsp;iteration&nbsp;but&nbsp;returns&nbsp;only&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;index&nbsp;of&nbsp;the&nbsp;point&nbsp;which&nbsp;should&nbsp;be&nbsp;used&nbsp;to&nbsp;update&nbsp;linear&nbsp;rule.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;init_model&nbsp;[struct]&nbsp;Initial&nbsp;model;&nbsp;must&nbsp;contain&nbsp;items</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;.W,&nbsp;.b&nbsp;and&nbsp;.t&nbsp;(see&nbsp;above).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Binary&nbsp;linear&nbsp;classifier:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Normal&nbsp;vector&nbsp;of&nbsp;hyperplane.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;hyperplane.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.exitflag&nbsp;[1x1]&nbsp;1&nbsp;...&nbsp;perceptron&nbsp;has&nbsp;converged.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;...&nbsp;number&nbsp;of&nbsp;iterations&nbsp;exceeded&nbsp;tmax.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.t&nbsp;[int]&nbsp;Number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.last_update&nbsp;[d&nbsp;x&nbsp;1]&nbsp;Index&nbsp;of&nbsp;the&nbsp;last&nbsp;point&nbsp;used&nbsp;for&nbsp;update.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;=&nbsp;genlsdata(&nbsp;2,&nbsp;50,&nbsp;1);</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;perceptron(data)</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;ppatterns(data);&nbsp;pline(model);&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;EKOZINEC,&nbsp;MPERCEPTRON,&nbsp;LINCLASS.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;17-sep-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;16-Feb-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;20-Jan-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;7-jan-2002,&nbsp;VF.&nbsp;A&nbsp;new&nbsp;coat.</span><br>
+<span class=help1>%&nbsp;24.&nbsp;6.00&nbsp;V.&nbsp;Hlavac,&nbsp;comments&nbsp;polished.</span><br>
+<span class=help1>%&nbsp;15-dec-2000,&nbsp;texts,&nbsp;returns&nbsp;bad&nbsp;point</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;get&nbsp;data&nbsp;dimensions</span><br>
+[dim,num_data]&nbsp;=&nbsp;size(data.X);<br>
+<br>
+<span class=comment>%&nbsp;Process&nbsp;input&nbsp;arguments&nbsp;</span><br>
+<span class=comment>%&nbsp;-----------------------------</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;options&nbsp;=&nbsp;[];&nbsp;<span class=keyword>else</span>&nbsp;options&nbsp;=&nbsp;c2s(options);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'tmax'</span>),&nbsp;options.tmax&nbsp;=&nbsp;inf;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;3,<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;create&nbsp;init&nbsp;model</span><br>
+&nbsp;&nbsp;<span class=comment>%----------------------------</span><br>
+&nbsp;&nbsp;model.W&nbsp;=&nbsp;zeros(dim,1);<br>
+&nbsp;&nbsp;model.b&nbsp;=&nbsp;0;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;take&nbsp;init&nbsp;model&nbsp;from&nbsp;input</span><br>
+&nbsp;&nbsp;<span class=comment>%----------------------------</span><br>
+&nbsp;&nbsp;model&nbsp;=&nbsp;init_model;<br>
+<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(model,<span class=quotes>'t'</span>),&nbsp;model.t&nbsp;=&nbsp;0;&nbsp;<span class=keyword>end</span><br>
+<br>
+model.exitflag&nbsp;=&nbsp;0;<br>
+model.last_update&nbsp;=&nbsp;0;<br>
+<br>
+<span class=comment>%&nbsp;Add&nbsp;one&nbsp;constant&nbsp;coordinates&nbsp;to&nbsp;the&nbsp;data&nbsp;and&nbsp;swap</span><br>
+<span class=comment>%&nbsp;points&nbsp;from&nbsp;the&nbsp;second&nbsp;class&nbsp;along&nbsp;the&nbsp;origin.</span><br>
+<span class=comment>%&nbsp;----------------------------------------------------</span><br>
+data.X&nbsp;=&nbsp;[data.X;&nbsp;ones(1,num_data)];<br>
+dim=dim+1;<br>
+inx&nbsp;=&nbsp;find(data.y==2);<br>
+data.X(:,inx)&nbsp;=&nbsp;-data.X(:,inx);<br>
+W&nbsp;=&nbsp;[model.W;model.b];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<br>
+<span class=keyword>if</span>&nbsp;options.tmax&nbsp;==&nbsp;-1,<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;return&nbsp;index&nbsp;of&nbsp;point&nbsp;which&nbsp;should&nbsp;be&nbsp;used&nbsp;to&nbsp;update&nbsp;linear&nbsp;rule</span><br>
+&nbsp;&nbsp;<span class=comment>%----------------------------------------------------------------------</span><br>
+&nbsp;&nbsp;fvalue&nbsp;=&nbsp;data.X'*W;<br>
+&nbsp;&nbsp;inx&nbsp;=&nbsp;find(&nbsp;fvalue&nbsp;&lt;=&nbsp;0&nbsp;);<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;length(inx)==0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;model.exitflag&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;model.exitflag&nbsp;=&nbsp;0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;model.last_update&nbsp;=&nbsp;inx(1);<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>else</span><br>
+<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;main&nbsp;loop&nbsp;</span><br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;-----------------------------------</span><br>
+&nbsp;&nbsp;<span class=keyword>while</span>&nbsp;options.tmax&nbsp;&gt;&nbsp;model.t&nbsp;&&nbsp;model.exitflag&nbsp;==&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;model.t&nbsp;=&nbsp;model.t+1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Compute&nbsp;discriminant&nbsp;function&nbsp;for&nbsp;all&nbsp;data</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;fvalue&nbsp;=&nbsp;data.X'*W;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;inx&nbsp;=&nbsp;find(&nbsp;fvalue&nbsp;&lt;=&nbsp;0&nbsp;);<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;length(inx)==0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.exitflag&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inx&nbsp;=&nbsp;inx(1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.exitflag&nbsp;=&nbsp;0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.last_update&nbsp;=&nbsp;inx;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Update&nbsp;model&nbsp;using&nbsp;the&nbsp;Perceptron&nbsp;rule</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;W&nbsp;=&nbsp;W&nbsp;+&nbsp;data.X(:,inx);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;separates&nbsp;normal&nbsp;vector&nbsp;and&nbsp;bias</span><br>
+&nbsp;&nbsp;model.W&nbsp;=&nbsp;W(1:dim-1);<br>
+&nbsp;&nbsp;model.b&nbsp;=&nbsp;W(dim);<br>
+<span class=keyword>end</span><br>
+<br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'linclass'</span>;<br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

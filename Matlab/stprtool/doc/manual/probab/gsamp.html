@@ -1,0 +1,49 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">GSAMP</b>
+<td valign="baseline" align="right" class="function"><a href="../probab/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Generates sample from Gaussian distribution.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;X&nbsp;=&nbsp;gsamp(&nbsp;Mean,&nbsp;Cov,&nbsp;num_data&nbsp;)</span><br>
+<span class=help>&nbsp;&nbsp;X&nbsp;=&nbsp;gsamp(&nbsp;model,&nbsp;num_data&nbsp;)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;X&nbsp;=&nbsp;gsamp(Mean,Cov,num_data)&nbsp;generates&nbsp;num_data&nbsp;samples&nbsp;from&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;a&nbsp;multi-variate&nbsp;Gassian&nbsp;distribution&nbsp;given&nbsp;by&nbsp;mean&nbsp;vector&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;Mean&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;and&nbsp;covariance&nbsp;matrix&nbsp;Cov&nbsp;[dim&nbsp;x&nbsp;dim].&nbsp;</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;X&nbsp;=&nbsp;gsamp(model,num_data)&nbsp;assumes&nbsp;that&nbsp;parameters&nbsp;of&nbsp;Gaussian</span><br>
+<span class=help>&nbsp;&nbsp;are&nbsp;given&nbsp;in&nbsp;structure&nbsp;with&nbsp;fields&nbsp;model.Mean&nbsp;a&nbsp;model.Cov.</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;struct('Mean',1,'Cov',2);</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;hold&nbsp;on;</span><br>
+<span class=help>&nbsp;&nbsp;plot([-4:0.1:5],pdfgauss([-4:0.1:5],model),'r');</span><br>
+<span class=help>&nbsp;&nbsp;[Y,X]&nbsp;=&nbsp;hist(gsamp(model,500),10);</span><br>
+<span class=help>&nbsp;&nbsp;bar(X,Y/500);</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../probab/pdfgauss.html" target="mdsbody">PDFGAUSS</a>,&nbsp;<a href = "../probab/gmmsamp.html" target="mdsbody">GMMSAMP</a>.</span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../probab/list/gsamp.html">gsamp.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 28-apr-2004, VF, adopted from P.Krizek <br>
+
+</body>
+</html>

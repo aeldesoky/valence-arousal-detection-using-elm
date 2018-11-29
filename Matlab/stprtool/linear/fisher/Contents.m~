@@ -1,0 +1,15 @@
+% Linear classifier based on the Fisher linear discriminat.
+%
+% fldqp   - Computes Fisher's Linear Discriminat using QP.
+% lfld    - Learns Fisher's Linear Discriminat.
+%
+
+
+% About: Statistical Pattern Recognition Toolbox
+% (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac
+% <a href="http://www.cvut.cz">Czech Technical University Prague</a>
+% <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a>
+% <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a>
+
+% Modifications:
+%  13-Feb-2003, VF

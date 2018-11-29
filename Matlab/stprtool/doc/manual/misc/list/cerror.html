@@ -1,0 +1,67 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>cerror.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>error</span>=<span class=defun_name>cerror</span>(<span class=defun_in>y1,y2,label</span>)<br>
+<span class=h1>%&nbsp;CERROR&nbsp;Computes&nbsp;classification&nbsp;error.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;error&nbsp;=&nbsp;cerror(ypred,ytrue)</span><br>
+<span class=help>%&nbsp;&nbsp;error&nbsp;=&nbsp;cerror(ypred,ytrue,label)&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;error&nbsp;=&nbsp;cerror(ypred,ytrue)&nbsp;returns&nbsp;classification&nbsp;error,&nbsp;i.e.,</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;error=&nbsp;&nbsp;find(ypred~=ytrue)/length(ytrue).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;error&nbsp;=&nbsp;cerror(ypred,ytrue,label)&nbsp;considers&nbsp;only&nbsp;labels</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;find(ytrue==label),&nbsp;i.e.,&nbsp;if&nbsp;ypred,&nbsp;ytrue&nbsp;are&nbsp;from&nbsp;{1,2}&nbsp;then</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;false_positives_rate&nbsp;=&nbsp;cerror(ypred,ytrue,2)</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;false_negatives_rate&nbsp;=&nbsp;cerror(ypred,ytrue,1)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;y1&nbsp;[1&nbsp;x&nbsp;n]&nbsp;Vector&nbsp;of&nbsp;integers&nbsp;(response&nbsp;of&nbsp;classifier).</span><br>
+<span class=help>%&nbsp;&nbsp;y2&nbsp;[1&nbsp;x&nbsp;n]&nbsp;Vector&nbsp;of&nbsp;integers&nbsp;(ground&nbsp;truth).</span><br>
+<span class=help>%&nbsp;&nbsp;label&nbsp;[int]&nbsp;Selected&nbsp;label.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;error&nbsp;[real]&nbsp;Error.&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;classifier&nbsp;&nbsp;=&nbsp;[1,1,1,2]</span><br>
+<span class=help>%&nbsp;&nbsp;groundtruth&nbsp;=&nbsp;[2,1,2,1]</span><br>
+<span class=help>%&nbsp;&nbsp;error&nbsp;=&nbsp;cerror(classifier,groundtruth)</span><br>
+<span class=help>%&nbsp;&nbsp;false_pos&nbsp;=&nbsp;cerror(classifier,groundtruth,2)</span><br>
+<span class=help>%&nbsp;&nbsp;false_neg&nbsp;=&nbsp;cerror(classifier,groundtruth,1)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;ROC</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;08-aug-2005,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;09-jun-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;14-Jan-2003,&nbsp;VF</span><br>
+<br>
+<hr>
+y1=y1(:);y2=y2(:);<br>
+<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;3,<br>
+&nbsp;&nbsp;<span class=error>error</span>=length(find((y1-y2)~=0))/length(y2);<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;inx&nbsp;=&nbsp;find(y2==label);<br>
+&nbsp;&nbsp;<span class=error>error</span>&nbsp;=&nbsp;length(&nbsp;find(y1(inx)~=label)&nbsp;)/length(inx);<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

@@ -1,0 +1,102 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>weaklearner.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model&nbsp;</span>=&nbsp;<span class=defun_name>weaklearner</span>(<span class=defun_in>data</span>)<br>
+<span class=h1>%&nbsp;WEAKLEARNER&nbsp;Produce&nbsp;classifier&nbsp;thresholding&nbsp;single&nbsp;feature.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;weaklearner(data)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;produce&nbsp;a&nbsp;weak&nbsp;binary&nbsp;classifier&nbsp;which&nbsp;assigns</span><br>
+<span class=help>%&nbsp;&nbsp;input&nbsp;vector&nbsp;x&nbsp;to&nbsp;classes&nbsp;[1,2]&nbsp;based&nbsp;on&nbsp;thresholding&nbsp;a&nbsp;single&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;feature.&nbsp;The&nbsp;output&nbsp;is&nbsp;a&nbsp;model&nbsp;which&nbsp;defines&nbsp;the&nbsp;threshold&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;and&nbsp;feature&nbsp;index&nbsp;such&nbsp;that&nbsp;the&nbsp;weighted&nbsp;error&nbsp;is&nbsp;minimized.</span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;weak&nbsp;learner&nbsp;can&nbsp;be&nbsp;used&nbsp;with&nbsp;the&nbsp;AdaBoost&nbsp;classifier</span><br>
+<span class=help>%&nbsp;&nbsp;(see&nbsp;'help&nbsp;adaboost')&nbsp;as&nbsp;a&nbsp;feature&nbsp;selection&nbsp;method.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Training&nbsp;data:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Binary&nbsp;labels&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.D&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Weights&nbsp;of&nbsp;training&nbsp;vectors&nbsp;(optional).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;not&nbsp;given&nbsp;then&nbsp;D&nbsp;is&nbsp;set&nbsp;to&nbsp;be&nbsp;uniform&nbsp;distribution.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Binary&nbsp;linear&nbsp;classifier:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Normal&nbsp;vector&nbsp;of&nbsp;hyperplane.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;the&nbsp;hyperplane.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.fun&nbsp;=&nbsp;'linclass'.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;help&nbsp;adaboost</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also:&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;ADABOOST,&nbsp;ADACLASS.</span><br>
+<span class=help>%&nbsp;</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2004,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;25-aug-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;11-aug-2004,&nbsp;VF</span><br>
+<br>
+<hr>
+[dim,num_data]&nbsp;=&nbsp;size(data.X);<br>
+<br>
+W&nbsp;=&nbsp;zeros(dim,1);<br>
+Errors&nbsp;=&nbsp;zeros(dim,1);<br>
+<br>
+<span class=keyword>for</span>&nbsp;i=1:dim,<br>
+<br>
+&nbsp;&nbsp;x&nbsp;=&nbsp;[-inf,sort(unique(data.X(i,:)))];<br>
+&nbsp;<br>
+&nbsp;&nbsp;err&nbsp;=&nbsp;[];&nbsp;f&nbsp;=&nbsp;[];<br>
+&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;j=1:length(x)-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;f(j)&nbsp;=&nbsp;0.5*(x(j)+x(j+1));<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;y&nbsp;=&nbsp;ones(1,num_data);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;y(find(data.X(i,:)&lt;&nbsp;f(j)))&nbsp;=&nbsp;2;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;err(j)&nbsp;=&nbsp;sum((y(:)~=data.y(:)).*data.D(:));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;[minerr1,inx1]&nbsp;=&nbsp;min(err);<br>
+&nbsp;&nbsp;[minerr2,inx2]&nbsp;=&nbsp;min(1-err);<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;minerr1&nbsp;&lt;&nbsp;minerr2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;W(i)&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Errors(i)&nbsp;=&nbsp;minerr1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;b(i)&nbsp;=&nbsp;-f(inx1);<br>
+&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;W(i)&nbsp;=&nbsp;-&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Errors(i)&nbsp;=&nbsp;minerr2;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;b(i)&nbsp;=&nbsp;f(inx2);<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+<span class=keyword>end</span><br>
+<br>
+[dummy,inx]&nbsp;=&nbsp;min(Errors);<br>
+<br>
+model.W&nbsp;=&nbsp;zeros(dim,1);<br>
+model.W(inx)&nbsp;=&nbsp;W(inx);<br>
+model.b&nbsp;=&nbsp;b(inx);<br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'linclass'</span>;<br>
+<br>
+y&nbsp;=&nbsp;linclass(data.X,model);<br>
+err&nbsp;=&nbsp;sum((y(:)~=data.y(:)).*data.D(:));<br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+<span class=comment>%EOF</span><br>
+</code>

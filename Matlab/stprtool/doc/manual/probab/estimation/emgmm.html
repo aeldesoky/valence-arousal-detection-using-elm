@@ -1,0 +1,118 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">EMGMM</b>
+<td valign="baseline" align="right" class="function"><a href="../../probab/estimation/index.html" target="mdsdir"><img border = 0 src="../../up.gif"></a></table>
+  <p><b>Expectation-Maximization Algorithm for Gaussian mixture model.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;emgmm(X)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;emgmm(X,options)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;emgmm(X,options,init_model)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;This&nbsp;function&nbsp;implements&nbsp;the&nbsp;Expectation-Maximization&nbsp;algorithm&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;(EM)&nbsp;[<a href="../../references.html#Schles68" title = "" >Schles68</a>][<a href="../../references.html#DLR77" title = "" >DLR77</a>]&nbsp;which&nbsp;computes&nbsp;the&nbsp;maximum-likelihood&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;estimate&nbsp;of&nbsp;the&nbsp;paramaters&nbsp;of&nbsp;the&nbsp;Gaussian&nbsp;mixture&nbsp;model&nbsp;(GMM).&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;EM&nbsp;algorithm&nbsp;is&nbsp;an&nbsp;iterative&nbsp;procedure&nbsp;which&nbsp;monotonically&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;increases&nbsp;log-likelihood&nbsp;of&nbsp;the&nbsp;current&nbsp;estimate&nbsp;until&nbsp;it&nbsp;reaches&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;a&nbsp;local&nbsp;optimum.&nbsp;</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;number&nbsp;of&nbsp;components&nbsp;of&nbsp;the&nbsp;GMM&nbsp;is&nbsp;given&nbsp;in&nbsp;options.ncomp&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;(default&nbsp;2).</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;following&nbsp;three&nbsp;stopping&nbsp;are&nbsp;condition&nbsp;used:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;1.&nbsp;Improvement&nbsp;of&nbsp;the&nbsp;log-likelihood&nbsp;is&nbsp;less&nbsp;than&nbsp;given</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;threshold</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;logL(t+1)&nbsp;&nbsp;-&nbsp;logL(t)&nbsp;&lt;&nbsp;options.eps_logL</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;2.&nbsp;Change&nbsp;of&nbsp;the&nbsp;squared&nbsp;differences&nbsp;of&nbsp;a&nbsp;estimated&nbsp;posteriory&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;probabilities&nbsp;is&nbsp;less&nbsp;than&nbsp;given&nbsp;threshold</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;||alpha(t+1)&nbsp;-&nbsp;alpha(t)||^2&nbsp;&lt;&nbsp;options.eps_alpha</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;3.&nbsp;Number&nbsp;of&nbsp;iterations&nbsp;exceeds&nbsp;given&nbsp;threshold.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t&nbsp;&gt;=&nbsp;options.tmax&nbsp;</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;type&nbsp;of&nbsp;estimated&nbsp;covariance&nbsp;matrices&nbsp;is&nbsp;optional:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;options.cov_type&nbsp;=&nbsp;'full'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;full&nbsp;covariance&nbsp;matrix&nbsp;(default)</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;options.cov_type&nbsp;=&nbsp;'diag'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;diagonal&nbsp;covarinace&nbsp;matrix</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;cov_options.type&nbsp;=&nbsp;'spherical'&nbsp;spherical&nbsp;covariance&nbsp;matrix</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;initial&nbsp;model&nbsp;(estimate)&nbsp;is&nbsp;selected:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;1.&nbsp;randomly&nbsp;(options.init&nbsp;=&nbsp;'random')&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;2.&nbsp;using&nbsp;C-means&nbsp;(options.init&nbsp;=&nbsp;'cmeans')</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;3.&nbsp;using&nbsp;the&nbsp;user&nbsp;specified&nbsp;init_model.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Data&nbsp;sample.</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Control&nbsp;paramaters:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.ncomp&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;components&nbsp;of&nbsp;GMM&nbsp;(default&nbsp;2).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;(default&nbsp;inf).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.eps_logL&nbsp;[1x1]&nbsp;Minimal&nbsp;improvement&nbsp;in&nbsp;log-likelihood&nbsp;(default&nbsp;0).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.eps_alpha&nbsp;[1x1]&nbsp;Minimal&nbsp;change&nbsp;of&nbsp;Alphas&nbsp;(default&nbsp;0).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.cov_type&nbsp;[1x1]&nbsp;Type&nbsp;of&nbsp;estimated&nbsp;covarince&nbsp;matrices&nbsp;(see&nbsp;above).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.init&nbsp;[string]&nbsp;'random'&nbsp;use&nbsp;random&nbsp;initial&nbsp;model&nbsp;(default);</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'cmeans'&nbsp;use&nbsp;K-means&nbsp;to&nbsp;find&nbsp;initial&nbsp;model.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.verb&nbsp;[1x1]&nbsp;If&nbsp;1&nbsp;then&nbsp;info&nbsp;is&nbsp;displayed&nbsp;(default&nbsp;0).</span><br>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;init_model&nbsp;[struct]&nbsp;Initial&nbsp;model:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Mean&nbsp;[dim&nbsp;x&nbsp;ncomp]&nbsp;Mean&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Cov&nbsp;[dim&nbsp;x&nbsp;dim&nbsp;x&nbsp;ncomp]&nbsp;Covariance&nbsp;matrices.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Priors&nbsp;[1&nbsp;x&nbsp;ncomp]&nbsp;Weights&nbsp;of&nbsp;mixture&nbsp;components.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[ncomp&nbsp;x&nbsp;num_data]&nbsp;(optional)&nbsp;Distribution&nbsp;of&nbsp;hidden&nbsp;state.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;(optional)&nbsp;Counter&nbsp;of&nbsp;iterations.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Estimated&nbsp;Gaussian&nbsp;mixture&nbsp;model:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Mean&nbsp;[dim&nbsp;x&nbsp;ncomp]&nbsp;Mean&nbsp;vectors.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Cov&nbsp;[dim&nbsp;x&nbsp;dim&nbsp;x&nbsp;ncomp]&nbsp;Covariance&nbsp;matrices.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.Prior&nbsp;[1&nbsp;x&nbsp;ncomp]&nbsp;Weights&nbsp;of&nbsp;mixture&nbsp;components.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;Number&nbsp;iterations.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.options&nbsp;[struct]&nbsp;Copy&nbsp;of&nbsp;used&nbsp;options.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.exitflag&nbsp;[int]&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;was&nbsp;exceeded.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;or&nbsp;2&nbsp;...&nbsp;EM&nbsp;has&nbsp;converged;&nbsp;indicates&nbsp;which&nbsp;stopping&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;was&nbsp;used&nbsp;(see&nbsp;above).</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;Note:&nbsp;if&nbsp;EM&nbsp;algorithm&nbsp;does&nbsp;not&nbsp;converge&nbsp;run&nbsp;it&nbsp;again&nbsp;from&nbsp;different</span><br>
+<span class=help>&nbsp;initial&nbsp;model.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;EM&nbsp;is&nbsp;used&nbsp;to&nbsp;estimate&nbsp;parameters&nbsp;of&nbsp;mixture&nbsp;of&nbsp;2&nbsp;Guassians:</span><br>
+<span class=help>&nbsp;&nbsp;true_model&nbsp;=&nbsp;struct('Mean',[-2&nbsp;2],'Cov',[1&nbsp;0.5],'Prior',[0.4&nbsp;0.6]);</span><br>
+<span class=help>&nbsp;&nbsp;sample&nbsp;=&nbsp;gmmsamp(true_model,&nbsp;100);</span><br>
+<span class=help>&nbsp;&nbsp;estimated_model&nbsp;=&nbsp;emgmm(sample.X,struct('ncomp',2,'verb',1));</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;ppatterns(sample.X);</span><br>
+<span class=help>&nbsp;&nbsp;h1=pgmm(true_model,struct('color','r'));</span><br>
+<span class=help>&nbsp;&nbsp;h2=pgmm(estimated_model,struct('color','b'));</span><br>
+<span class=help>&nbsp;&nbsp;legend([h1(1)&nbsp;h2(1)],'Ground&nbsp;truth',&nbsp;'ML&nbsp;estimation');&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;hold&nbsp;on;&nbsp;xlabel('iterations');&nbsp;ylabel('log-likelihood');</span><br>
+<span class=help>&nbsp;&nbsp;plot(&nbsp;estimated_model.logL&nbsp;);</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../../probab/estimation/mlcgmm.html" target="mdsbody">MLCGMM</a>,&nbsp;<a href = "../../probab/estimation/mmgauss.html" target="mdsbody">MMGAUSS</a>,&nbsp;<a href = "../../probab/pdfgmm.html" target="mdsbody">PDFGMM</a>,&nbsp;<a href = "../../probab/gmmsamp.html" target="mdsbody">GMMSAMP</a>.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../../probab/estimation/list/emgmm.html">emgmm.m</a>
+  <p><b class="info_field">About: </b>  Statistical Patte7rn Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 26-jul-07, VF, inconsistent parameter names 'ncomp and 'num_gauss' removed<br>
+ 26-may-2004, VF, initialization by K-means added<br>
+ 1-may-2004, VF<br>
+ 19-sep-2003, VF<br>
+ 16-mar-2003, VF<br>
+
+</body>
+</html>

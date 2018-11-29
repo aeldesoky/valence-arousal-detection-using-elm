@@ -1,0 +1,1204 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>demo_linclass.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>result&nbsp;</span>=&nbsp;<span class=defun_name>demo_linclass</span>(<span class=defun_in>action,hfigure,varargin</span>)<br>
+<span class=h1>%&nbsp;DEMO_LINCLASS&nbsp;Demo&nbsp;on&nbsp;the&nbsp;algorithms&nbsp;learning&nbsp;linear&nbsp;classifiers.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;demo_linclass</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;DEMO_LINCLASS&nbsp;demonstrates&nbsp;use&nbsp;of&nbsp;the&nbsp;algorithms&nbsp;which&nbsp;find&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;linear&nbsp;decision&nbsp;hyperplane&nbsp;between&nbsp;two&nbsp;(dichotomy)</span><br>
+<span class=help>%&nbsp;&nbsp;vector&nbsp;sets.&nbsp;The&nbsp;demo&nbsp;requires&nbsp;2D&nbsp;input&nbsp;training&nbsp;data.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;program&nbsp;vizualizes&nbsp;found&nbsp;hyperplane&nbsp;in&nbsp;the&nbsp;current&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;algorithm&nbsp;step.&nbsp;The&nbsp;missclassified&nbsp;vector&nbsp;used&nbsp;by&nbsp;the</span><br>
+<span class=help>%&nbsp;&nbsp;demonstrated&nbsp;iterative&nbsp;algorithms&nbsp;for&nbsp;update&nbsp;is&nbsp;vizualized</span><br>
+<span class=help>%&nbsp;&nbsp;as&nbsp;well.&nbsp;Text&nbsp;description&nbsp;of&nbsp;the&nbsp;found&nbsp;solution&nbsp;is</span><br>
+<span class=help>%&nbsp;&nbsp;printed&nbsp;at&nbsp;the&nbsp;bottom&nbsp;part&nbsp;of&nbsp;window.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;Following&nbsp;algorithms&nbsp;can&nbsp;be&nbsp;tested:</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;Perceptron&nbsp;&nbsp;-&nbsp;Perceptron&nbsp;learning&nbsp;rule&nbsp;(see&nbsp;'help&nbsp;perceptron').</span><br>
+<span class=help>%&nbsp;&nbsp;Kozinec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Kozinec's&nbsp;algorithm&nbsp;(see&nbsp;'help&nbsp;ekozinec',&nbsp;eps=-1).&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;e-Kozinec&nbsp;&nbsp;&nbsp;-&nbsp;Kozinec's&nbsp;algorithm&nbsp;finding&nbsp;eps-optimal&nbsp;hyperplane</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(see&nbsp;'help&nbsp;ekozinec',&nbsp;eps&nbsp;&gt;&nbsp;0).</span><br>
+<span class=help>%&nbsp;&nbsp;Linear&nbsp;SVM&nbsp;&nbsp;&nbsp;-&nbsp;Linear&nbsp;Supprot&nbsp;Vector&nbsp;Machines&nbsp;for&nbsp;separable&nbsp;data</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(see&nbsp;'help&nbsp;smo',&nbsp;C=inf,&nbsp;ker='linear').</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Control:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Algorithm&nbsp;&nbsp;-&nbsp;Dselects&nbsp;algorithm&nbsp;for&nbsp;testing.</span><br>
+<span class=help>%&nbsp;&nbsp;Epsilon&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Input&nbsp;parameter&nbsp;of&nbsp;'ekozinec'&nbsp;algorithm&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(see&nbsp;'help&nbsp;ekozinec').</span><br>
+<span class=help>%&nbsp;&nbsp;Iterations&nbsp;-&nbsp;Number&nbsp;of&nbsp;iterations&nbsp;in&nbsp;one&nbsp;step.</span><br>
+<span class=help>%&nbsp;&nbsp;Animation&nbsp;&nbsp;-&nbsp;Enables/dissables&nbsp;animation&nbsp;-&nbsp;smooth&nbsp;changeover&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;between&nbsp;two&nbsp;algorithm&nbsp;states.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;FIG2EPS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Exports&nbsp;screen&nbsp;to&nbsp;the&nbsp;PostScript&nbsp;file.</span><br>
+<span class=help>%&nbsp;&nbsp;Load&nbsp;data&nbsp;&nbsp;&nbsp;-&nbsp;Loads&nbsp;input&nbsp;training&nbsp;data&nbsp;from&nbsp;file.</span><br>
+<span class=help>%&nbsp;&nbsp;Create&nbsp;data&nbsp;-&nbsp;Invokes&nbsp;program&nbsp;for&nbsp;creating&nbsp;training&nbsp;data.</span><br>
+<span class=help>%&nbsp;&nbsp;Reset&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Sets&nbsp;the&nbsp;algorithm&nbsp;to&nbsp;the&nbsp;initial&nbsp;state.</span><br>
+<span class=help>%&nbsp;&nbsp;Play&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Runs&nbsp;the&nbsp;algorithm.</span><br>
+<span class=help>%&nbsp;&nbsp;Stop&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Stops&nbsp;the&nbsp;running&nbsp;algorithm.</span><br>
+<span class=help>%&nbsp;&nbsp;Step&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Perform&nbsp;one&nbsp;step&nbsp;of&nbsp;the&nbsp;algorithm.</span><br>
+<span class=help>%&nbsp;&nbsp;Info&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Invoke&nbsp;the&nbsp;info&nbsp;box.</span><br>
+<span class=help>%&nbsp;&nbsp;Close&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Close&nbsp;the&nbsp;program.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;PERCEPTRON,&nbsp;EKOZINEC,&nbsp;SVM.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;19-sep-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;17-Feb-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;24.&nbsp;6.00&nbsp;V.&nbsp;Hlavac,&nbsp;comments&nbsp;polished.</span><br>
+<span class=help1>%&nbsp;11-dec-2000&nbsp;V.&nbsp;Franc,&nbsp;a&nbsp;little&nbsp;increasing&nbsp;of&nbsp;code&nbsp;readibility</span><br>
+<span class=help1>%&nbsp;15-dec-2000</span><br>
+<br>
+<hr>
+LINE_WIDTH=1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;width&nbsp;of&nbsp;separation&nbsp;line</span><br>
+ANIM_STEPS=10;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;number&nbsp;of&nbsp;steps&nbsp;during&nbsp;the&nbsp;line&nbsp;animation</span><br>
+BORDER=0.2;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;minimal&nbsp;space&nbsp;between&nbsp;axis&nbsp;and&nbsp;points</span><br>
+<span class=comment>%DATA_IDENT='Finite&nbsp;sets,&nbsp;Enumeration';&nbsp;&nbsp;%&nbsp;file&nbsp;identifier</span><br>
+ALGOS=[<span class=quotes>'Perceptron'</span>;<span class=quotes>'Kozinec&nbsp;&nbsp;&nbsp;'</span>;<span class=quotes>'e-Kozinec&nbsp;'</span>;&nbsp;&nbsp;<span class=quotes>'LinearSVM&nbsp;'</span>];<br>
+WRONGPOINT_SIZE&nbsp;=&nbsp;13;<br>
+<br>
+<span class=comment>%&nbsp;if&nbsp;number&nbsp;of&nbsp;arguments&nbsp;is&nbsp;less&nbsp;then&nbsp;1,&nbsp;that&nbsp;means&nbsp;first&nbsp;call&nbsp;of&nbsp;this</span><br>
+<span class=comment>%&nbsp;function.&nbsp;Every&nbsp;other&nbsp;calls&nbsp;set&nbsp;up&nbsp;at&nbsp;least&nbsp;argument&nbsp;action</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;action&nbsp;=&nbsp;<span class=quotes>'initialize'</span>;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;what&nbsp;action&nbsp;is&nbsp;required&nbsp;?</span><br>
+<span class=keyword>switch</span>&nbsp;lower(action)<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'initialize'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Initialize&nbsp;user&nbsp;interface&nbsp;control&nbsp;and&nbsp;figure&nbsp;=======</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Figure&nbsp;=============================================</span><br>
+&nbsp;&nbsp;&nbsp;left=0.1;<br>
+&nbsp;&nbsp;&nbsp;width=0.8;<br>
+&nbsp;&nbsp;&nbsp;bottom=0.1;<br>
+&nbsp;&nbsp;&nbsp;height=0.8;<br>
+&nbsp;&nbsp;&nbsp;hfigure=<span class=graph>figure</span>(<span class=quotes>'Name'</span>,<span class=quotes>'Linear&nbsp;discriminant&nbsp;function'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'NumberTitle'</span>,<span class=quotes>'off'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'tag'</span>,<span class=quotes>'Demo_Linclass'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'RendererMode'</span>,<span class=quotes>'manual'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Axes&nbsp;=========================================</span><br>
+&nbsp;&nbsp;&nbsp;left=0.1;<br>
+&nbsp;&nbsp;&nbsp;width=0.65;<br>
+&nbsp;&nbsp;&nbsp;bottom=0.35;<br>
+&nbsp;&nbsp;&nbsp;height=0.60;<br>
+&nbsp;&nbsp;&nbsp;haxes1=<span class=graph>axes</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Box'</span>,<span class=quotes>'on'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'DrawMode'</span>,<span class=quotes>'fast'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'UserData'</span>,[],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height]);<br>
+&nbsp;&nbsp;&nbsp;xlabel(<span class=quotes>'feature&nbsp;x_1'</span>);<br>
+&nbsp;&nbsp;&nbsp;ylabel(<span class=quotes>'feature&nbsp;x_2'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Comment&nbsp;window&nbsp;=================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Comment&nbsp;Window&nbsp;frame</span><br>
+&nbsp;&nbsp;&nbsp;bottom=0.05;<br>
+&nbsp;&nbsp;&nbsp;height=0.2;<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'frame'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'BackgroundColor'</span>,[0.5&nbsp;0.5&nbsp;0.5]);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Text&nbsp;label</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'text'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;height-0.01&nbsp;width&nbsp;0.05],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'BackgroundColor'</span>,[0.5&nbsp;0.5&nbsp;0.5],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ForegroundColor'</span>,[1&nbsp;1&nbsp;1],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Comment&nbsp;Window'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Edit&nbsp;window</span><br>
+&nbsp;&nbsp;&nbsp;border=0.01;<br>
+&nbsp;&nbsp;&nbsp;hconsole=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'edit'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'HorizontalAlignment'</span>,<span class=quotes>'left'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Max'</span>,10,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'BackgroundColor'</span>,[1&nbsp;1&nbsp;1],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left+border&nbsp;bottom&nbsp;width-2*border&nbsp;height-0.05],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Enable'</span>,<span class=quotes>'inactive'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>''</span>);<br>
+<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Buttons&nbsp;===========================================</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;--&nbsp;Export&nbsp;to&nbsp;EPS&nbsp;---------</span><br>
+&nbsp;&nbsp;&nbsp;width=0.1;<br>
+&nbsp;&nbsp;&nbsp;left=0.75-width;<br>
+&nbsp;&nbsp;&nbsp;bottom=0.95;<br>
+&nbsp;&nbsp;&nbsp;height=0.04;<br>
+&nbsp;&nbsp;&nbsp;hbtclose&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'fig2eps(gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'FIG2EPS'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%----------------------------------</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Close&nbsp;button</span><br>
+&nbsp;&nbsp;&nbsp;left=0.8;<br>
+&nbsp;&nbsp;&nbsp;bottom=0.05;<br>
+&nbsp;&nbsp;&nbsp;height=0.05;<br>
+&nbsp;&nbsp;&nbsp;width=0.15;<br>
+&nbsp;&nbsp;&nbsp;hbtclose&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'close(gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Close'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Info&nbsp;button:&nbsp;call&nbsp;stanard&nbsp;info&nbsp;box</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+1.5*height;<br>
+&nbsp;&nbsp;&nbsp;hbtinfo&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_linclass('</span><span class=quotes>'info'</span><span class=quotes>',gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Info'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Step&nbsp;button:&nbsp;perform&nbsp;one&nbsp;adaptation&nbsp;step</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+1.5*height;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hbtstep&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Step'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_linclass('</span><span class=quotes>'step'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Stop&nbsp;button:&nbsp;stop&nbsp;process&nbsp;of&nbsp;adaptation</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+height;<br>
+&nbsp;&nbsp;&nbsp;hbtstop&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Stop'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'set(gcbo,'</span><span class=quotes>'UserData'</span><span class=quotes>',1)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Play&nbsp;button:&nbsp;start&nbsp;up&nbsp;adaptation</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+height;<br>
+&nbsp;&nbsp;&nbsp;hbtplay&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Play'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_linclass('</span><span class=quotes>'play'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Reset&nbsp;button:&nbsp;set&nbsp;up&nbsp;t&nbsp;=&nbsp;0</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+height;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hbtreset&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Reset'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_linclass('</span><span class=quotes>'reset'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Creat&nbsp;data</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+1.5*height;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hbtcreat&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Create&nbsp;data'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_linclass('</span><span class=quotes>'creatdata'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Load&nbsp;data</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+1*height;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hbtload&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Load&nbsp;data'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_linclass('</span><span class=quotes>'getfile'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Popup&nbsp;menus&nbsp;======================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Pop&nbsp;up&nbsp;menu&nbsp;for&nbsp;the&nbsp;selection&nbsp;between&nbsp;algorithms</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;title</span><br>
+&nbsp;&nbsp;&nbsp;bottom=0.95-height;<br>
+&nbsp;&nbsp;&nbsp;htxalgo=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'text'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Algorithm'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;popup&nbsp;menu</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-height;<br>
+&nbsp;&nbsp;&nbsp;hpualgo=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'popup'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'CallBack'</span>,<span class=quotes>'demo_linclass('</span><span class=quotes>'epshandler'</span><span class=quotes>',gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,ALGOS);<br>
+<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Edit&nbsp;line&nbsp;========================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;epsilon</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-1.2*height;<br>
+&nbsp;&nbsp;&nbsp;htxeps=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'text'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;0.9*height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'epsilon'</span>);<br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-height;<br>
+&nbsp;&nbsp;&nbsp;hedeps&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'edit'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'CallBack'</span>,<span class=quotes>'demo_linclass('</span><span class=quotes>'epshandler'</span><span class=quotes>',gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'1e-2'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;#&nbsp;of&nbsp;iterations</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-1.1*height;<br>
+&nbsp;&nbsp;&nbsp;htxiter=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'text'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;0.9*height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Iterations'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-0.9*height;<br>
+&nbsp;&nbsp;&nbsp;hediter&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'edit'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'CallBack'</span>,<span class=quotes>'demo_linclass('</span><span class=quotes>'iterhandler'</span><span class=quotes>',gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'1'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Check&nbsp;boxes&nbsp;==============================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Make&nbsp;check&nbsp;box&nbsp;to&nbsp;determine&nbsp;if&nbsp;a&nbsp;line&nbsp;will&nbsp;be&nbsp;drawn&nbsp;in&nbsp;one&nbsp;</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;step&nbsp;or&nbsp;smooth&nbsp;plot.</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-height*1.2;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hxbanim&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'checkbox'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Animation'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;============================================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Store&nbsp;handlers</span><br>
+&nbsp;&nbsp;&nbsp;handlers=struct(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'line'</span>,struct(<span class=quotes>'handler'</span>,-1,<span class=quotes>'alpha'</span>,0,<span class=quotes>'theta'</span>,0,<span class=quotes>'t'</span>,0),...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btstep'</span>,hbtstep,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btstop'</span>,hbtstop,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btclose'</span>,hbtclose,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btplay'</span>,hbtplay,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btreset'</span>,hbtreset,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btinfo'</span>,hbtinfo,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btload'</span>,hbtload,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btcreat'</span>,hbtcreat,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'pualgo'</span>,hpualgo,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'console'</span>,hconsole,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'editer'</span>,hediter,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'edeps'</span>,hedeps,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'txeps'</span>,htxeps,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'axes1'</span>,haxes1,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'xbanim'</span>,hxbanim);<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'UserData'</span>,handlers)<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Reset</span><br>
+&nbsp;&nbsp;&nbsp;demo_linclass(<span class=quotes>'reset'</span>,hfigure);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Put&nbsp;figure&nbsp;on&nbsp;desktop</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'Visible'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;drawnow;<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'iterhandler'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Handler&nbsp;for&nbsp;edit&nbsp;line&nbsp;Iterations&nbsp;===============</span><br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;iter=round(str2num(<span class=graph>get</span>(h.editer,<span class=quotes>'String'</span>)));<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isempty(iter)&nbsp;|&nbsp;iter&nbsp;&lt;&nbsp;1,&nbsp;iter=1;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.editer,<span class=quotes>'String'</span>,num2str(iter));<br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'epshandler'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Handler&nbsp;for&nbsp;edit&nbsp;line&nbsp;Epsilon&nbsp;=======================</span><br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;if&nbsp;algorithm&nbsp;e-Kozinec&nbsp;is&nbsp;selected&nbsp;then&nbsp;...</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;<span class=graph>get</span>(h.pualgo,<span class=quotes>'Value'</span>)==3,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.edeps,<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.txeps,<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;epsil=str2num(<span class=graph>get</span>(h.edeps,<span class=quotes>'String'</span>));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;epsil&nbsp;&lt;&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;epsil=1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.edeps,<span class=quotes>'String'</span>,num2str(epsil));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.edeps,<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.txeps,<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'creatdata'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Invoke&nbsp;data&nbsp;set&nbsp;creator&nbsp;================================</span><br>
+&nbsp;&nbsp;&nbsp;createdata(<span class=quotes>'finite'</span>,2,<span class=quotes>'demo_linclass'</span>,<span class=quotes>'created'</span>,hfigure);<br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'created'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Load&nbsp;new&nbsp;created&nbsp;data&nbsp;set&nbsp;=============================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;handler&nbsp;and&nbsp;make&nbsp;this&nbsp;figure&nbsp;active</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>figure</span>(hfigure);<br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;file&nbsp;name</span><br>
+&nbsp;&nbsp;&nbsp;path=<span class=stack>varargin</span>{1};<br>
+&nbsp;&nbsp;&nbsp;name=<span class=stack>varargin</span>{2};<br>
+&nbsp;&nbsp;&nbsp;pathname=strcat(path,name);<br>
+<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;if&nbsp;checkdat(pathname,DATA_IDENT,2,[0&nbsp;0])==1,</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;check2ddata(pathname),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.pathname=pathname;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.path=path;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.name=name;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.btload,<span class=quotes>'UserData'</span>,file);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_linclass(<span class=quotes>'loadsets'</span>,hfigure);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_linclass(<span class=quotes>'reset'</span>,hfigure);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;errordlg(<span class=quotes>'This&nbsp;file&nbsp;does&nbsp;not&nbsp;contain&nbsp;required&nbsp;data.'</span>,<span class=quotes>'Bad&nbsp;file'</span>,<span class=quotes>'modal'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'getfile'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Invoke&nbsp;standard&nbsp;open&nbsp;file&nbsp;dialog&nbsp;===================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Opens&nbsp;file&nbsp;and&nbsp;checks&nbsp;if&nbsp;contains&nbsp;appropriate&nbsp;data,&nbsp;</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;if&nbsp;yes&nbsp;loads&nbsp;data.</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;[name,path]=uigetfile(<span class=quotes>'*.mat'</span>,<span class=quotes>'Open&nbsp;file'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;name~=0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.pathname=strcat(path,name);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.path=path;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.name=name;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;check2ddata(file.pathname),<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;checkdat(file.pathname,DATA_IDENT,2,[0&nbsp;0])==1,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.btload,<span class=quotes>'UserData'</span>,file);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_linclass(<span class=quotes>'loadsets'</span>,hfigure);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_linclass(<span class=quotes>'reset'</span>,hfigure);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;errordlg(<span class=quotes>'This&nbsp;file&nbsp;does&nbsp;not&nbsp;contain&nbsp;required&nbsp;data.'</span>,<span class=quotes>'Bad&nbsp;file'</span>,<span class=quotes>'modal'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'redraw'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Redraw&nbsp;points&nbsp;in&nbsp;axes&nbsp;==================================</span><br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;uicontrol&nbsp;handlers</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;point&nbsp;sets</span><br>
+&nbsp;&nbsp;&nbsp;sets=<span class=graph>get</span>(h.axes1,<span class=quotes>'UserData'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isempty(sets)==1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=jump>return</span>;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;clears&nbsp;axes</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(<span class=graph>get</span>(h.axes1,<span class=quotes>'Children'</span>),<span class=quotes>'EraseMode'</span>,<span class=quotes>'normal'</span>);<br>
+&nbsp;&nbsp;&nbsp;clrchild(h.axes1);<br>
+<br>
+&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.handler=<span class=graph>line</span>(<span class=quotes>'EraseMode'</span>,<span class=quotes>'xor'</span>,<span class=quotes>'Color'</span>,<span class=quotes>'k'</span>,<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>,<span class=quotes>'Parent'</span>,h.axes1);<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'UserData'</span>,h);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;uicontrol&nbsp;handlers</span><br>
+<br>
+<span class=comment>%%%&nbsp;&nbsp;&nbsp;pplot(sets.X,sets.I);</span><br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;ppoints(sets.X,sets.I);</span><br>
+&nbsp;&nbsp;&nbsp;ppatterns(sets);<br>
+&nbsp;&nbsp;&nbsp;demo_linclass(<span class=quotes>'drawline'</span>,hfigure,h.<span class=graph>line</span>.theta,h.<span class=graph>line</span>.alpha);<br>
+<br>
+&nbsp;&nbsp;&nbsp;drawnow;<br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'loadsets'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Load&nbsp;data&nbsp;sets&nbsp;========================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Get&nbsp;file&nbsp;name&nbsp;from&nbsp;the&nbsp;pop&nbsp;up&nbsp;menu&nbsp;according&nbsp;to&nbsp;menu&nbsp;pointer.&nbsp;</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Than&nbsp;clear&nbsp;axes,load&nbsp;new&nbsp;file&nbsp;and&nbsp;appear&nbsp;the&nbsp;points&nbsp;from&nbsp;the&nbsp;file.</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Clear&nbsp;axes</span><br>
+&nbsp;&nbsp;&nbsp;clrchild(h.axes1);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.axes1,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Box'</span>,<span class=quotes>'on'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'DrawMode'</span>,<span class=quotes>'fast'</span>&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;xlabel(<span class=quotes>'feature&nbsp;x_1'</span>);<br>
+&nbsp;&nbsp;&nbsp;ylabel(<span class=quotes>'feature&nbsp;x_2'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;No&nbsp;line</span><br>
+&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.handler=-1;<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'UserData'</span>,h);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Get&nbsp;file&nbsp;name&nbsp;with&nbsp;sets</span><br>
+&nbsp;&nbsp;&nbsp;file=<span class=graph>get</span>(h.btload,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Load&nbsp;sets</span><br>
+&nbsp;&nbsp;&nbsp;sets=load(file.pathname);<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%%%</span><br>
+&nbsp;&nbsp;&nbsp;sets.I=sets.y;<br>
+&nbsp;&nbsp;&nbsp;sets.N=2;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;ii=1:max(sets.y),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sets.K(ii)=length(find(sets.y==ii));<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;store&nbsp;loaded&nbsp;sets</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.axes1,<span class=quotes>'UserData'</span>,sets);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;set&nbsp;axes&nbsp;according&nbsp;to&nbsp;current&nbsp;point&nbsp;set</span><br>
+&nbsp;&nbsp;&nbsp;win=cmpwin(min(sets.X<span class=quotes>'),max(sets.X'</span>),BORDER,BORDER);<br>
+&nbsp;&nbsp;&nbsp;setaxis(h.axes1,win);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>axes</span>(h.axes1);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;plots&nbsp;points</span><br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;ppoints(sets.X,sets.I);</span><br>
+&nbsp;&nbsp;&nbsp;ppatterns(sets);<br>
+<br>
+&nbsp;&nbsp;&nbsp;drawnow;<br>
+&nbsp;&nbsp;&nbsp;<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'play'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Start&nbsp;up&nbsp;the&nbsp;adaptation&nbsp;process&nbsp;============================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Get&nbsp;handle&nbsp;to&nbsp;data.</span><br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;h.<span class=graph>line</span>.handler==-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=jump>return</span>;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Check&nbsp;if&nbsp;data&nbsp;are&nbsp;loaded.</span><br>
+&nbsp;&nbsp;&nbsp;sets=<span class=graph>get</span>(h.axes1,<span class=quotes>'UserData'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isempty(sets)==1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=jump>return</span>;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Disable&nbsp;and&nbsp;enable&nbsp;buttons.</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>([h.btinfo&nbsp;h.btstep&nbsp;h.btclose&nbsp;h.btplay&nbsp;h.btreset&nbsp;h.btload&nbsp;h.btcreat&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.pualgo&nbsp;h.editer],<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.btstop,<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.btstop,<span class=quotes>'UserData'</span>,0);<br>
+<br>
+&nbsp;&nbsp;&nbsp;h.stop&nbsp;=&nbsp;0;<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'UserData'</span>,h);<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Play&nbsp;-&nbsp;adaptation&nbsp;process</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>while</span>&nbsp;h.stop==0&nbsp;&&nbsp;<span class=graph>get</span>(h.btstop,<span class=quotes>'UserData'</span>)==0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_linclass(<span class=quotes>'step'</span>,hfigure);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Enable&nbsp;and&nbsp;dissable&nbsp;buttons.</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>([h.btinfo&nbsp;h.btstep&nbsp;h.btclose&nbsp;h.btplay&nbsp;h.btreset&nbsp;h.pualgo&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.editer&nbsp;h.btload&nbsp;h.btcreat],<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.btstop,<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>);<br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'step'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Perform&nbsp;one&nbsp;adaptation&nbsp;step&nbsp;======================================</span><br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;handlers&nbsp;we&nbsp;will&nbsp;need...</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;h.<span class=graph>line</span>.handler==-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=jump>return</span>;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;sets</span><br>
+&nbsp;&nbsp;&nbsp;sets=<span class=graph>get</span>(h.axes1,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;no&nbsp;data&nbsp;set&nbsp;loaded</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isempty(sets)==1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=jump>return</span>;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;[alpha,theta,solution,t]=exec(hfigure);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;mod(h.stepcnt,2)==1&nbsp;&&nbsp;h.<span class=graph>line</span>.t&nbsp;&gt;0,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;solution&nbsp;~=&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_linclass(<span class=quotes>'drawline'</span>,hfigure,theta,alpha);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text=makeinfo(t,alpha,theta,solution);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.console,<span class=quotes>'String'</span>,text&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;<span class=graph>get</span>(h.xbanim,<span class=quotes>'Value'</span>)==0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_linclass(<span class=quotes>'drawline'</span>,hfigure,theta,alpha);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_linclass(<span class=quotes>'animline'</span>,hfigure,theta,alpha);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;solution==1&nbsp;|&nbsp;solution==-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.stop=1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.alpha&nbsp;=&nbsp;alpha;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.theta&nbsp;=&nbsp;theta;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.t&nbsp;=&nbsp;t;<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;solution==0&nbsp;|&nbsp;solution&nbsp;==1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;appear&nbsp;time&nbsp;and&nbsp;line&nbsp;parameters</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text=makeinfo(t,alpha,theta,solution);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>elseif</span>&nbsp;solution==-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text=<span class=io>sprintf</span>(<span class=quotes>'Solution&nbsp;does&nbsp;not&nbsp;exist.\n'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.console,<span class=quotes>'String'</span>,text&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;&nbsp;store&nbsp;new&nbsp;solution</span><br>
+&nbsp;&nbsp;&nbsp;h.stepcnt=h.stepcnt+1;<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'UserData'</span>,h);<br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'animline'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Smooth&nbsp;transition&nbsp;of&nbsp;line&nbsp;from&nbsp;old&nbsp;to&nbsp;new&nbsp;position&nbsp;===============</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;handlers</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;old&nbsp;position&nbsp;of&nbsp;line&nbsp;is...</span><br>
+&nbsp;&nbsp;&nbsp;alpha2=h.<span class=graph>line</span>.alpha;<br>
+&nbsp;&nbsp;&nbsp;theta2=h.<span class=graph>line</span>.theta;<br>
+&nbsp;&nbsp;&nbsp;t2=h.<span class=graph>line</span>.t;<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;New&nbsp;position&nbsp;get&nbsp;from&nbsp;input&nbsp;arguments</span><br>
+&nbsp;&nbsp;&nbsp;theta1=<span class=stack>varargin</span>{1};<br>
+&nbsp;&nbsp;&nbsp;alpha1=<span class=stack>varargin</span>{2};<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;t2~=0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;move&nbsp;line</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;step=1/ANIM_STEPS;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;k=0:step:1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alpha=(1-k)*alpha2+k*alpha1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;smooth&nbsp;transition&nbsp;of&nbsp;alpha</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;theta=(1-k)*theta2+k*theta1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;--//--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;theta</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_linclass(<span class=quotes>'drawline'</span>,hfigure,theta,alpha);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;it&nbsp;is&nbsp;first&nbsp;step</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_linclass(<span class=quotes>'drawline'</span>,hfigure,theta1,alpha1);&nbsp;<span class=comment>%&nbsp;first&nbsp;step</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;<span class=comment>%&nbsp;if&nbsp;t2~=0</span><br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'reset'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Reset&nbsp;adaptation&nbsp;process,&nbsp;set&nbsp;up&nbsp;zero&nbsp;step&nbsp;================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;handlers</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;data&nbsp;set</span><br>
+&nbsp;&nbsp;&nbsp;sets=<span class=graph>get</span>(h.axes1,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;file</span><br>
+&nbsp;&nbsp;&nbsp;file=<span class=graph>get</span>(h.btload,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;zeroize&nbsp;parameters&nbsp;of&nbsp;the&nbsp;separation&nbsp;line</span><br>
+&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.t=0;<br>
+&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.theta=0;<br>
+&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.alpha=[0;0];<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;h.stepcnt=0;<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;h.<span class=graph>line</span>.handler==-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;create&nbsp;line</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>axes</span>(h.axes1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.handler=...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>line</span>(<span class=quotes>'EraseMode'</span>,<span class=quotes>'xor'</span>,<span class=quotes>'Color'</span>,<span class=quotes>'k'</span>,<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>,<span class=quotes>'Parent'</span>,h.axes1);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.badpoint.handler=<span class=graph>line</span>(<span class=quotes>'EraseMode'</span>,<span class=quotes>'xor'</span>,<span class=quotes>'Color'</span>,<span class=quotes>'k'</span>,<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Parent'</span>,h.axes1,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Marker'</span>,<span class=quotes>'o'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'MarkerSize'</span>,WRONGPOINT_SIZE);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;drawnow;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;change&nbsp;parameters&nbsp;of&nbsp;line</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.<span class=graph>line</span>.handler,<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.badpoint.handler,<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;<span class=comment>%&nbsp;if&nbsp;hline==-1</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;set&nbsp;up&nbsp;handlers&nbsp;and&nbsp;flush&nbsp;queue&nbsp;with&nbsp;graph.&nbsp;objects</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'UserData'</span>,h);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;create&nbsp;comment</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isempty(sets)==0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;consoletext=<span class=io>sprintf</span>(<span class=quotes>'Step&nbsp;t=0\nNo&nbsp;separation&nbsp;line'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;titletext=<span class=io>sprintf</span>(<span class=quotes>'Data&nbsp;file:&nbsp;%s,&nbsp;%d&nbsp;vectors'</span>,file.name,sum(sets.K));<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;consoletext=<span class=io>sprintf</span>([<span class=quotes>'No&nbsp;data&nbsp;loaded.\nPress&nbsp;Load&nbsp;data&nbsp;button.\n'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Load&nbsp;sample&nbsp;data&nbsp;from&nbsp;../toolboxroot/data/binary_separable'</span>]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;titletext=<span class=quotes>''</span>;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pos=<span class=graph>get</span>(h.axes1,<span class=quotes>'Position'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fsize=min(pos(3),pos(4))/10;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setaxis(h.axes1,[-1&nbsp;1&nbsp;-1&nbsp;1]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>axis</span>([-1&nbsp;1&nbsp;-1&nbsp;1]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=eval>builtin</span>(<span class=quotes>'text'</span>,0,0,<span class=quotes>'Press&nbsp;'</span><span class=quotes>'Load&nbsp;data'</span><span class=quotes>'&nbsp;button.'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'HorizontalAlignment'</span>,<span class=quotes>'center'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'FontUnits'</span>,<span class=quotes>'normalized'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Clipping'</span>,<span class=quotes>'on'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'FontSize'</span>,fsize);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;show&nbsp;comment</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.console,<span class=quotes>'String'</span>,consoletext&nbsp;);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;print&nbsp;title</span><br>
+&nbsp;&nbsp;&nbsp;pos=<span class=graph>get</span>(h.axes1,<span class=quotes>'Position'</span>);<br>
+&nbsp;&nbsp;&nbsp;fsize=(1-pos(2)-pos(4))*1;<br>
+&nbsp;&nbsp;&nbsp;title(titletext,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Parent'</span>,h.axes1,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'VerticalAlignment'</span>,<span class=quotes>'bottom'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'HorizontalAlignment'</span>,<span class=quotes>'left'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'FontUnits'</span>,<span class=quotes>'normalized'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[0&nbsp;1&nbsp;0],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'FontSize'</span>,fsize);<br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'drawline'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Draw&nbsp;separation&nbsp;line&nbsp;============================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;handlers</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;new&nbsp;line&nbsp;position&nbsp;from&nbsp;input&nbsp;arguments</span><br>
+&nbsp;&nbsp;&nbsp;theta=<span class=stack>varargin</span>{1};<br>
+&nbsp;&nbsp;&nbsp;alpha=<span class=stack>varargin</span>{2};<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;mod(h.stepcnt,2)==1&nbsp;&&nbsp;h.<span class=graph>line</span>.t&nbsp;&gt;0,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.badpoint.handler,<span class=quotes>'Visible'</span>,<span class=quotes>'on'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'XData'</span>,alpha(1),<span class=quotes>'YData'</span>,alpha(2));<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.badpoint.handler,<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>);<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Cut&nbsp;off&nbsp;line&nbsp;along&nbsp;axes</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[x1,y1,x2,y2,in]=cliplin1(alpha,theta,getaxis(h.axes1));<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;erase&nbsp;old&nbsp;line</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.<span class=graph>line</span>.handler,<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;draw&nbsp;new&nbsp;line&nbsp;if&nbsp;is&nbsp;in&nbsp;the&nbsp;axes</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;in==1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.<span class=graph>line</span>.handler,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'XData'</span>,[x1&nbsp;x2],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'YData'</span>,[y1&nbsp;y2],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'LineWidth'</span>,LINE_WIDTH,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Visible'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;flush&nbsp;draw&nbsp;queue</span><br>
+&nbsp;&nbsp;&nbsp;drawnow;<br>
+&nbsp;<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'info'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Invokes&nbsp;standard&nbsp;Matlab`s&nbsp;info&nbsp;box&nbsp;==========================</span><br>
+&nbsp;&nbsp;&nbsp;helpwin(mfilename);<br>
+<span class=keyword>end</span><br>
+<br>
+<br>
+<br>
+<span class=comment>%========================================</span><br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[text]</span>=<span class=defun_name>makeinfo</span>(<span class=defun_in>t,alpha,theta,solution</span>)<br>
+<span class=comment>%&nbsp;assembles&nbsp;text&nbsp;description&nbsp;about&nbsp;current&nbsp;solution&nbsp;state</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;solution==1,<br>
+&nbsp;&nbsp;&nbsp;txline{1}=<span class=io>sprintf</span>(<span class=quotes>'Solution&nbsp;was&nbsp;found&nbsp;after&nbsp;t=%d&nbsp;step(s).'</span>,t);<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;txline{1}=<span class=io>sprintf</span>(<span class=quotes>'Step&nbsp;t=%d'</span>,t);<br>
+<span class=keyword>end</span><br>
+txline{2}=<span class=io>sprintf</span>(<span class=quotes>'Linear&nbsp;decision&nbsp;function:'</span>);<br>
+txline{3}=<span class=io>sprintf</span>(<span class=quotes>'%f&nbsp;x_1&nbsp;+&nbsp;%f&nbsp;x_2&nbsp;+&nbsp;%f&nbsp;=&nbsp;0'</span>,alpha(1),alpha(2),-theta);<br>
+<br>
+text=<span class=quotes>''</span>;<br>
+<span class=keyword>for</span>&nbsp;i=1:3,<br>
+&nbsp;&nbsp;&nbsp;text=strvcat(text,txline{i});<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+<br>
+<span class=comment>%===========================================</span><br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[alpha,theta,solution,tplus1]</span>=<span class=defun_name>exec</span>(<span class=defun_in>hfigure</span>);<br>
+<br>
+h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<br>
+<span class=keyword>if</span>&nbsp;h.<span class=graph>line</span>.handler==-1,<br>
+&nbsp;&nbsp;&nbsp;<span class=jump>return</span>;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;get&nbsp;sets</span><br>
+sets=<span class=graph>get</span>(h.axes1,<span class=quotes>'UserData'</span>);<br>
+<br>
+<span class=comment>%&nbsp;no&nbsp;data&nbsp;set&nbsp;loaded</span><br>
+<span class=keyword>if</span>&nbsp;isempty(sets)==1,<br>
+&nbsp;&nbsp;&nbsp;<span class=jump>return</span>;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;get&nbsp;parameters</span><br>
+t=h.<span class=graph>line</span>.t;<br>
+alpha=h.<span class=graph>line</span>.alpha;<br>
+theta=h.<span class=graph>line</span>.theta;<br>
+<br>
+iter=max(1,round(str2num(<span class=graph>get</span>(h.editer,<span class=quotes>'String'</span>))));<br>
+epsil=str2num(<span class=graph>get</span>(h.edeps,<span class=quotes>'String'</span>));<br>
+<br>
+<span class=keyword>if</span>&nbsp;mod(h.stepcnt,2)&nbsp;~=&nbsp;0&nbsp;&&nbsp;t&nbsp;&gt;&nbsp;0,<br>
+&nbsp;&nbsp;iter&nbsp;=&nbsp;-1;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;perform&nbsp;one&nbsp;adaptation&nbsp;step</span><br>
+<span class=keyword>switch</span>&nbsp;<span class=graph>get</span>(h.pualgo,<span class=quotes>'Value'</span>)<br>
+&nbsp;<span class=label>case</span>&nbsp;1<br>
+<span class=comment>%</span><br>
+<span class=comment>%[alpha,theta,solution,tplus1]=perceptr(sets.X,sets.I,iter,t,alpha,theta);</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;iter==-1,&nbsp;tmp_options.tmax&nbsp;=&nbsp;-1;&nbsp;<span class=keyword>else</span>&nbsp;tmp_options.tmax=t+iter;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;init_model.t=t;<br>
+&nbsp;&nbsp;&nbsp;init_model.W=alpha;<br>
+&nbsp;&nbsp;&nbsp;init_model.b=-theta;<br>
+&nbsp;&nbsp;&nbsp;tmp_model&nbsp;=&nbsp;perceptron(sets,tmp_options,init_model);<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;iter==-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;tmp_model.last_update,&nbsp;alpha=sets.X(:,tmp_model.last_update);&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span>&nbsp;alpha=tmp_model.W;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alpha&nbsp;=&nbsp;tmp_model.W;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;solution=tmp_model.exitflag;<br>
+&nbsp;&nbsp;&nbsp;tplus1&nbsp;=&nbsp;tmp_model.t;<br>
+&nbsp;&nbsp;&nbsp;theta&nbsp;=&nbsp;-tmp_model.b;<br>
+<br>
+&nbsp;<span class=label>case</span>&nbsp;2<br>
+<span class=comment>%%</span><br>
+<span class=comment>%%&nbsp;&nbsp;[alpha,theta,solution,tplus1]=kozinec(sets.X,sets.I,iter,t,alpha,theta);</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;iter==-1,&nbsp;tmp_options.tmax&nbsp;=&nbsp;-1;&nbsp;<span class=keyword>else</span>&nbsp;tmp_options.tmax=t+iter;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;tmp_options.eps=-1;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;t~=0,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;init_model.t=t;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;init_model.W=alpha;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;init_model.b=-theta;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tmp_model&nbsp;=&nbsp;ekozinec(sets,tmp_options,&nbsp;init_model);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmp_model&nbsp;=&nbsp;ekozinec(sets,tmp_options);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;iter==-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;tmp_model.last_update,&nbsp;alpha=sets.X(:,tmp_model.last_update);&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span>&nbsp;alpha=tmp_model.W;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alpha&nbsp;=&nbsp;tmp_model.W;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;solution=tmp_model.exitflag;<br>
+&nbsp;&nbsp;&nbsp;tplus1&nbsp;=&nbsp;tmp_model.t;<br>
+&nbsp;&nbsp;&nbsp;theta&nbsp;=&nbsp;-tmp_model.b;<br>
+<br>
+&nbsp;<span class=label>case</span>&nbsp;3<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;[alpha,theta,solution,tplus1]=ekozinec(sets.X,sets.I,epsil,iter,t,...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alpha,theta);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;iter==-1,&nbsp;tmp_options.tmax&nbsp;=&nbsp;-1;&nbsp;<span class=keyword>else</span>&nbsp;tmp_options.tmax=t+iter;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;t~=0,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;init_model.t=t;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;init_model.W=alpha;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;init_model.b=-theta;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tmp_options.eps=epsil;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tmp_model&nbsp;=&nbsp;ekozinec(sets,tmp_options,init_model);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;tmp_options.eps=epsil;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tmp_model&nbsp;=&nbsp;ekozinec(sets,tmp_options);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;iter==-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;tmp_model.last_update,&nbsp;alpha=sets.X(:,tmp_model.last_update);&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span>&nbsp;alpha=tmp_model.W;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alpha&nbsp;=&nbsp;tmp_model.W;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;solution=tmp_model.exitflag;<br>
+&nbsp;&nbsp;&nbsp;tplus1&nbsp;=&nbsp;tmp_model.t;<br>
+&nbsp;&nbsp;&nbsp;theta&nbsp;=&nbsp;-tmp_model.b;<br>
+<br>
+&nbsp;<span class=label>case</span>&nbsp;4<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tmp_options.ker=<span class=quotes>'linear'</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tmp_options.C&nbsp;=&nbsp;1e12;<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;[alpha,theta,solution]=svmmot(sets.X,sets.I);</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;tmp_model=smo(sets,tmp_options);<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;tmp_model.exitflag&nbsp;&lt;=0,&nbsp;solution=-1;&nbsp;else&nbsp;solution=1;&nbsp;end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;tmp_model.trnerr&nbsp;&gt;&nbsp;0,&nbsp;solution&nbsp;=&nbsp;-1;&nbsp;<span class=keyword>else</span>&nbsp;solution=1;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;theta=-tmp_model.b;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;alpha=tmp_model.sv.X*tmp_model.Alpha(:);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tplus1=1;<br>
+&nbsp;<span class=label>case</span>&nbsp;5<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;[alpha,theta,solution,tplus1]=psum(sets.X,sets.I,10,iter,t,alpha,theta);</span><br>
+<span class=comment>%&nbsp;case&nbsp;6</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;[alpha,theta,solution,tplus1]=psumv(sets.X,sets.I,iter,t,alpha,theta);</span><br>
+<span class=comment>%&nbsp;case&nbsp;7</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;[alpha,theta,solution,tplus1]=navara1(sets.X,sets.I,iter,t,alpha,theta);</span><br>
+<span class=comment>%&nbsp;case&nbsp;8</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;[alpha,theta,solution,tplus1]=navarah1(sets.X,sets.I,iter,t,alpha,theta);</span><br>
+<span class=comment>%&nbsp;case&nbsp;9</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;[alpha,theta,solution]=simplex(sets.X,sets.I);</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;solution==0,&nbsp;solution=-1;&nbsp;end</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;tplus1=1;</span><br>
+<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span><br>
+<br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[]</span>=<span class=defun_name>setaxis</span>(<span class=defun_in>handle,rect</span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;function&nbsp;[]=setaxis(handle,rect)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;SETAXIS&nbsp;sets&nbsp;scaling&nbsp;for&nbsp;the&nbsp;x-&nbsp;and&nbsp;y-axes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;on&nbsp;the&nbsp;plot&nbsp;with&nbsp;a&nbsp;given&nbsp;handle.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;See&nbsp;also&nbsp;AXIS.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox,&nbsp;Vojtech&nbsp;Franc,&nbsp;Vaclav&nbsp;Hlavac&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;(c)&nbsp;Czech&nbsp;Technical&nbsp;University&nbsp;Prague,&nbsp;http://cmp.felk.cvut.cz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;Written&nbsp;Vojtech&nbsp;Franc&nbsp;(diploma&nbsp;thesis)&nbsp;02.01.2000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;Modifications&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=graph>set</span>(handle,<span class=quotes>'XLim'</span>,rect(1:2));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=graph>set</span>(handle,<span class=quotes>'YLim'</span>,rect(3:4));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=keyword>if</span>&nbsp;size(rect,2)&gt;=6,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(handle,<span class=quotes>'ZLim'</span>,rect(5:6));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=keyword>end</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=jump>return</span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<br>
+<span class=comment>%========================================&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[rect]</span>=<span class=defun_name>getaxis</span>(<span class=defun_in>handle</span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;function&nbsp;[rect]=getaxis(handle)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;GETAXIS&nbsp;returns&nbsp;a&nbsp;row&nbsp;vector&nbsp;containing&nbsp;the&nbsp;scaling&nbsp;for&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;the&nbsp;plot&nbsp;with&nbsp;a&nbsp;given&nbsp;handle.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;See&nbsp;also&nbsp;AXIS.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox,&nbsp;Vojtech&nbsp;Franc,&nbsp;Vaclav&nbsp;Hlavac&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;(c)&nbsp;Czech&nbsp;Technical&nbsp;University&nbsp;Prague,&nbsp;http://cmp.felk.cvut.cz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;Written&nbsp;Vojtech&nbsp;Franc&nbsp;(diploma&nbsp;thesis)&nbsp;02.01.2000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;Modifications&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;24.&nbsp;6.00&nbsp;V.&nbsp;Hlavac,&nbsp;comments&nbsp;polished.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+rect=[<span class=graph>get</span>(handle,<span class=quotes>'XLim'</span>),<span class=graph>get</span>(handle,<span class=quotes>'YLim'</span>),<span class=graph>get</span>(handle,<span class=quotes>'ZLim'</span>)];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=jump>return</span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[win]</span>=<span class=defun_name>cmpwin</span>(<span class=defun_in>mins,maxs,xborder,yborder</span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;[win]=cmpwin(mins,maxs,xborder,yborder)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;CMPWIN&nbsp;computes&nbsp;appropriate&nbsp;size&nbsp;of&nbsp;the&nbsp;axes.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox,&nbsp;Vojtech&nbsp;Franc,&nbsp;Vaclav&nbsp;Hlavac&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;(c)&nbsp;Czech&nbsp;Technical&nbsp;University&nbsp;Prague,&nbsp;http://cmp.felk.cvut.cz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;Written&nbsp;Vojtech&nbsp;Franc&nbsp;(diploma&nbsp;thesis)&nbsp;02.01.2000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;Modifications&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;24.&nbsp;6.00&nbsp;V.&nbsp;Hlavac,&nbsp;comments&nbsp;polished.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+dx=max(&nbsp;(maxs(1)-mins(1)),&nbsp;1&nbsp;)*xborder;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+dy=max(&nbsp;(maxs(2)-mins(2)),&nbsp;1&nbsp;)*yborder;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%x1=floor(mins(1)-dx);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%x2=ceil(maxs(1)+dx);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%y1=floor(mins(2)-dy);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%y2=ceil(maxs(2)+dx);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+x1=(mins(1)-dx);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+x2=(maxs(1)+dx);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+y1=(mins(2)-dy);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+y2=(maxs(2)+dx);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+win=[x1&nbsp;x2&nbsp;y1&nbsp;y2];&nbsp;&nbsp;<br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[x1,y1,x2,y2,in]</span>=<span class=defun_name>cliplin1</span>(<span class=defun_in>alpha,theta,window</span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;[x1,y1,x2,y2,in]=cliplin1(alpha,theta,window)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;CLIPLIN1&nbsp;clips&nbsp;the&nbsp;line&nbsp;given&nbsp;by&nbsp;the&nbsp;equation&nbsp;alpha*x=theta&nbsp;along&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;the&nbsp;window.&nbsp;It&nbsp;returns&nbsp;two&nbsp;points&nbsp;on&nbsp;the&nbsp;border&nbsp;of&nbsp;the&nbsp;window.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;If&nbsp;the&nbsp;line&nbsp;is&nbsp;in&nbsp;the&nbsp;window&nbsp;then&nbsp;the&nbsp;argument&nbsp;is&nbsp;equal&nbsp;to&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;else&nbsp;it&nbsp;returns&nbsp;0.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;See&nbsp;also&nbsp;CLIPLIN2.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox,&nbsp;Vojtech&nbsp;Franc,&nbsp;Vaclav&nbsp;Hlavac&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;(c)&nbsp;Czech&nbsp;Technical&nbsp;University&nbsp;Prague,&nbsp;http://cmp.felk.cvut.cz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;Written&nbsp;Vojtech&nbsp;Franc&nbsp;(diploma&nbsp;thesis)&nbsp;20.10.1999,&nbsp;23.12.1999&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;Modifications&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;24.&nbsp;6.00&nbsp;V.&nbsp;Hlavac,&nbsp;comments&nbsp;polished.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+minx=window(1);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+maxx=window(2);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+miny=window(3);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+maxy=window(4);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+x=zeros(4,1);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+y=zeros(4,1);&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=keyword>if</span>&nbsp;alpha(1)==0,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;alpha(2)~=0,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1=minx;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y1=theta/alpha(2);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x2=maxx;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y2=y1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in=1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;if&nbsp;alpha&nbsp;==&nbsp;0&nbsp;then&nbsp;it&nbsp;means&nbsp;the&nbsp;bad&nbsp;input.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1=0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y1=0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x2=0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y2=0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in=0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=keyword>elseif</span>&nbsp;alpha(2)==0,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;x1=theta/alpha(1);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;y1=miny;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;x2=x1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;y2=maxy;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;in=1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;<span class=keyword>else</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y(1)=maxy;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;x(1)=(theta-alpha(2)*y(1))/alpha(1);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;y(2)=miny;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;x(2)=(theta-alpha(2)*y(2))/alpha(1);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;x(3)=maxx;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;y(3)=(theta-alpha(1)*x(3))/alpha(2);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;x(4)=minx;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;y(4)=(theta-alpha(1)*x(4))/alpha(2);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;j=0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i=1:4,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;x(i)&nbsp;&lt;=&nbsp;maxx&nbsp;&&nbsp;x(i)&nbsp;&gt;=&nbsp;minx&nbsp;&&nbsp;y(i)&nbsp;&lt;=&nbsp;maxy&nbsp;&&nbsp;y(i)&nbsp;&gt;=&nbsp;miny,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;j==0,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;j=j+1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1=x(i);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y1=y(i);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>elseif</span>&nbsp;j==1,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;j=j+1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x2=x(i);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y2=y(i);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;j&lt;2,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1=0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y1=0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x2=0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y2=0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in=0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in=1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=keyword>end</span>&nbsp;<span class=comment>%&nbsp;elseif&nbsp;alpha(2)==0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[]</span>=<span class=defun_name>clrchild</span>(<span class=defun_in>handle</span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;function&nbsp;[]=clraxis(handle)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;CLRCHILD&nbsp;clears&nbsp;children&nbsp;of&nbsp;an&nbsp;object&nbsp;with&nbsp;the&nbsp;given&nbsp;handle.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;See&nbsp;also&nbsp;DELETE.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox,&nbsp;Vojtech&nbsp;Franc,&nbsp;Vaclav&nbsp;Hlavac&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;(c)&nbsp;Czech&nbsp;Technical&nbsp;University&nbsp;Prague,&nbsp;http://cmp.felk.cvut.cz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;Written&nbsp;Vojtech&nbsp;Franc&nbsp;(diploma&nbsp;thesis)&nbsp;02.01.2000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;Modifications&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;24.&nbsp;6.00&nbsp;V.&nbsp;Hlavac,&nbsp;comments&nbsp;polished.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+delete(<span class=graph>get</span>(handle,<span class=quotes>'Children'</span>));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<span class=jump>return</span>;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model</span>=<span class=defun_name>ekozinec</span>(<span class=defun_in>data,options,init_model</span>)<br>
+<span class=comment>%&nbsp;EKOZINEC&nbsp;Kozinec's&nbsp;algorithm&nbsp;for&nbsp;eps-optimal&nbsp;separating&nbsp;hyperplane.</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;Synopsis:</span><br>
+<span class=comment>%&nbsp;&nbsp;model&nbsp;=&nbsp;ekozinec(data)</span><br>
+<span class=comment>%&nbsp;&nbsp;model&nbsp;=&nbsp;ekozinec(data,options)</span><br>
+<span class=comment>%&nbsp;&nbsp;model&nbsp;=&nbsp;ekozinec(data,options,init_model)</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;Description:</span><br>
+<span class=comment>%&nbsp;&nbsp;This&nbsp;function&nbsp;is&nbsp;implementation&nbsp;of&nbsp;the&nbsp;Kozinec's&nbsp;algorithm</span><br>
+<span class=comment>%&nbsp;&nbsp;[Koz73]&nbsp;with&nbsp;eps-optimality&nbsp;stopping&nbsp;condition&nbsp;([SH10],&nbsp;Chapter&nbsp;5).</span><br>
+<span class=comment>%&nbsp;&nbsp;It&nbsp;transforms&nbsp;the&nbsp;binary-class&nbsp;problem&nbsp;to&nbsp;the&nbsp;single-class&nbsp;problem.</span><br>
+<span class=comment>%&nbsp;&nbsp;The&nbsp;nearest&nbsp;point&nbsp;from&nbsp;convex&nbsp;hull&nbsp;of&nbsp;transformed&nbsp;data&nbsp;which</span><br>
+<span class=comment>%&nbsp;&nbsp;determines&nbsp;the&nbsp;optimal&nbsp;separating&nbsp;hyperplane&nbsp;is&nbsp;found&nbsp;by&nbsp;the&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;Kozinec's&nbsp;algorithm.</span><br>
+<span class=comment>%&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;model&nbsp;=&nbsp;ekozinec(data)&nbsp;finds&nbsp;eps-optimal&nbsp;separating&nbsp;hyperplane&nbsp;for</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;linearly&nbsp;separable&nbsp;data.</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;&nbsp;model&nbsp;=&nbsp;ekozinec(data,options)&nbsp;specifies&nbsp;stopping&nbsp;conditions&nbsp;of</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;the&nbsp;algorithm&nbsp;in&nbsp;structure&nbsp;options:</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;.eps&nbsp;[1x1]&nbsp;...&nbsp;controls&nbsp;how&nbsp;close&nbsp;is&nbsp;the&nbsp;found&nbsp;solution&nbsp;to</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;optimal&nbsp;hyperplane&nbsp;in&nbsp;terms&nbsp;of&nbsp;Euclidien&nbsp;norm&nbsp;of&nbsp;the</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;normal&nbsp;vector&nbsp;(default&nbsp;0.01).</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]...&nbsp;maximal&nbsp;number&nbsp;of&nbsp;iterations.</span><br>
+<span class=comment>%&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;If&nbsp;tmax==-1&nbsp;then&nbsp;it&nbsp;only&nbsp;returns&nbsp;index&nbsp;(model.last_update)</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;of&nbsp;data&nbsp;vector&nbsp;which&nbsp;should&nbsp;be&nbsp;used&nbsp;by&nbsp;the&nbsp;algorithm&nbsp;for&nbsp;updating</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;the&nbsp;linear&nbsp;rule&nbsp;in&nbsp;the&nbsp;next&nbsp;iteration.</span><br>
+<span class=comment>%&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;model&nbsp;=&nbsp;ekozinec(data,options,init_model)&nbsp;specifies&nbsp;initial&nbsp;model</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;which&nbsp;must&nbsp;contain:</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;...&nbsp;normal&nbsp;vector.</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;...&nbsp;bias&nbsp;of&nbsp;hyperplane.</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;(optional)&nbsp;...&nbsp;iteration&nbsp;number.</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;Input:</span><br>
+<span class=comment>%&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Labeled&nbsp;(binary)&nbsp;training&nbsp;data.&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Input&nbsp;vectors.</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;(1&nbsp;or&nbsp;2).</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;&nbsp;options&nbsp;[struct]&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;.eps&nbsp;[1x1]&nbsp;Precision&nbsp;of&nbsp;found&nbsp;hyperplane&nbsp;(see&nbsp;above).</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;.tmax&nbsp;[1x1]&nbsp;Maximal&nbsp;number&nbsp;of&nbsp;iterations&nbsp;(default&nbsp;tmax=inf).</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;tmax==-1&nbsp;then&nbsp;it&nbsp;does&nbsp;not&nbsp;perform&nbsp;any&nbsp;iteration&nbsp;but&nbsp;returns&nbsp;only&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;index&nbsp;of&nbsp;the&nbsp;point&nbsp;which&nbsp;should&nbsp;be&nbsp;used&nbsp;to&nbsp;update&nbsp;linear&nbsp;rule.</span><br>
+<span class=comment>%&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;init_model&nbsp;[struct]&nbsp;Initial&nbsp;model;&nbsp;must&nbsp;contain&nbsp;items</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;.W,&nbsp;.b&nbsp;and&nbsp;.t&nbsp;(see&nbsp;below).</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;Output:</span><br>
+<span class=comment>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Found&nbsp;linear&nbsp;classifier:</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Normal&nbsp;vector&nbsp;of&nbsp;hyperplane.</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;.b&nbsp;[1x1]&nbsp;Bias&nbsp;of&nbsp;hyperplane.</span><br>
+<span class=comment>%&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;.exitflag&nbsp;[1x1]&nbsp;1&nbsp;...&nbsp;eps-optimality&nbsp;condition&nbsp;satisfied</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;...&nbsp;number&nbsp;of&nbsp;iterations&nbsp;exceeded&nbsp;tmax.</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;.t&nbsp;[int]&nbsp;Number&nbsp;of&nbsp;iterations.</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;.last_update&nbsp;[d&nbsp;x&nbsp;1]&nbsp;Index&nbsp;of&nbsp;the&nbsp;last&nbsp;point&nbsp;used&nbsp;for&nbsp;update.</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;Example:</span><br>
+<span class=comment>%&nbsp;&nbsp;data&nbsp;=&nbsp;genlsdata(&nbsp;2,&nbsp;50,&nbsp;1);</span><br>
+<span class=comment>%&nbsp;&nbsp;model&nbsp;=&nbsp;ekozinec(data)</span><br>
+<span class=comment>%&nbsp;&nbsp;figure;&nbsp;ppatterns(data);&nbsp;pline(model);&nbsp;</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=comment>%</span><br>
+<br>
+<span class=comment>%&nbsp;About:&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=comment>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=comment>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=comment>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=comment>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=comment>%&nbsp;Modifications:</span><br>
+<span class=comment>%&nbsp;3-may-2004,&nbsp;VF</span><br>
+<span class=comment>%&nbsp;17-sep-2003,&nbsp;VF</span><br>
+<span class=comment>%&nbsp;16-Feb-2003,&nbsp;VF</span><br>
+<span class=comment>%&nbsp;21-apr-2001,&nbsp;V.Franc,&nbsp;created</span><br>
+<br>
+<span class=comment>%&nbsp;get&nbsp;data&nbsp;dimensions</span><br>
+[dim,num_data]&nbsp;=&nbsp;size(data.X);<br>
+<br>
+<span class=comment>%&nbsp;Process&nbsp;input&nbsp;arguments&nbsp;</span><br>
+<span class=comment>%&nbsp;------------------------------------</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;options&nbsp;=&nbsp;[];&nbsp;<span class=keyword>else</span>&nbsp;options&nbsp;=&nbsp;c2s(&nbsp;options&nbsp;);&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'tmax'</span>),&nbsp;options.tmax&nbsp;=&nbsp;inf;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'eps'</span>),&nbsp;options.eps&nbsp;=&nbsp;0.01;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;3,&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;make&nbsp;inital&nbsp;model</span><br>
+&nbsp;&nbsp;model.b&nbsp;=&nbsp;0;<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;data.y(1)==1,&nbsp;W&nbsp;=&nbsp;[data.X(:,1);1];&nbsp;<span class=keyword>else</span>&nbsp;W&nbsp;=&nbsp;-[data.X(:,1);1];&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;inital&nbsp;model&nbsp;from&nbsp;input</span><br>
+&nbsp;&nbsp;model&nbsp;=&nbsp;init_model;<br>
+&nbsp;&nbsp;W&nbsp;=&nbsp;[model.W;&nbsp;model.b];<br>
+<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(&nbsp;model,<span class=quotes>'t'</span>),&nbsp;model.t&nbsp;=&nbsp;0;&nbsp;<span class=keyword>end</span><br>
+<br>
+model.exitflag&nbsp;=&nbsp;0;<br>
+model.last_update&nbsp;=&nbsp;0;<br>
+<br>
+<span class=comment>%&nbsp;Add&nbsp;one&nbsp;constant&nbsp;coordinates&nbsp;to&nbsp;the&nbsp;data&nbsp;and&nbsp;swap&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=comment>%&nbsp;points&nbsp;from&nbsp;the&nbsp;second&nbsp;class&nbsp;along&nbsp;the&nbsp;origin.</span><br>
+<span class=comment>%&nbsp;----------------------------------------------------&nbsp;</span><br>
+data.X&nbsp;=&nbsp;[data.X;&nbsp;ones(1,num_data)];<br>
+dim=dim+1;<br>
+inx&nbsp;=&nbsp;find(data.y==2);<br>
+data.X(:,inx)&nbsp;=&nbsp;-data.X(:,inx);<br>
+<br>
+<span class=keyword>if</span>&nbsp;options.tmax&nbsp;==&nbsp;-1,<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;return&nbsp;index&nbsp;of&nbsp;point&nbsp;which&nbsp;should&nbsp;be&nbsp;used&nbsp;to&nbsp;update&nbsp;linear&nbsp;rule</span><br>
+&nbsp;&nbsp;<span class=comment>%----------------------------------------------------------------------</span><br>
+&nbsp;&nbsp;norm_W&nbsp;=&nbsp;norm(W);<br>
+&nbsp;&nbsp;[min_proj,min_inx]=min(&nbsp;data.X'*W/norm_W&nbsp;);<br>
+<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;bound&nbsp;for&nbsp;separating&nbsp;or&nbsp;eps-optimal&nbsp;separating&nbsp;hyperplane&nbsp;</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.eps&nbsp;&lt;&nbsp;0,&nbsp;bound&nbsp;=&nbsp;norm_W/2;&nbsp;<span class=keyword>else</span>&nbsp;bound&nbsp;=&nbsp;norm_W&nbsp;-&nbsp;options.eps;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;model.last_update&nbsp;=&nbsp;min_inx;<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;min_proj&nbsp;&lt;=&nbsp;bound,&nbsp;model.exitflag&nbsp;=&nbsp;0;&nbsp;<span class=keyword>else</span>&nbsp;model.exitflag&nbsp;=&nbsp;1;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>else</span>&nbsp;<br>
+<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;main&nbsp;loop</span><br>
+&nbsp;&nbsp;<span class=comment>%----------------</span><br>
+&nbsp;&nbsp;<span class=keyword>while</span>&nbsp;model.exitflag&nbsp;==&nbsp;0&nbsp;&&nbsp;options.tmax&nbsp;&gt;&nbsp;model.t,<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;model.t&nbsp;=&nbsp;model.t&nbsp;+&nbsp;1;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;norm_W&nbsp;=&nbsp;norm(W);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[min_proj,min_inx]=min(&nbsp;data.X'*W/norm_W&nbsp;);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;bound&nbsp;for&nbsp;separating&nbsp;or&nbsp;eps-optimal&nbsp;separating&nbsp;hyperplane&nbsp;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;options.eps&nbsp;&lt;&nbsp;0,&nbsp;bound&nbsp;=&nbsp;0;&nbsp;<span class=keyword>else</span>&nbsp;bound=norm_W&nbsp;-&nbsp;options.eps;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;min_proj&nbsp;&lt;=&nbsp;bound,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.last_update&nbsp;=&nbsp;min_inx;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xt=data.X(:,min_inx);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k=min(1,(W-xt)<span class=quotes>'*W/((W-xt)'</span>*(W-xt))&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;W&nbsp;=&nbsp;W*(1-k)&nbsp;+&nbsp;xt*k;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.exitflag&nbsp;=&nbsp;0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.exitflag&nbsp;=&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<br>
+<span class=keyword>end</span><br>
+<br>
+model.W&nbsp;=&nbsp;W(1:dim-1);<br>
+model.b&nbsp;=&nbsp;W(dim);<br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'linclass'</span>;<br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+</code>

@@ -1,0 +1,122 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>cmeans.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[model,y]&nbsp;</span>=&nbsp;<span class=defun_name>cmeans</span>(<span class=defun_in>X,num_centers,Init_centers</span>)<br>
+<span class=h1>%&nbsp;CMEANS&nbsp;K-means&nbsp;clustering&nbsp;algorithm.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;[model,y]&nbsp;=&nbsp;cmeans(X,num_centers)</span><br>
+<span class=help>%&nbsp;&nbsp;[model,y]&nbsp;=&nbsp;cmeans(X,num_centers,Init_centers)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;[model,y]&nbsp;=&nbsp;cmeans(X,num_centers)&nbsp;runs&nbsp;C-means&nbsp;clustering&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;where&nbsp;inital&nbsp;centers&nbsp;are&nbsp;randomly&nbsp;selected&nbsp;from&nbsp;the&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;input&nbsp;vectors&nbsp;X.&nbsp;The&nbsp;output&nbsp;are&nbsp;found&nbsp;centers&nbsp;stored&nbsp;in&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;structure&nbsp;model.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;[model,y]&nbsp;=&nbsp;cmeans(X,num_centers,Init_centers)&nbsp;uses</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;init_centers&nbsp;as&nbsp;the&nbsp;starting&nbsp;point.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Input&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;num_centers&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;centers.</span><br>
+<span class=help>%&nbsp;&nbsp;Init_centers&nbsp;[1x1]&nbsp;Starting&nbsp;point&nbsp;of&nbsp;the&nbsp;algorithm.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Found&nbsp;clustering:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_centers]&nbsp;Found&nbsp;centers.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_centers]&nbsp;Implicitly&nbsp;added&nbsp;labels&nbsp;1..num_centers.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.t&nbsp;[1x1]&nbsp;Number&nbsp;of&nbsp;iterations.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.MsErr&nbsp;[1xt]&nbsp;Mean-Square&nbsp;error&nbsp;at&nbsp;each&nbsp;iteration.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;assigned&nbsp;to&nbsp;data&nbsp;according&nbsp;to&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;the&nbsp;nearest&nbsp;center.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;=&nbsp;load('riply_trn');</span><br>
+<span class=help>%&nbsp;&nbsp;[model,data.y]&nbsp;=&nbsp;cmeans(&nbsp;data.X,&nbsp;4&nbsp;);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;ppatterns(data);&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;ppatterns(model,12);&nbsp;pboundary(&nbsp;model&nbsp;);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;EMGMM,&nbsp;KNNCLASS.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>(c)</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox,&nbsp;(C)&nbsp;1999-2003,</span><br>
+<span class=help1>%&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;engineering&lt;/a&gt;,</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;18-dec-2008,&nbsp;VF,&nbsp;fix:&nbsp;Init_centers&nbsp;argument&nbsp;used&nbsp;as&nbsp;the&nbsp;initial&nbsp;solution</span><br>
+<span class=help1>%&nbsp;17-jun-2007,&nbsp;VF,&nbsp;renamed&nbsp;from&nbsp;kmeans&nbsp;to&nbsp;cmeans&nbsp;to&nbsp;avoid&nbsp;conflicts&nbsp;with&nbsp;stats&nbsp;toolbox</span><br>
+<span class=help1>%&nbsp;12-may-2004,&nbsp;VF</span><br>
+<br>
+<hr>
+[dim,num_data]&nbsp;=&nbsp;size(X);<br>
+<br>
+<span class=comment>%&nbsp;random&nbsp;inicialization&nbsp;of&nbsp;class&nbsp;centers</span><br>
+<span class=comment>%-----------------------------------------------</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;3,<br>
+&nbsp;&nbsp;inx=randperm(num_data);<br>
+&nbsp;&nbsp;model.X&nbsp;=&nbsp;X(:,inx(1:num_centers));<br>
+&nbsp;&nbsp;model.y&nbsp;=&nbsp;1:num_centers;<br>
+&nbsp;&nbsp;model.K&nbsp;=&nbsp;1;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;num_centers&nbsp;~=&nbsp;size(Init_centers,2)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=error>error</span>(<span class=quotes>'Argument&nbsp;num_centers&nbsp;must&nbsp;be&nbsp;equal&nbsp;to&nbsp;the&nbsp;number&nbsp;of&nbsp;columns&nbsp;of&nbsp;Init_centers.'</span>);&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;model.X&nbsp;=&nbsp;Init_centers;<br>
+&nbsp;&nbsp;model.y&nbsp;=&nbsp;1:num_centers'<br>
+<span class=keyword>end</span><br>
+<br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'knnclass'</span>;<br>
+<br>
+old_y&nbsp;=&nbsp;zeros(1,num_data);<br>
+t&nbsp;=&nbsp;0;<br>
+<br>
+<span class=comment>%&nbsp;main&nbsp;loop</span><br>
+<span class=comment>%-------------------------</span><br>
+<span class=keyword>while</span>&nbsp;1,<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;t&nbsp;=&nbsp;t+1;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;classificitation</span><br>
+&nbsp;&nbsp;y&nbsp;=&nbsp;knnclass(&nbsp;X,&nbsp;model&nbsp;);<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;computation&nbsp;of&nbsp;class&nbsp;centers</span><br>
+&nbsp;&nbsp;err&nbsp;=&nbsp;0;<br>
+&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i=1:num_centers,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;inx&nbsp;=&nbsp;find(y&nbsp;==&nbsp;i);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;~isempty(inx),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;compute&nbsp;approximation&nbsp;error</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;err&nbsp;=&nbsp;err&nbsp;+&nbsp;sum(sum((X(:,inx)&nbsp;-&nbsp;model.X(:,i)*ones(1,length(inx))&nbsp;).^2));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;compute&nbsp;new&nbsp;centers</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.X(:,i)&nbsp;=&nbsp;sum(X(:,inx),2)/length(inx);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;Number&nbsp;of&nbsp;iterations&nbsp;and&nbsp;Mean-Square&nbsp;Error&nbsp;</span><br>
+&nbsp;&nbsp;model.t&nbsp;=&nbsp;t;<br>
+&nbsp;&nbsp;model.MsErr(t)&nbsp;=&nbsp;err/num_data;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;sum(&nbsp;abs(y&nbsp;-&nbsp;old_y)&nbsp;)&nbsp;==&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=jump>return</span>;<br>
+&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;old_y&nbsp;=&nbsp;y;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

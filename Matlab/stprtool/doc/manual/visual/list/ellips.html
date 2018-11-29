@@ -1,0 +1,132 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>ellips.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>varargout</span>=<span class=defun_name>ellips</span>(<span class=defun_in>Center,Shape,radius,n</span>)<br>
+<span class=h1>%&nbsp;ELLIPS&nbsp;Creates&nbsp;ellipse.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;[X,Y]&nbsp;=&nbsp;ellips(Center,Shape,radius,n)</span><br>
+<span class=help>%&nbsp;&nbsp;[X,Y,Z]&nbsp;=&nbsp;ellips(Center,Shape,radius,n)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;interpolates&nbsp;ellipse&nbsp;by&nbsp;lines&nbsp;in&nbsp;2d&nbsp;space</span><br>
+<span class=help>%&nbsp;&nbsp;or&nbsp;by&nbsp;patches&nbsp;in&nbsp;3d&nbsp;space&nbsp;respectivelly.&nbsp;The&nbsp;ellipsoid&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;is&nbsp;described&nbsp;as</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;radius^2=(x-Center)'*Shape*(x-Center).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;number&nbsp;of&nbsp;lines&nbsp;used&nbsp;for&nbsp;interpolation&nbsp;is&nbsp;given</span><br>
+<span class=help>%&nbsp;&nbsp;by&nbsp;argument&nbsp;n&nbsp;in&nbsp;2d&nbsp;case.&nbsp;In&nbsp;3d&nbsp;case&nbsp;the&nbsp;argument</span><br>
+<span class=help>%&nbsp;&nbsp;n&nbsp;has&nbsp;the&nbsp;same&nbsp;meaning&nbsp;in&nbsp;the&nbsp;Matlab&nbsp;function&nbsp;sphere(n).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Center&nbsp;[2x1]&nbsp;or&nbsp;[3x1]&nbsp;Center&nbsp;of&nbsp;the&nbsp;ellipse.</span><br>
+<span class=help>%&nbsp;&nbsp;Shape&nbsp;[2x2]&nbsp;or&nbsp;[3x3]&nbsp;Shape&nbsp;of&nbsp;the&nbsp;ellipse.</span><br>
+<span class=help>%&nbsp;&nbsp;n&nbsp;[1x1]&nbsp;Density&nbsp;of&nbsp;interpolation&nbsp;(default&nbsp;20).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;2d&nbsp;ellipse</span><br>
+<span class=help>%&nbsp;&nbsp;[x,y]&nbsp;=&nbsp;ellips([1;1],[1&nbsp;0.5;0.5&nbsp;1],1);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;plot(x,y);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;3d&nbsp;ellipsoid</span><br>
+<span class=help>%&nbsp;&nbsp;[x,y,z]&nbsp;=&nbsp;ellips([1;1;1],[1&nbsp;0&nbsp;0;0&nbsp;2&nbsp;0;&nbsp;0&nbsp;0&nbsp;3],1);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;mesh(x,y,z);</span><br>
+<span class=help>%</span><br>
+<hr>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;30-apr-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;13-Feb-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;24-6-2000&nbsp;V.&nbsp;Hlavac,&nbsp;comments&nbsp;polished.</span><br>
+<br>
+<hr>
+Center=Center(:);<br>
+<br>
+<span class=comment>%&nbsp;input&nbsp;arguments&nbsp;processing</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;4,&nbsp;n=20;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;dimension</span><br>
+dim&nbsp;=&nbsp;size(Shape,1);<br>
+<br>
+<span class=keyword>if</span>&nbsp;dim&nbsp;==&nbsp;3,<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;3D&nbsp;ellipsoid,&nbsp;creates&nbsp;the&nbsp;matrix&nbsp;X,Y,Z&nbsp;appropriate&nbsp;for&nbsp;using&nbsp;in</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;the&nbsp;functions&nbsp;mesh,surf,&nbsp;etc.</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;[X,Y,Z]&nbsp;=&nbsp;sphere(n);<br>
+<br>
+&nbsp;&nbsp;&nbsp;X=radius*X;<br>
+&nbsp;&nbsp;&nbsp;Y=radius*Y;<br>
+&nbsp;&nbsp;&nbsp;Z=radius*Z;<br>
+<br>
+&nbsp;&nbsp;&nbsp;[A,p]=chol(Shape);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;p&nbsp;~=&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=error>error</span>(<span class=quotes>'Shape&nbsp;matrix&nbsp;must&nbsp;be&nbsp;positive&nbsp;definite'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;A=inv(A);<br>
+<br>
+&nbsp;&nbsp;&nbsp;[ROWS,COLUMNS]=size(X);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;transforms&nbsp;sphere&nbsp;to&nbsp;ellipse&nbsp;</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i=1:ROWS,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;P=[X(i,:);Y(i,:);Z(i,:)];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Q=A*P;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;if&nbsp;the&nbsp;translation&nbsp;is&nbsp;given&nbsp;then&nbsp;translate&nbsp;points</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Q=Q+repmat(Center(:),1,COLUMNS);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;X(i,:)=Q(1,:);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Y(i,:)=Q(2,:);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Z(i,:)=Q(3,:);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;<span class=comment>%&nbsp;for&nbsp;i=1:ROWS</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;return&nbsp;variables</span><br>
+&nbsp;&nbsp;&nbsp;<span class=stack>varargout</span>{1}=X;<br>
+&nbsp;&nbsp;&nbsp;<span class=stack>varargout</span>{2}=Y;<br>
+&nbsp;&nbsp;&nbsp;<span class=stack>varargout</span>{3}=Z;<br>
+<br>
+<span class=keyword>elseif</span>&nbsp;dim&nbsp;==&nbsp;2,<br>
+<br>
+&nbsp;&nbsp;&nbsp;from=0;<br>
+&nbsp;&nbsp;&nbsp;to=2*pi;<br>
+&nbsp;&nbsp;&nbsp;step=(to-from)/n;<br>
+&nbsp;&nbsp;&nbsp;X=cos([from:step:to]);<br>
+&nbsp;&nbsp;&nbsp;Y=sin([from:step:to]);<br>
+<br>
+&nbsp;&nbsp;&nbsp;X=radius*X;<br>
+&nbsp;&nbsp;&nbsp;Y=radius*Y;<br>
+<br>
+&nbsp;&nbsp;&nbsp;[A,p]=chol(Shape);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;p&nbsp;~=&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=error>error</span>(<span class=quotes>'Shape&nbsp;matrix&nbsp;must&nbsp;be&nbsp;positive&nbsp;definite'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;A=inv(A);<br>
+<br>
+&nbsp;&nbsp;&nbsp;P=[X;Y];<br>
+&nbsp;&nbsp;&nbsp;Q=A*P;<br>
+<br>
+&nbsp;&nbsp;&nbsp;Q=Q+repmat(Center(:),1,n+1);<br>
+<br>
+&nbsp;&nbsp;&nbsp;X=Q(1,:);<br>
+&nbsp;&nbsp;&nbsp;Y=Q(2,:);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;return&nbsp;variables</span><br>
+&nbsp;&nbsp;&nbsp;<span class=stack>varargout</span>{1}=X;<br>
+&nbsp;&nbsp;&nbsp;<span class=stack>varargout</span>{2}=Y;<br>
+<br>
+<span class=keyword>end</span><br>
+&nbsp;<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%EOF</span><br>
+</code>

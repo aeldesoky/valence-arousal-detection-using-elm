@@ -1,0 +1,42 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">DEMO_SVMPOUT</b>
+<td valign="baseline" align="right" class="function"><a href="../demos/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Fitting a posteriory probability to SVM output.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;A&nbsp;posteriory&nbsp;probability&nbsp;p(y==1|f(x))&nbsp;of&nbsp;the&nbsp;first&nbsp;class</span><br>
+<span class=help>&nbsp;given&nbsp;SVM&nbsp;output&nbsp;f(x)&nbsp;is&nbsp;assumed&nbsp;to&nbsp;be&nbsp;sigmoid&nbsp;function.&nbsp;</span><br>
+<span class=help>&nbsp;Parameters&nbsp;A(1)&nbsp;and&nbsp;A(2)&nbsp;of&nbsp;the&nbsp;sigmoid&nbsp;function&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;p(y==1|f(x))&nbsp;=&nbsp;1/(1+exp(A(1)*f(x)+A(2))&nbsp;</span><br>
+<span class=help>&nbsp;are&nbsp;estimated&nbsp;using&nbsp;Maximum-Likelihood&nbsp;[<a href="../references.html#Platt99a" title = "" >Platt99a</a>].&nbsp;</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;The&nbsp;Gaussian&nbsp;mixture&nbsp;model&nbsp;(GMM)&nbsp;is&nbsp;fitted&nbsp;to&nbsp;the&nbsp;SVM&nbsp;output</span><br>
+<span class=help>&nbsp;and&nbsp;the&nbsp;a&nbsp;posteriory&nbsp;probability&nbsp;are&nbsp;computed&nbsp;for&nbsp;</span><br>
+<span class=help>&nbsp;comparison&nbsp;to&nbsp;the&nbsp;ML&nbsp;estimate.</span><br>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;The&nbsp;ML&nbsp;estimation&nbsp;of&nbsp;the&nbsp;sigmoid&nbsp;function&nbsp;is&nbsp;imlemented&nbsp;</span><br>
+<span class=help>&nbsp;in&nbsp;'mlsigmoid'&nbsp;(see&nbsp;'help&nbsp;mlsigmoid'&nbsp;for&nbsp;more&nbsp;info).</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../demos/list/demo_svmpout.html">demo_svmpout.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 03-jun-2004, VF<br>
+ 6-May-2003, VF<br>
+
+</body>
+</html>

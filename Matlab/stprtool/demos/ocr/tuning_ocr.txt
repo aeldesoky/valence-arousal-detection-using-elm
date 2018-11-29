@@ -1,0 +1,109 @@
+Current directory is /mnt/home.dokt/xfrancv/work
+Adding path for the Statistical Pattern Recognition Toolbox...
+Creating training set:
+Input file: daniel_martinec1.mat, label: 1
+Input file: daniel_martinec10.mat, label: 10
+Input file: daniel_martinec2.mat, label: 2
+Input file: daniel_martinec3.mat, label: 3
+Input file: daniel_martinec4.mat, label: 4
+Input file: daniel_martinec5.mat, label: 5
+Input file: daniel_martinec6.mat, label: 6
+Input file: daniel_martinec7.mat, label: 7
+Input file: daniel_martinec8.mat, label: 8
+Input file: daniel_martinec9.mat, label: 9
+Input file: honza_cech1.mat, label: 1
+Input file: honza_cech10.mat, label: 10
+Input file: honza_cech2.mat, label: 2
+Input file: honza_cech3.mat, label: 3
+Input file: honza_cech4.mat, label: 4
+Input file: honza_cech5.mat, label: 5
+Input file: honza_cech6.mat, label: 6
+Input file: honza_cech7.mat, label: 7
+Input file: honza_cech8.mat, label: 8
+Input file: honza_cech9.mat, label: 9
+Input file: jana_kostkova1.mat, label: 1
+Input file: jana_kostkova10.mat, label: 10
+Input file: jana_kostkova2.mat, label: 2
+Input file: jana_kostkova3.mat, label: 3
+Input file: jana_kostkova4.mat, label: 4
+Input file: jana_kostkova5.mat, label: 5
+Input file: jana_kostkova6.mat, label: 6
+Input file: jana_kostkova7.mat, label: 7
+Input file: jana_kostkova8.mat, label: 8
+Input file: jana_kostkova9.mat, label: 9
+Input file: martin_matousek1.mat, label: 1
+Input file: martin_matousek10.mat, label: 10
+Input file: martin_matousek2.mat, label: 2
+Input file: martin_matousek3.mat, label: 3
+Input file: martin_matousek4.mat, label: 4
+Input file: martin_matousek5.mat, label: 5
+Input file: martin_matousek6.mat, label: 6
+Input file: martin_matousek7.mat, label: 7
+Input file: martin_matousek8.mat, label: 8
+Input file: martin_matousek9.mat, label: 9
+Input file: martin_barva1.mat, label: 1
+Input file: martin_barva10.mat, label: 10
+Input file: martin_barva2.mat, label: 2
+Input file: martin_barva3.mat, label: 3
+Input file: martin_barva4.mat, label: 4
+Input file: martin_barva6.mat, label: 6
+Input file: martin_barva7.mat, label: 7
+Input file: martin_barva8.mat, label: 8
+Input file: martin_barva9.mat, label: 9
+Input file: vojta_franc1.mat, label: 1
+Input file: vojta_franc10.mat, label: 10
+Input file: vojta_franc2.mat, label: 2
+Input file: vojta_franc3.mat, label: 3
+Input file: vojta_franc4.mat, label: 4
+Input file: vojta_franc5.mat, label: 5
+Input file: vojta_franc6.mat, label: 6
+Input file: vojta_franc7.mat, label: 7
+Input file: vojta_franc8.mat, label: 8
+Input file: vojta_franc9.mat, label: 9
+Saving data to: ../../data/ocr_numerals/OcrTrndata.mat
+>> >> >> >> >> >> Tuning multi-class SVM classifier.
+>> Model 1/5: ker=rbf, C=Inf, arg=1.000000 
+fold 1/5: training, testing, tst_err = 0.8559
+fold 2/5: training, testing, tst_err = 0.8831
+fold 3/5: training, testing, tst_err = 0.8932
+fold 4/5: training, testing, tst_err = 0.8966
+fold 5/5: training, testing, tst_err = 0.8831
+cross-validation error = 0.8824 (best so far)
+
+Model 2/5: ker=rbf, C=Inf, arg=2.500000 
+fold 1/5: training, testing, tst_err = 0.0746
+fold 2/5: training, testing, tst_err = 0.0864
+fold 3/5: training, testing, tst_err = 0.0780
+fold 4/5: training, testing, tst_err = 0.0441
+fold 5/5: training, testing, tst_err = 0.0627
+cross-validation error = 0.0692 (best so far)
+
+Model 3/5: ker=rbf, C=Inf, arg=5.000000 
+fold 1/5: training, testing, tst_err = 0.0475
+fold 2/5: training, testing, tst_err = 0.0390
+fold 3/5: training, testing, tst_err = 0.0458
+fold 4/5: training, testing, tst_err = 0.0237
+fold 5/5: training, testing, tst_err = 0.0288
+cross-validation error = 0.0369 (best so far)
+
+Model 4/5: ker=rbf, C=Inf, arg=7.500000 
+fold 1/5: training, testing, tst_err = 0.0424
+fold 2/5: training, testing, tst_err = 0.0407
+fold 3/5: training, testing, tst_err = 0.0441
+fold 4/5: training, testing, tst_err = 0.0288
+fold 5/5: training, testing, tst_err = 0.0322
+cross-validation error = 0.0376
+
+Model 5/5: ker=rbf, C=Inf, arg=10.000000 
+fold 1/5: training, testing, tst_err = 0.0441
+fold 2/5: training, testing, tst_err = 0.0424
+fold 3/5: training, testing, tst_err = 0.0458
+fold 4/5: training, testing, tst_err = 0.0288
+fold 5/5: training, testing, tst_err = 0.0356
+cross-validation error = 0.0393
+
+best model: ker=rbf, C=Inf, arg=5.000000 
+cross-validation error = 0.0369
+>> >> 
+Saving results to: ocrtuning
+>> >> >> >> >> >> >> >> 

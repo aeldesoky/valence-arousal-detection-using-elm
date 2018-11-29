@@ -1,0 +1,50 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>dsamp.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>X&nbsp;</span>=&nbsp;<span class=defun_name>dsamp</span>(<span class=defun_in>Px,num_data</span>)<br>
+<span class=h1>%&nbsp;DSAMP&nbsp;Generates&nbsp;samples&nbsp;from&nbsp;discrete&nbsp;distribution.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;=&nbsp;dsamp(Px,num_data)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Px&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Discrete&nbsp;probability&nbsp;distribution;&nbsp;it&nbsp;must</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;satisfy&nbsp;sum(Px)&nbsp;=&nbsp;1&nbsp;and&nbsp;min(Px)&nbsp;&gt;=&nbsp;0.</span><br>
+<span class=help>%&nbsp;&nbsp;num_data&nbsp;[1&nbsp;x&nbsp;1]&nbsp;Number&nbsp;of&nbsp;samples&nbsp;to&nbsp;be&nbsp;generated.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Px&nbsp;=&nbsp;[0.2&nbsp;0.3&nbsp;0.1&nbsp;0.4];</span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;=&nbsp;dsamp(Px,1000);</span><br>
+<span class=help>%&nbsp;&nbsp;Px_emp&nbsp;=&nbsp;hist(X,4)/1000</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also</span><br>
+<span class=help>%&nbsp;&nbsp;GSAMP,&nbsp;GMMSAMP</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2005,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;Czech&nbsp;Technical&nbsp;University&nbsp;Prague</span><br>
+<span class=help1>%&nbsp;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering</span><br>
+<span class=help1>%&nbsp;Center&nbsp;for&nbsp;Machine&nbsp;Perception</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;26-mar-2005,&nbsp;VF</span><br>
+<br>
+<hr>
+unif_X&nbsp;=&nbsp;rand(1,num_data);<br>
+X&nbsp;=&nbsp;zeros(1,num_data);<br>
+<br>
+cum_Px&nbsp;=&nbsp;[0;&nbsp;tril(ones(length(Px)))*Px(:)];<br>
+cum_Px(<span class=keyword>end</span>)&nbsp;=&nbsp;inf;<br>
+<span class=keyword>for</span>&nbsp;i=1:length(Px),<br>
+&nbsp;&nbsp;inx&nbsp;=&nbsp;find(&nbsp;unif_X&nbsp;&gt;=&nbsp;cum_Px(i)&nbsp;&&nbsp;unif_X&nbsp;&lt;&nbsp;cum_Px(i+1)&nbsp;);<br>
+&nbsp;&nbsp;X(inx)&nbsp;=&nbsp;i;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

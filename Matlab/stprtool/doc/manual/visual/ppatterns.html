@@ -1,0 +1,72 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">PPATTERNS</b>
+<td valign="baseline" align="right" class="function"><a href="../visual/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Plots pattern as points in feature space.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;ppatterns(data,marker_size)</span><br>
+<span class=help>&nbsp;&nbsp;ppatterns(data,'num')</span><br>
+<span class=help>&nbsp;&nbsp;ppatterns(X,marker,marker_size)</span><br>
+<span class=help>&nbsp;&nbsp;ppatterns(X,y)</span><br>
+<span class=help>&nbsp;&nbsp;ppatterns(X,y,marker_size)</span><br>
+<span class=help>&nbsp;&nbsp;ppatterns(X,y,'num')</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;ppatterns(data,marker_size)&nbsp;plots&nbsp;data.X&nbsp;as&nbsp;points</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;distinguished&nbsp;by&nbsp;marker&nbsp;and&nbsp;its&nbsp;color&nbsp;according&nbsp;to&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;given&nbsp;labels&nbsp;data.y.&nbsp;The&nbsp;marker&nbsp;size&nbsp;can&nbsp;be&nbsp;prescribed.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;ppatterns(data,'num')&nbsp;plots&nbsp;data.X&nbsp;in&nbsp;distinguished&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;by&nbsp;numbers&nbsp;and&nbsp;colors&nbsp;according&nbsp;to&nbsp;given&nbsp;labels&nbsp;data.y.&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;The&nbsp;marker&nbsp;size&nbsp;can&nbsp;be&nbsp;determined&nbsp;by&nbsp;argument&nbsp;marker_size.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;ppatterns(X,marker,marker_size)&nbsp;plots&nbsp;data&nbsp;X.&nbsp;Marker&nbsp;type</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;can&nbsp;be&nbsp;determined&nbsp;by&nbsp;argument&nbsp;marker.&nbsp;The&nbsp;marker&nbsp;size&nbsp;can&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;be&nbsp;determined&nbsp;by&nbsp;argument&nbsp;marker_size.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;ppatterns(X,y,...)&nbsp;instead&nbsp;of&nbsp;structure&nbsp;data,&nbsp;which&nbsp;contains</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;items&nbsp;X&nbsp;and&nbsp;y&nbsp;these&nbsp;can&nbsp;enter&nbsp;the&nbsp;function&nbsp;directly.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;If&nbsp;dimension&nbsp;of&nbsp;input&nbsp;data&nbsp;is&nbsp;greater&nbsp;than&nbsp;3&nbsp;then</span><br>
+<span class=help>&nbsp;&nbsp;only&nbsp;first&nbsp;3&nbsp;dimensions&nbsp;are&nbsp;assumed&nbsp;and&nbsp;data&nbsp;are&nbsp;plotted&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;in&nbsp;3D&nbsp;space.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>&nbsp;&nbsp;H&nbsp;[struct]&nbsp;Handles&nbsp;of&nbsp;used&nbsp;graphical&nbsp;objects.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;data&nbsp;=&nbsp;load('riply_trn');&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;ppatterns(data);</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;ppatterns(data,'num');</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;ppatterns(data.X,'xk',10);</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../visual/pline.html" target="mdsbody">PLINE</a>.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../visual/list/ppatterns.html">ppatterns.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 25-may-2004, VF<br>
+ 11-mar-2004, VF, <br>
+ 5-oct-2003, VF, returns handles<br>
+ 12-feb-2003, VF, 1D, 3D added<br>
+ 7-jan-2003, VF, created<br>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>demo_kpcadenois.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=h1>%&nbsp;DEMO_KPCADENOIS&nbsp;Idea&nbsp;of&nbsp;image&nbsp;denoising&nbsp;based&nbsp;on&nbsp;Kernel&nbsp;PCA.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;kernel&nbsp;PCA&nbsp;model&nbsp;is&nbsp;trained&nbsp;for&nbsp;to&nbsp;model&nbsp;input&nbsp;2D&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;free&nbsp;model&nbsp;parameters&nbsp;(kernel&nbsp;argument,&nbsp;dimension)&nbsp;are&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;tuned&nbsp;by&nbsp;the&nbsp;script&nbsp;train_kpca_denois.&nbsp;The&nbsp;denosing&nbsp;of&nbsp;corrupted&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;vectors&nbsp;is&nbsp;based&nbsp;on&nbsp;projecting&nbsp;onto&nbsp;the&nbsp;kernel&nbsp;PCA&nbsp;model&nbsp;and&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;take&nbsp;the&nbsp;resulting&nbsp;image&nbsp;as&nbsp;the&nbsp;reconstructed&nbsp;vector&nbsp;[Mika99b].&nbsp;This&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;idea&nbsp;is&nbsp;demonstrated&nbsp;on&nbsp;a&nbsp;toy&nbsp;2D&nbsp;data.&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;GREEDYKPCA,&nbsp;KPCAREC,&nbsp;KPCA.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;06-jun2004,&nbsp;VF</span><br>
+<br>
+<hr>
+help&nbsp;img_denois_idea;<br>
+<br>
+<span class=comment>%&nbsp;setting&nbsp;</span><br>
+<span class=comment>%---------------------------------------</span><br>
+<br>
+<span class=comment>%&nbsp;toy&nbsp;data&nbsp;generated&nbsp;by&nbsp;gencircledata</span><br>
+input_data_file&nbsp;=&nbsp;<span class=quotes>'noisy_circle'</span>;&nbsp;&nbsp;<br>
+<br>
+options.ker&nbsp;=&nbsp;<span class=quotes>'rbf'</span>;&nbsp;&nbsp;<span class=comment>%&nbsp;kernel</span><br>
+options.arg&nbsp;=&nbsp;2;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;kernel&nbsp;argument</span><br>
+options.m&nbsp;=&nbsp;500;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;#of&nbsp;vectors&nbsp;used&nbsp;for&nbsp;approximation</span><br>
+options.p&nbsp;=&nbsp;10;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;deth&nbsp;of&nbsp;search&nbsp;for&nbsp;the&nbsp;best&nbsp;basis&nbsp;vector</span><br>
+options.new_dim&nbsp;=&nbsp;2;&nbsp;&nbsp;<span class=comment>%&nbsp;output&nbsp;dimension</span><br>
+options.verb&nbsp;=&nbsp;1;&nbsp;&nbsp;&nbsp;<br>
+<br>
+<span class=comment>%&nbsp;load&nbsp;training&nbsp;data&nbsp;containing&nbsp;examples&nbsp;of&nbsp;corrupted&nbsp;and&nbsp;</span><br>
+<span class=comment>%&nbsp;corresponding&nbsp;ground&nbsp;truth&nbsp;vectors.</span><br>
+load(input_data_file,<span class=quotes>'trn'</span>);<br>
+[Dim,Num_Data]&nbsp;=&nbsp;size(trn.X);<br>
+<br>
+<span class=comment>%&nbsp;train&nbsp;kernel&nbsp;PCA</span><br>
+kpca_model&nbsp;=&nbsp;greedykpca(trn.X,options);<br>
+<br>
+<span class=comment>%&nbsp;example&nbsp;of&nbsp;corrupted&nbsp;vector&nbsp;out&nbsp;of&nbsp;kernel&nbsp;PCA&nbsp;subspace</span><br>
+corr_x&nbsp;=&nbsp;[-2;4.5];<br>
+<br>
+<span class=comment>%&nbsp;vector&nbsp;reconstruction</span><br>
+rec_x&nbsp;=&nbsp;kpcarec(corr_x,kpca_model);<br>
+<br>
+<span class=comment>%&nbsp;visualization</span><br>
+<span class=graph>figure</span>;&nbsp;hold&nbsp;on;&nbsp;<span class=graph>axis</span>([-4&nbsp;7&nbsp;-4&nbsp;7]);<br>
+h0=ppatterns(trn.gnd_X,<span class=quotes>'r+'</span>);<br>
+h1=ppatterns(trn.X,<span class=quotes>'gx'</span>);<br>
+h3=ppatterns(rec_x,<span class=quotes>'bo'</span>,13);<br>
+h2=ppatterns(corr_x,<span class=quotes>'mo'</span>,13);<br>
+<span class=graph>plot</span>([rec_x(1)&nbsp;corr_x(1)],[rec_x(2)&nbsp;corr_x(2)],<span class=quotes>'k--'</span>);<br>
+h4&nbsp;=&nbsp;legend([h0&nbsp;h1&nbsp;h2&nbsp;h3],<span class=quotes>'Ground&nbsp;truth'</span>,<span class=quotes>'Noisy&nbsp;examples'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Corrupted'</span>,<span class=quotes>'Reconstructed'</span>);<br>
+<span class=graph>set</span>(h4,<span class=quotes>'FontSize'</span>,13);<br>
+<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

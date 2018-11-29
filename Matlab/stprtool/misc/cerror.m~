@@ -1,0 +1,58 @@
+function error=cerror(y1,y2,label)
+% CERROR Computes classification error.
+%
+% Synopsis:
+%  error = cerror(y1,y2)
+%  error = cerror(y1,y2,label) 
+%
+% Description:
+%  error = cerror(y1,y2) returns classification error, i.e.,
+%      error=  1/length(y1) sum_i L( y1(i), y2(i))
+%
+%    where L(a,b)=0 if a==b and L(a,b)=1 if a ~= b.
+%
+%  error = cerror(y1,y2,label) considers only labels
+%    find(y2==label), i.e., if y1,y2 from {-1,1} then
+%
+%   false_positives_rate = cerror(y1,y2,-1)
+%   false_negatives_rate = cerror(y1,y2,+1)
+%
+% Input:
+%  y1 [1 x n] Vector of integers (response of classifier).
+%  y2 [1 x n] Vector of integers (ground truth).
+%  label [int] Selected label.
+%
+% Output:
+%  error [real] Error. 
+%
+% Example:
+%  classifier  = [1,1,1,2]
+%  groundtruth = [2,1,2,1]
+%  error = cerror(classifier,groundtruth)
+%  false_pos = cerror(classifier,groundtruth,2)
+%  false_neg = cerror(classifier,groundtruth,1)
+%
+% See also 
+%  ROC
+%
+
+% About: Statistical Pattern Recognition Toolbox
+% (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac
+% <a href="http://www.cvut.cz">Czech Technical University Prague</a>
+% <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a>
+% <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a>
+
+% Modifications:
+% 09-jun-2004, VF
+% 14-Jan-2003, VF
+
+y1=y1(:);y2=y2(:);
+
+if nargin < 3,
+  error=length(find((y1-y2)~=0))/length(y1);
+else
+  inx = find(y2==label);
+  error = length( find(y1(inx)~=label) )/length(inx);
+end
+
+return;

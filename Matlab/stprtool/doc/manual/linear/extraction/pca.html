@@ -1,0 +1,79 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">PCA</b>
+<td valign="baseline" align="right" class="function"><a href="../../linear/extraction/index.html" target="mdsdir"><img border = 0 src="../../up.gif"></a></table>
+  <p><b>Principal Component Analysis.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;pca(X)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;pca(X,new_dim)</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;pca(X,var)</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;It&nbsp;computes&nbsp;Principal&nbsp;Component&nbsp;Analysis,&nbsp;i.e.,&nbsp;the</span><br>
+<span class=help>&nbsp;&nbsp;linear&nbsp;transform&nbsp;which&nbsp;makes&nbsp;data&nbsp;uncorrelated&nbsp;and</span><br>
+<span class=help>&nbsp;&nbsp;minize&nbsp;the&nbsp;reconstruction&nbsp;error.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;pca(X,new_dim)&nbsp;use&nbsp;to&nbsp;specify&nbsp;explicitely&nbsp;output</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;dimesnion&nbsp;where&nbsp;new_dim&nbsp;&gt;=&nbsp;1.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;pca(X,var)&nbsp;use&nbsp;to&nbsp;specify&nbsp;a&nbsp;portion&nbsp;of&nbsp;discarded</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;variance&nbsp;in&nbsp;data&nbsp;where&nbsp;0&nbsp;&lt;=&nbsp;var&nbsp;&lt;&nbsp;1.&nbsp;The&nbsp;new_dim&nbsp;is&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;selected&nbsp;be&nbsp;as&nbsp;small&nbsp;as&nbsp;possbile&nbsp;and&nbsp;to&nbsp;satisfy&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;&gt;=&nbsp;MsErr(new_dim)/MaxMsErr&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;where&nbsp;MaxMsErr&nbsp;=&nbsp;sum(sum(X.^2)).&nbsp;</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>&nbsp;&nbsp;X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;training&nbsp;data&nbsp;stored&nbsp;as&nbsp;columns.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;new_dim&nbsp;[1x1]&nbsp;Output&nbsp;dimension;&nbsp;new_dim&nbsp;&gt;&nbsp;1&nbsp;(default&nbsp;new_dim&nbsp;=&nbsp;dim);</span><br>
+<span class=help>&nbsp;&nbsp;var&nbsp;[1x1]&nbsp;Portion&nbsp;of&nbsp;discarded&nbsp;variance&nbsp;in&nbsp;data.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Ouputs:</span></span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Linear&nbsp;projection:</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.W&nbsp;[dim&nbsp;x&nbsp;new_dim]&nbsp;Projection&nbsp;matrix.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.b&nbsp;[new_dim&nbsp;x&nbsp;1]&nbsp;Bias.</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.eigval&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;eigenvalues.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.mse&nbsp;[real]&nbsp;Mean&nbsp;square&nbsp;representation&nbsp;error.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.MsErr&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;Mean-square&nbsp;errors&nbsp;with&nbsp;respect&nbsp;to&nbsp;number&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;basis&nbsp;vectors;&nbsp;mse=MsErr(new_dim).</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;.mean_X&nbsp;[dim&nbsp;x&nbsp;1]&nbsp;mean&nbsp;of&nbsp;training&nbsp;data.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>&nbsp;&nbsp;in_data&nbsp;=&nbsp;load('iris');</span><br>
+<span class=help>&nbsp;&nbsp;model&nbsp;=&nbsp;pca(in_data.X,&nbsp;2)</span><br>
+<span class=help>&nbsp;&nbsp;out_data&nbsp;=&nbsp;linproj(in_data,model);</span><br>
+<span class=help>&nbsp;&nbsp;figure;&nbsp;ppatterns(out_data);</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also></span><br>
+<span class=help><span class=also>&nbsp;&nbsp;<a href = "../../linear/linproj.html" target="mdsbody">LINPROJ</a>,&nbsp;<a href = "../../linear/extraction/pcarec.html" target="mdsbody">PCAREC</a>,&nbsp;<a href = "../../kernels/extraction/kpca.html" target="mdsbody">KPCA</a>.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../../linear/extraction/list/pca.html">pca.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 20-may-2004, VF<br>
+ 20-june-2003, VF<br>
+ 21-jan-03, VF<br>
+ 20-jan-03, VF<br>
+ 16-Jan-2003, VF, new comments.<br>
+ 26-jun-2002, VF<br>
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>lin2quad.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>quad_model&nbsp;</span>=&nbsp;<span class=defun_name>lin2quad</span>(<span class=defun_in>lin_model</span>)<br>
+<span class=h1>%&nbsp;LIN2QUAD&nbsp;Merges&nbsp;linear&nbsp;rule&nbsp;and&nbsp;quadratic&nbsp;mapping.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;quad_model&nbsp;=&nbsp;lin2quad(lin_model)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;It&nbsp;recomputes&nbsp;parameters&nbsp;of&nbsp;input&nbsp;linear&nbsp;classifier</span><br>
+<span class=help>%&nbsp;&nbsp;onto&nbsp;parameters&nbsp;of&nbsp;output&nbsp;quadratic&nbsp;classisifier.</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;linear&nbsp;classifier&nbsp;is&nbsp;assumed&nbsp;to&nbsp;be&nbsp;trained&nbsp;on&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;the&nbsp;n-dimensional&nbsp;data&nbsp;quadraticaly&nbsp;mapped&nbsp;(see&nbsp;'help&nbsp;qmap')&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;into&nbsp;the&nbsp;(n*(n+3)/2)-dimensional&nbsp;feature&nbsp;space.&nbsp;The&nbsp;linear&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;classifier&nbsp;in&nbsp;the&nbsp;feature&nbsp;space&nbsp;appears&nbsp;as&nbsp;the&nbsp;quadratic&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;classifier&nbsp;in&nbsp;the&nbsp;original&nbsp;data&nbsp;space.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;orig_data&nbsp;=&nbsp;load('vltava');</span><br>
+<span class=help>%&nbsp;&nbsp;map_data&nbsp;=&nbsp;qmap(orig_data);</span><br>
+<span class=help>%&nbsp;&nbsp;lin_model&nbsp;=&nbsp;perceptron(map_data);</span><br>
+<span class=help>%&nbsp;&nbsp;quad_model&nbsp;=&nbsp;lin2quad(lin_model);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;ppatterns(orig_data);&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;pboundary(quad_model);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;QUACLASS,&nbsp;QMAP</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;09-jun-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;17-may-2004,&nbsp;VF</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;allows&nbsp;input&nbsp;model&nbsp;to&nbsp;be&nbsp;cell</span><br>
+lin_model&nbsp;=&nbsp;c2s(&nbsp;lin_model&nbsp;);<br>
+<br>
+<span class=comment>%&nbsp;check&nbsp;dimension</span><br>
+[m,&nbsp;nfun]&nbsp;=&nbsp;size(&nbsp;lin_model.W&nbsp;);<br>
+n&nbsp;=&nbsp;(-3&nbsp;+&nbsp;sqrt(&nbsp;9&nbsp;+&nbsp;8*m&nbsp;))/2;<br>
+<span class=keyword>if</span>&nbsp;round(n)&nbsp;~=&nbsp;n,<br>
+&nbsp;&nbsp;<span class=error>error</span>(<span class=quotes>'Wrong&nbsp;dimension&nbsp;of&nbsp;input&nbsp;linear&nbsp;classifier.'</span>);<br>
+<span class=keyword>end</span><br>
+<br>
+quad_model.A&nbsp;=&nbsp;zeros(n,n,nfun);<br>
+quad_model.B&nbsp;=&nbsp;lin_model.W(1:n,:);<br>
+quad_model.C&nbsp;=&nbsp;lin_model.b(:)';<br>
+<br>
+<span class=keyword>for</span>&nbsp;k=1:nfun<br>
+<br>
+&nbsp;cnt&nbsp;=&nbsp;n;<br>
+&nbsp;<span class=keyword>for</span>&nbsp;i=1:n,<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;j=i:n,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cnt&nbsp;=&nbsp;cnt&nbsp;+&nbsp;1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;i&nbsp;==&nbsp;j,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;quad_model.A(i,j,k)&nbsp;=&nbsp;lin_model.W(cnt,k);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;quad_model.A(i,j,k)&nbsp;=&nbsp;0.5*lin_model.W(cnt,k);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;quad_model.A(j,i,k)&nbsp;=&nbsp;0.5*lin_model.W(cnt,k);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>end</span><br>
+<br>
+quad_model.fun&nbsp;=&nbsp;<span class=quotes>'quadclass'</span>;<br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%EOF</span><br>
+</code>

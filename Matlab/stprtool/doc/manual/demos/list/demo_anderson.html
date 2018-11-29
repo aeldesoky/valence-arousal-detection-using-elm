@@ -1,0 +1,1158 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>demo_anderson.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>result&nbsp;</span>=&nbsp;<span class=defun_name>demo_anderson</span>(<span class=defun_in>action,hfigure,varargin</span>)<br>
+<span class=h1>%&nbsp;DEMO_ANDERSON&nbsp;Demo&nbsp;on&nbsp;Generalized&nbsp;Anderson's&nbsp;task.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;demo_anderson</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;demo&nbsp;demonstrates&nbsp;the&nbsp;algorithms&nbsp;which&nbsp;solve&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;the&nbsp;Generalized&nbsp;Anderson`s&nbsp;Task&nbsp;(GAT)&nbsp;[SH10].&nbsp;The&nbsp;GAT&nbsp;is&nbsp;an&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;instance&nbsp;of&nbsp;the&nbsp;non-Bayesian&nbsp;task&nbsp;of&nbsp;decision&nbsp;under&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;non-random&nbsp;intervention.&nbsp;</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;goal&nbsp;of&nbsp;is&nbsp;to&nbsp;find&nbsp;a&nbsp;binary&nbsp;linear&nbsp;classification</span><br>
+<span class=help>%&nbsp;&nbsp;rule&nbsp;(g(x)=sgn(W'*x+b)&nbsp;(line&nbsp;in&nbsp;2D)&nbsp;with&nbsp;minimal&nbsp;probability&nbsp;of</span><br>
+<span class=help>%&nbsp;&nbsp;misclassification.&nbsp;The&nbsp;conditional&nbsp;probabilities&nbsp;are&nbsp;known&nbsp;to</span><br>
+<span class=help>%&nbsp;&nbsp;be&nbsp;Gaussians&nbsp;their&nbsp;paramaters&nbsp;belong&nbsp;to&nbsp;a&nbsp;given&nbsp;set&nbsp;of&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;parameters.&nbsp;The&nbsp;true&nbsp;parameters&nbsp;are&nbsp;not&nbsp;known.&nbsp;The&nbsp;linear&nbsp;rule&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;which&nbsp;guarantes&nbsp;the&nbsp;minimimal&nbsp;classification&nbsp;error&nbsp;for&nbsp;the&nbsp;worst</span><br>
+<span class=help>%&nbsp;&nbsp;possible&nbsp;case&nbsp;(the&nbsp;worst&nbsp;configuration&nbsp;of&nbsp;Gaussains)&nbsp;is</span><br>
+<span class=help>%&nbsp;&nbsp;sought&nbsp;for.</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;The&nbsp;found&nbsp;solution&nbsp;(hyperplane,&nbsp;line&nbsp;in&nbsp;2D)&nbsp;is&nbsp;vizualized&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;as&nbsp;well&nbsp;as&nbsp;the&nbsp;input&nbsp;Gaussians&nbsp;which&nbsp;describe&nbsp;input&nbsp;classes.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;Following&nbsp;algorithms&nbsp;can&nbsp;be&nbsp;tested:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;Eps-solution&nbsp;-&nbsp;Finds&nbsp;epsilon-solution&nbsp;of&nbsp;the&nbsp;GAT&nbsp;in&nbsp;finite&nbsp;number</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;iterations&nbsp;if&nbsp;such&nbsp;solution&nbsp;exist.&nbsp;The&nbsp;epsilon&nbsp;means</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;desired&nbsp;classification&nbsp;error.</span><br>
+<span class=help>%&nbsp;&nbsp;Original&nbsp;&nbsp;-&nbsp;Original&nbsp;Anderson-Bahadur's&nbsp;algorithm&nbsp;defined&nbsp;for&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;two&nbsp;Gaussians&nbsp;only&nbsp;(each&nbsp;class&nbsp;one&nbsp;Gaussian).</span><br>
+<span class=help>%&nbsp;&nbsp;Optimal&nbsp;&nbsp;&nbsp;-&nbsp;Implementation&nbsp;of&nbsp;general&nbsp;algorithm&nbsp;propsed&nbsp;by&nbsp;Schlesinger.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;It&nbsp;finds&nbsp;the&nbsp;optimal&nbsp;solution.</span><br>
+<span class=help>%&nbsp;&nbsp;Gradient&nbsp;&nbsp;-&nbsp;Fast&nbsp;and&nbsp;simple&nbsp;implementation&nbsp;which&nbsp;uses&nbsp;the&nbsp;generalized</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gradient&nbsp;descent&nbsp;optimization.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Control:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Algorithm&nbsp;&nbsp;-&nbsp;select&nbsp;algorithm&nbsp;for&nbsp;testing.</span><br>
+<span class=help>%&nbsp;&nbsp;Parameter&nbsp;&nbsp;-&nbsp;parameters&nbsp;for&nbsp;the&nbsp;selected&nbsp;algorithm.</span><br>
+<span class=help>%&nbsp;&nbsp;Iterations&nbsp;-&nbsp;number&nbsp;of&nbsp;iterations&nbsp;in&nbsp;one&nbsp;step.</span><br>
+<span class=help>%&nbsp;&nbsp;Animation&nbsp;&nbsp;-&nbsp;enable/dissable&nbsp;animation.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;FIG2EPS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;export&nbsp;screen&nbsp;to&nbsp;the&nbsp;PostScript&nbsp;file.</span><br>
+<span class=help>%&nbsp;&nbsp;Load&nbsp;data&nbsp;&nbsp;&nbsp;-&nbsp;load&nbsp;input&nbsp;point&nbsp;sets&nbsp;from&nbsp;file.</span><br>
+<span class=help>%&nbsp;&nbsp;Create&nbsp;data&nbsp;-&nbsp;call&nbsp;interactive&nbsp;program&nbsp;for&nbsp;creating&nbsp;sets&nbsp;of&nbsp;Gaussians.</span><br>
+<span class=help>%&nbsp;&nbsp;Reset&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;set&nbsp;the&nbsp;tested&nbsp;algorithm&nbsp;to&nbsp;the&nbsp;initial&nbsp;state.</span><br>
+<span class=help>%&nbsp;&nbsp;Play&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;run&nbsp;the&nbsp;tested&nbsp;algorithm.</span><br>
+<span class=help>%&nbsp;&nbsp;Stop&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;stop&nbsp;the&nbsp;running&nbsp;algorithm.</span><br>
+<span class=help>%&nbsp;&nbsp;Step&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;perform&nbsp;only&nbsp;one&nbsp;step.</span><br>
+<span class=help>%&nbsp;&nbsp;Info&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;display&nbsp;the&nbsp;info&nbsp;box.</span><br>
+<span class=help>%&nbsp;&nbsp;Close&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;close&nbsp;the&nbsp;program.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;EANDERS,&nbsp;ANDRORIG,&nbsp;GGRADANDR,&nbsp;GANDERS.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;17-sep-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;11-June-2001,&nbsp;V.Franc,&nbsp;comments&nbsp;added.</span><br>
+<span class=help1>%&nbsp;24.&nbsp;6.00&nbsp;V.&nbsp;Hlavac,&nbsp;comments&nbsp;polished.</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;constants</span><br>
+ALGONAMES=[<span class=quotes>'Eps-solution&nbsp;'</span>;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Original&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'</span>;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Gradient&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'</span>;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Optimal&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'</span>];<br>
+PREC_TITLE=[<span class=quotes>'Max&nbsp;error&nbsp;(0-50)&nbsp;[%]'</span>;...&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;e-Optimal&nbsp;solution</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'d(lambda,ni)&nbsp;(0,inf)'</span>;...&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Original&nbsp;Anderson`s&nbsp;solution</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'d(&nbsp;min&nbsp;r&nbsp;)&nbsp;(0,inf)&nbsp;&nbsp;'</span>;...&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Gradient&nbsp;method</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'d(&nbsp;min&nbsp;r&nbsp;)&nbsp;(0,inf)&nbsp;&nbsp;'</span>];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;General&nbsp;solution&nbsp;</span><br>
+DEF_PRECISION=[10,1e-3,1e-3,1e-3];&nbsp;&nbsp;<span class=comment>%&nbsp;default&nbsp;values&nbsp;of&nbsp;the&nbsp;precision&nbsp;of&nbsp;algo.&nbsp;1,2,...</span><br>
+BORDER=0.5;<br>
+DATA_IDENT=<span class=quotes>'Infinite&nbsp;sets,&nbsp;Normal&nbsp;distributions'</span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;M-file&nbsp;identifier</span><br>
+PLOT_FCE=<span class=quotes>'pandr2d'</span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;outlined&nbsp;ellipsoids</span><br>
+<span class=comment>%PLOT_FCE='pandr2df';&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%&nbsp;outlined&nbsp;ellipsoids</span><br>
+<br>
+<span class=comment>%&nbsp;if&nbsp;number&nbsp;of&nbsp;arguments&nbsp;is&nbsp;less&nbsp;then&nbsp;1,&nbsp;that&nbsp;means&nbsp;first&nbsp;call&nbsp;of&nbsp;this&nbsp;function.&nbsp;Every</span><br>
+<span class=comment>%&nbsp;other&nbsp;calls&nbsp;set&nbsp;up&nbsp;at&nbsp;least&nbsp;argument&nbsp;action</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;action&nbsp;=&nbsp;<span class=quotes>'initialize'</span>;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;what&nbsp;action&nbsp;is&nbsp;required&nbsp;?</span><br>
+<span class=keyword>switch</span>&nbsp;lower(action)<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'initialize'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Initialize&nbsp;user&nbsp;interface&nbsp;control&nbsp;and&nbsp;figure&nbsp;window&nbsp;================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Figure&nbsp;=============================================================</span><br>
+&nbsp;&nbsp;&nbsp;left=0.1;<br>
+&nbsp;&nbsp;&nbsp;width=0.8;<br>
+&nbsp;&nbsp;&nbsp;bottom=0.1;<br>
+&nbsp;&nbsp;&nbsp;height=0.8;<br>
+&nbsp;&nbsp;&nbsp;hfigure=<span class=graph>figure</span>(<span class=quotes>'Name'</span>,<span class=quotes>'Anderson`s&nbsp;task'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Visible'</span>,<span class=quotes>'off'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'NumberTitle'</span>,<span class=quotes>'off'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'tag'</span>,<span class=quotes>'Demo_Anderson'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'RendererMode'</span>,<span class=quotes>'manual'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Axes&nbsp;===============================================================</span><br>
+&nbsp;&nbsp;&nbsp;left=0.1;<br>
+&nbsp;&nbsp;&nbsp;width=0.65;<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;axes&nbsp;for&nbsp;showing&nbsp;sets</span><br>
+&nbsp;&nbsp;&nbsp;bottom=0.35;<br>
+&nbsp;&nbsp;&nbsp;height=0.60;<br>
+&nbsp;&nbsp;&nbsp;haxes1=<span class=graph>axes</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Box'</span>,<span class=quotes>'on'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'DrawMode'</span>,<span class=quotes>'fast'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'NextPlot'</span>,<span class=quotes>'add'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Layer'</span>,<span class=quotes>'top'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'UserData'</span>,[],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height]);<br>
+&nbsp;&nbsp;&nbsp;xlabel(<span class=quotes>'feature&nbsp;x'</span>);<br>
+&nbsp;&nbsp;&nbsp;ylabel(<span class=quotes>'feature&nbsp;y'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Comment&nbsp;window&nbsp;=====================================================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Comment&nbsp;Window&nbsp;frame</span><br>
+&nbsp;&nbsp;&nbsp;bottom=0.05;<br>
+&nbsp;&nbsp;&nbsp;height=0.2;<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'frame'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'BackgroundColor'</span>,[0.5&nbsp;0.5&nbsp;0.5]);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Text&nbsp;label</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'text'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;height-0.01&nbsp;width&nbsp;0.05],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'BackgroundColor'</span>,[0.5&nbsp;0.5&nbsp;0.5],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ForegroundColor'</span>,[1&nbsp;1&nbsp;1],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Comment&nbsp;Window'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Edit&nbsp;window</span><br>
+&nbsp;&nbsp;&nbsp;border=0.01;<br>
+&nbsp;&nbsp;&nbsp;hconsole=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'edit'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'HorizontalAlignment'</span>,<span class=quotes>'left'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Max'</span>,10,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'BackgroundColor'</span>,[1&nbsp;1&nbsp;1],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left+border&nbsp;bottom&nbsp;width-2*border&nbsp;height-0.05],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Enable'</span>,<span class=quotes>'inactive'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>''</span>);<br>
+<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Buttons&nbsp;===========================================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;--&nbsp;Export&nbsp;to&nbsp;EPS&nbsp;---------</span><br>
+&nbsp;&nbsp;&nbsp;width=0.1;<br>
+&nbsp;&nbsp;&nbsp;left=0.75-width;<br>
+&nbsp;&nbsp;&nbsp;bottom=0.95;<br>
+&nbsp;&nbsp;&nbsp;height=0.04;<br>
+&nbsp;&nbsp;&nbsp;hbtclose&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'fig2eps(gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'FIG2EPS'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%----------------------------------</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Close&nbsp;button</span><br>
+&nbsp;&nbsp;&nbsp;left=0.8;<br>
+&nbsp;&nbsp;&nbsp;bottom=0.05;<br>
+&nbsp;&nbsp;&nbsp;height=0.05;<br>
+&nbsp;&nbsp;&nbsp;width=0.15;<br>
+&nbsp;&nbsp;&nbsp;hbtclose&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'close(gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Close'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Info&nbsp;button:&nbsp;call&nbsp;stanard&nbsp;info&nbsp;box</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+1.5*height;<br>
+&nbsp;&nbsp;&nbsp;hbtinfo&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_anderson('</span><span class=quotes>'info'</span><span class=quotes>',gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Info'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Step&nbsp;button:&nbsp;perform&nbsp;one&nbsp;adaptation&nbsp;step</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+1.5*height;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hbtstep&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Step'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Interruptible'</span>,<span class=quotes>'off'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_anderson('</span><span class=quotes>'step'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Stop&nbsp;button:&nbsp;stop&nbsp;process&nbsp;of&nbsp;adaptation</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+height;<br>
+&nbsp;&nbsp;&nbsp;hbtstop&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Stop'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'set(gcbo,'</span><span class=quotes>'UserData'</span><span class=quotes>',1)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Play&nbsp;button:&nbsp;start&nbsp;up&nbsp;adaptation</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+height;<br>
+&nbsp;&nbsp;&nbsp;hbtplay&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Play'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_anderson('</span><span class=quotes>'play'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Reset&nbsp;button:&nbsp;set&nbsp;up&nbsp;t&nbsp;=&nbsp;0</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+height;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hbtreset&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Reset'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_anderson('</span><span class=quotes>'reset'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Create&nbsp;data</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+1.5*height;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hbtcreat&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Create&nbsp;data'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_anderson('</span><span class=quotes>'creatdata'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Load&nbsp;data</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+1*height;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hbtload&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'Normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Load&nbsp;data'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Callback'</span>,<span class=quotes>'demo_anderson('</span><span class=quotes>'getfile'</span><span class=quotes>',gcf)'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Check&nbsp;boxes&nbsp;===============================================================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Make&nbsp;chack&nbsp;box&nbsp;to&nbsp;determine&nbsp;if&nbsp;a&nbsp;line&nbsp;will&nbsp;be&nbsp;drawn&nbsp;in&nbsp;one&nbsp;step&nbsp;or&nbsp;smoothly.</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom+height*1.2;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hxbanim&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'checkbox'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Animation'</span>);<br>
+<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Popup&nbsp;menus&nbsp;==========================================================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Pop&nbsp;up&nbsp;menu&nbsp;for&nbsp;the&nbsp;selection&nbsp;between&nbsp;algorithms</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;title</span><br>
+&nbsp;&nbsp;&nbsp;bottom=0.95-height;<br>
+&nbsp;&nbsp;&nbsp;htxalgo=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'text'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;0.9*height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Algorithm'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;popup&nbsp;menu</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-0.9*height;<br>
+&nbsp;&nbsp;&nbsp;hpualgo=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'popup'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'CallBack'</span>,<span class=quotes>'demo_anderson('</span><span class=quotes>'algohandler'</span><span class=quotes>',gcf)'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'UserData'</span>,1,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,ALGONAMES);<br>
+<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Edit&nbsp;lines&nbsp;================================================================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;bottom=0.95-3.5*height;<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Precision&nbsp;of&nbsp;solution</span><br>
+&nbsp;&nbsp;&nbsp;htxprec=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'text'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;0.9*height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,PREC_TITLE(1,:));<br>
+<br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-height;<br>
+&nbsp;&nbsp;&nbsp;hedprec&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'edit'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,num2str(DEF_PRECISION(1))&nbsp;);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;#&nbsp;of&nbsp;iterations</span><br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-1.5*height;<br>
+&nbsp;&nbsp;&nbsp;htxiter=<span class=graph>uicontrol</span>(&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'text'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;0.9*height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,<span class=quotes>'Iterations'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;bottom=bottom-0.9*height;<br>
+&nbsp;&nbsp;&nbsp;hediter&nbsp;=&nbsp;<span class=graph>uicontrol</span>(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'ListboxTop'</span>,0,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[left&nbsp;bottom&nbsp;width&nbsp;height],&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Style'</span>,<span class=quotes>'edit'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'String'</span>,1);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==============================================================================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Store&nbsp;handlers</span><br>
+&nbsp;&nbsp;&nbsp;handlers=struct(...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'line'</span>,struct(<span class=quotes>'handler'</span>,-1,<span class=quotes>'alpha'</span>,0,<span class=quotes>'alpha1'</span>,0,<span class=quotes>'alpha2'</span>,0,<span class=quotes>'lambda'</span>,0,<span class=quotes>'theta'</span>,0,<span class=quotes>'t'</span>,0),...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btstep'</span>,hbtstep,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btstop'</span>,hbtstop,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btclose'</span>,hbtclose,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btplay'</span>,hbtplay,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btreset'</span>,hbtreset,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btinfo'</span>,hbtinfo,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btload'</span>,hbtload,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'btcreat'</span>,hbtcreat,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'pualgo'</span>,hpualgo,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'console'</span>,hconsole,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'edprec'</span>,hedprec,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'editer'</span>,hediter,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'txprec'</span>,htxprec,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'axes1'</span>,haxes1,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'xbanim'</span>,hxbanim);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'UserData'</span>,handlers);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Reset&nbsp;adaptation,&nbsp;t=0</span><br>
+&nbsp;&nbsp;&nbsp;demo_anderson(<span class=quotes>'reset'</span>,hfigure);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Put&nbsp;figure&nbsp;on&nbsp;desktop</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'Visible'</span>,<span class=quotes>'on'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;drawnow;<br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'creatdata'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Invoke&nbsp;data&nbsp;set&nbsp;creator&nbsp;============================================</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;creatset('normal',2,'demo_anderson','created',hfigure);</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;createdata(<span class=quotes>'gauss'</span>,2,<span class=quotes>'demo_anderson'</span>,<span class=quotes>'created'</span>,hfigure);<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'created'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Load&nbsp;new&nbsp;created&nbsp;data&nbsp;set&nbsp;===========================================</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;handler&nbsp;and&nbsp;make&nbsp;this&nbsp;figure&nbsp;active</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>figure</span>(hfigure);<br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;file&nbsp;name</span><br>
+&nbsp;&nbsp;&nbsp;path=<span class=stack>varargin</span>{1};<br>
+&nbsp;&nbsp;&nbsp;name=<span class=stack>varargin</span>{2};<br>
+&nbsp;&nbsp;&nbsp;pathname=strcat(path,name);<br>
+<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;if&nbsp;checkdat(pathname,DATA_IDENT,2,[0&nbsp;0])==1,</span><br>
+&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;check2dgauss(pathname),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.pathname=pathname;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.path=path;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.name=name;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.btload,<span class=quotes>'UserData'</span>,file);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_anderson(<span class=quotes>'loadsets'</span>,hfigure);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_anderson(<span class=quotes>'reset'</span>,hfigure);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;errordlg(<span class=quotes>'This&nbsp;file&nbsp;does&nbsp;not&nbsp;contain&nbsp;required&nbsp;data.'</span>,<span class=quotes>'Bad&nbsp;file'</span>,<span class=quotes>'modal'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'getfile'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Invoke&nbsp;standard&nbsp;open&nbsp;file&nbsp;dialog&nbsp;====================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Opens&nbsp;file&nbsp;and&nbsp;checks&nbsp;if&nbsp;contains&nbsp;apropriate&nbsp;data,&nbsp;if&nbsp;yes&nbsp;loads&nbsp;data.</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;change&nbsp;path&nbsp;to&nbsp;directory</span><br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;wres=what('anderson');</span><br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;cd(wres.path);</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;[name,path]=uigetfile(<span class=quotes>'*.mat'</span>,<span class=quotes>'Open&nbsp;file'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;name~=0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.pathname=strcat(path,name);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.path=path;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.name=name;<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;checkdat(file.pathname,DATA_IDENT,2,[0&nbsp;0])==1,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;check2dgauss(file.pathname),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.btload,<span class=quotes>'UserData'</span>,file);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_anderson(<span class=quotes>'loadsets'</span>,hfigure);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_anderson(<span class=quotes>'reset'</span>,hfigure);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;errordlg(<span class=quotes>'This&nbsp;file&nbsp;does&nbsp;not&nbsp;contain&nbsp;required&nbsp;data.'</span>,<span class=quotes>'Bad&nbsp;file'</span>,<span class=quotes>'modal'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'algohandler'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Handler&nbsp;for&nbsp;check&nbsp;box&nbsp;'Algorithm'&nbsp;=======================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;If&nbsp;new&nbsp;algorithm&nbsp;is&nbsp;selected&nbsp;then&nbsp;prepare&nbsp;data&nbsp;for&nbsp;it.</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;<span class=graph>get</span>(h.pualgo,<span class=quotes>'UserData'</span>)&nbsp;~=&nbsp;<span class=graph>get</span>(h.pualgo,<span class=quotes>'Value'</span>),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.pualgo,<span class=quotes>'UserData'</span>,<span class=graph>get</span>(h.pualgo,<span class=quotes>'Value'</span>));<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.edprec,<span class=quotes>'String'</span>,num2str(DEF_PRECISION(<span class=graph>get</span>(h.pualgo,<span class=quotes>'Value'</span>)))&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.txprec,<span class=quotes>'String'</span>,PREC_TITLE(<span class=graph>get</span>(h.pualgo,<span class=quotes>'Value'</span>),:));<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_anderson(<span class=quotes>'loadsets'</span>,hfigure);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;demo_anderson(<span class=quotes>'reset'</span>,hfigure);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'loadsets'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Load&nbsp;sets&nbsp;==============================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Get&nbsp;given&nbsp;file&nbsp;name&nbsp;and&nbsp;load&nbsp;the&nbsp;data&nbsp;set&nbsp;from&nbsp;him.</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;uicontrol&nbsp;handlers</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Get&nbsp;file&nbsp;name</span><br>
+&nbsp;&nbsp;&nbsp;file=<span class=graph>get</span>(h.btload,<span class=quotes>'UserData'</span>);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isempty(file)==0,<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Load&nbsp;sets</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sets=load(file.pathname);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sets.MI&nbsp;=&nbsp;sets.Mean;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sets.SIGMA&nbsp;=&nbsp;reshape(sets.Cov,2,2*size(sets.Mean,2));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sets.I&nbsp;=&nbsp;sets.y;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sets.K&nbsp;=&nbsp;zeros(1,max(sets.y));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sets.N&nbsp;=&nbsp;size(sets.Mean,1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i=1:max(sets.y),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sets.K(i)&nbsp;=&nbsp;length(find(sets.y==i));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;algorithm&nbsp;2&nbsp;(Original&nbsp;Anderson`s)&nbsp;solution&nbsp;find&nbsp;solution&nbsp;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;for&nbsp;two&nbsp;distributions&nbsp;only</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;<span class=graph>get</span>(h.pualgo,<span class=quotes>'Value'</span>)==2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;only&nbsp;one&nbsp;distribution&nbsp;from&nbsp;each&nbsp;class</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class1=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class2=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NI=[];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NMI=[];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NSIGMA=[];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NK=[1&nbsp;1];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;N&nbsp;=&nbsp;2;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>while</span>&nbsp;i&lt;sets.K&nbsp;|&nbsp;class1==0&nbsp;|class2==0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i=i+1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;sets.I(i)==1&nbsp;&&nbsp;class1==0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class1=1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NI=[NI,1];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NMI=[NMI,sets.MI(:,i)];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NSIGMA=[NSIGMA,sets.SIGMA(:,(i-1)*2+1:i*2)];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>elseif</span>&nbsp;sets.I(i)==2&nbsp;&&nbsp;class2==0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class2=1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NI=[NI,2];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NMI=[NMI,sets.MI(:,i)];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NSIGMA=[NSIGMA,sets.SIGMA(:,(i-1)*2+1:i*2)];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;<span class=comment>%&nbsp;while</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;replace&nbsp;old&nbsp;values</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sets.MI=NMI;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sets.SIGMA=NSIGMA;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sets.I=NI;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sets.K=NK;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;<span class=comment>%&nbsp;if&nbsp;get(h.pualgo,....</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;No&nbsp;set&nbsp;is&nbsp;loaded.</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sets=[];<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;store&nbsp;sets</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.axes1,<span class=quotes>'UserData'</span>,sets);<br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'play'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Start&nbsp;up&nbsp;the&nbsp;adaptation&nbsp;process&nbsp;=======================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Perform&nbsp;the&nbsp;adaptation&nbsp;step&nbsp;by&nbsp;step&nbsp;until&nbsp;the&nbsp;solution&nbsp;is&nbsp;found&nbsp;or&nbsp;stop</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;button&nbsp;is&nbsp;pushed&nbsp;down.</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;handlers</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;sets</span><br>
+&nbsp;&nbsp;&nbsp;sets=<span class=graph>get</span>(h.axes1,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;if&nbsp;some&nbsp;set&nbsp;is&nbsp;loaded&nbsp;then&nbsp;perform&nbsp;on&nbsp;step</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isempty(sets)==0,<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Disable&nbsp;buttons&nbsp;everything&nbsp;axcept</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>([h.btinfo&nbsp;h.btstep&nbsp;h.btclose&nbsp;h.btplay&nbsp;h.btreset&nbsp;h.btload&nbsp;h.pualgo&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.btcreat&nbsp;h.editer&nbsp;h.edprec&nbsp;h.xbanim],<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Only&nbsp;stop&nbsp;button&nbsp;can&nbsp;be&nbsp;pushed&nbsp;down</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.btstop,<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Stop&nbsp;button&nbsp;was&nbsp;not&nbsp;pushed&nbsp;down</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.btstop,<span class=quotes>'UserData'</span>,0);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;play=1;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;arguments&nbsp;from&nbsp;dialog</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;anim=<span class=graph>get</span>(h.xbanim,<span class=quotes>'Value'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Play&nbsp;-&nbsp;adaptation&nbsp;process</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>while</span>&nbsp;play==1&nbsp;&&nbsp;<span class=graph>get</span>(h.btstop,<span class=quotes>'UserData'</span>)==0,<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;arguments&nbsp;from&nbsp;dialog</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oldtheta=h.<span class=graph>line</span>.theta;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oldalpha=h.<span class=graph>line</span>.alpha;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;call&nbsp;algorithm</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[h,text,play,solution]=callalgo(h,sets);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;appear&nbsp;result</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.console,<span class=quotes>'String'</span>,text&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;drawnow;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;play~=-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;plot&nbsp;result</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;h.<span class=graph>line</span>.handler==-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>axes</span>(h.axes1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.handler=<span class=eval>feval</span>(PLOT_FCE,sets.MI,sets.SIGMA,sets.I,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.alpha,h.<span class=graph>line</span>.theta&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=eval>feval</span>(PLOT_FCE,sets.MI,sets.SIGMA,sets.I,h.<span class=graph>line</span>.alpha,h.<span class=graph>line</span>.theta,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.handler,anim,oldalpha,oldtheta);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;hands&nbsp;on&nbsp;control&nbsp;to&nbsp;MATLAB</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;drawnow;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;<span class=comment>%&nbsp;while&nbsp;play&nbsp;==&nbsp;1&nbsp;&&nbsp;get(...</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;&nbsp;store&nbsp;new&nbsp;solution</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'UserData'</span>,h);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;enable&nbsp;these&nbsp;buttons</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>([h.btinfo&nbsp;h.btstep&nbsp;h.btclose&nbsp;h.btplay&nbsp;h.btreset&nbsp;h.btload&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.btcreat&nbsp;h.pualgo&nbsp;h.editer&nbsp;h.edprec&nbsp;h.xbanim],<span class=quotes>'Enable'</span>,<span class=quotes>'on'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;disable&nbsp;stop&nbsp;button</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.btstop,<span class=quotes>'Enable'</span>,<span class=quotes>'off'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span>&nbsp;<span class=comment>%&nbsp;isempty(sets)==0,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;write&nbsp;down&nbsp;description</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text=<span class=io>sprintf</span>([<span class=quotes>'No&nbsp;data&nbsp;loaded.\nPress&nbsp;Load&nbsp;data&nbsp;or&nbsp;Create&nbsp;data&nbsp;button.\n'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Load&nbsp;sample&nbsp;data&nbsp;from&nbsp;../toolboxroot/data/anderson_task/'</span>&nbsp;]&nbsp;&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.console,<span class=quotes>'String'</span>,text&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;&nbsp;&nbsp;<br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'step'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Perform&nbsp;one&nbsp;adaptation&nbsp;step&nbsp;================================================</span><br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;handlers&nbsp;we&nbsp;will&nbsp;need...</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;sets</span><br>
+&nbsp;&nbsp;&nbsp;sets=<span class=graph>get</span>(h.axes1,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;if&nbsp;some&nbsp;set&nbsp;is&nbsp;loaded&nbsp;then&nbsp;perform&nbsp;on&nbsp;step</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isempty(sets)==0,<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;arguments&nbsp;from&nbsp;dialog</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;anim=<span class=graph>get</span>(h.xbanim,<span class=quotes>'Value'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oldtheta=h.<span class=graph>line</span>.theta;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oldalpha=h.<span class=graph>line</span>.alpha;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;call&nbsp;algorithm</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[h,text,play,solution]=callalgo(h,sets);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;appear&nbsp;result</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.console,<span class=quotes>'String'</span>,text&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;drawnow;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;play~=-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;plot&nbsp;result</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;h.<span class=graph>line</span>.handler==-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>axes</span>(h.axes1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.handler=<span class=eval>feval</span>(PLOT_FCE,sets.MI,sets.SIGMA,sets.I,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.alpha,h.<span class=graph>line</span>.theta&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=eval>feval</span>(PLOT_FCE,sets.MI,sets.SIGMA,sets.I,h.<span class=graph>line</span>.alpha,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.theta,h.<span class=graph>line</span>.handler,anim,oldalpha,oldtheta);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;drawnow;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;store&nbsp;data</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'UserData'</span>,h);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span>&nbsp;<span class=comment>%&nbsp;isempty(sets)==0,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;write&nbsp;down&nbsp;description</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text=<span class=io>sprintf</span>([<span class=quotes>'No&nbsp;data&nbsp;loaded.\nPress&nbsp;Load&nbsp;data&nbsp;or&nbsp;Create&nbsp;data&nbsp;button.\n'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Load&nbsp;sample&nbsp;data&nbsp;from&nbsp;../toolboxroot/data/anderson_task/'</span>&nbsp;]&nbsp;&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.console,<span class=quotes>'String'</span>,text&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'reset'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Reset&nbsp;adaptation&nbsp;process&nbsp;==================================</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Sets&nbsp;t=0&nbsp;and&nbsp;redraws&nbsp;axes.</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;h=<span class=graph>get</span>(hfigure,<span class=quotes>'UserData'</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;get&nbsp;handlers</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;zeroize&nbsp;all&nbsp;parameters&nbsp;of&nbsp;the&nbsp;solution</span><br>
+&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.t=0;<br>
+&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.theta=0;<br>
+&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.alpha=[0;0];<br>
+&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.alpha1=[0;0];<br>
+&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.alpha2=[0;0];<br>
+&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.lambda=0;<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'UserData'</span>,h);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;No&nbsp;line</span><br>
+&nbsp;&nbsp;&nbsp;h.<span class=graph>line</span>.handler=-1;<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(hfigure,<span class=quotes>'UserData'</span>,h);<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%%%&nbsp;&nbsp;&nbsp;cla;</span><br>
+&nbsp;&nbsp;&nbsp;clrchild(h.axes1);<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%%%&nbsp;&nbsp;&nbsp;win=axis;</span><br>
+&nbsp;&nbsp;&nbsp;win=getaxis(h.axes1);<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%%%&nbsp;&nbsp;&nbsp;axis([0&nbsp;1&nbsp;0&nbsp;1]);</span><br>
+&nbsp;&nbsp;&nbsp;setaxis(h.axes1,[0&nbsp;1&nbsp;0&nbsp;1]);<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%%%&nbsp;&nbsp;&nbsp;axis(win);</span><br>
+&nbsp;&nbsp;&nbsp;setaxis(h.axes1,win);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Redraw&nbsp;points</span><br>
+&nbsp;&nbsp;&nbsp;sets=<span class=graph>get</span>(h.axes1,<span class=quotes>'UserData'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;if&nbsp;some&nbsp;points&nbsp;are&nbsp;loaded&nbsp;than&nbsp;appear&nbsp;it</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;isempty(sets)==0,<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;set&nbsp;axes&nbsp;according&nbsp;to&nbsp;current&nbsp;points&nbsp;MI</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;sum(sets.K)&nbsp;&lt;&nbsp;3,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;win=cmpwin(min(sets.MI<span class=quotes>'),max(sets.MI'</span>),BORDER*2,BORDER*2);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;win=cmpwin(min(sets.MI<span class=quotes>'),max(sets.MI'</span>),BORDER,BORDER);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%%%&nbsp;axis(win);</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setaxis(h.axes1,win);<br>
+<br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pplot(sets.MI,sets.I);</span><br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ppoints(sets.MI,sets.I);</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ppatterns(sets.MI,sets.I);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;comment&nbsp;window&nbsp;text</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;consoletext=<span class=io>sprintf</span>(<span class=quotes>'Press&nbsp;Step&nbsp;button&nbsp;or&nbsp;Play&nbsp;button.\n'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file=<span class=graph>get</span>(h.btload,<span class=quotes>'UserData'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;titletext=<span class=io>sprintf</span>(<span class=quotes>'File:&nbsp;%s,&nbsp;#&nbsp;of&nbsp;distributions&nbsp;K&nbsp;=&nbsp;%d'</span>,file.name,sum(sets.K));<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span>&nbsp;<span class=comment>%&nbsp;if&nbsp;isempty(sets)==0,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;comment&nbsp;window&nbsp;text</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;consoletext=sprintf(['No&nbsp;data&nbsp;loaded.\n'&nbsp;...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Press&nbsp;Load&nbsp;button&nbsp;or&nbsp;Create&nbsp;data&nbsp;button.\n']);</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;consoletext=sprintf('No&nbsp;data&nbsp;loaded.\nPress&nbsp;Load&nbsp;data&nbsp;button.\n');</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;consoletext=<span class=io>sprintf</span>([<span class=quotes>'No&nbsp;data&nbsp;loaded.\nPress&nbsp;Load&nbsp;data&nbsp;or&nbsp;Create&nbsp;data&nbsp;button.\n'</span>,&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Load&nbsp;sample&nbsp;data&nbsp;from&nbsp;../toolboxroot/data/anderson_task/'</span>&nbsp;]&nbsp;&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;titletext=<span class=quotes>''</span>;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pos=<span class=graph>get</span>(h.axes1,<span class=quotes>'Position'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fsize=min(pos(3),pos(4))/10;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%%%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;axis([-1&nbsp;1&nbsp;-1&nbsp;1]);</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setaxis(h.axes1,[-1&nbsp;1&nbsp;-1&nbsp;1]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=eval>builtin</span>(<span class=quotes>'text'</span>,0,0,<span class=quotes>'Press&nbsp;'</span><span class=quotes>'Load&nbsp;data'</span><span class=quotes>'&nbsp;button.'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'HorizontalAlignment'</span>,<span class=quotes>'center'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'FontUnits'</span>,<span class=quotes>'normalized'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Clipping'</span>,<span class=quotes>'on'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'FontSize'</span>,fsize);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;print&nbsp;comment</span><br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(h.console,<span class=quotes>'String'</span>,consoletext&nbsp;);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;print&nbsp;title</span><br>
+&nbsp;&nbsp;&nbsp;pos=<span class=graph>get</span>(h.axes1,<span class=quotes>'Position'</span>);<br>
+&nbsp;&nbsp;&nbsp;fsize=(1-pos(2)-pos(4))*1;<br>
+&nbsp;&nbsp;&nbsp;title(titletext,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'VerticalAlignment'</span>,<span class=quotes>'bottom'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'HorizontalAlignment'</span>,<span class=quotes>'left'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'FontUnits'</span>,<span class=quotes>'normalized'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Units'</span>,<span class=quotes>'normalized'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Position'</span>,[0&nbsp;1&nbsp;0],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'FontSize'</span>,fsize);<br>
+<br>
+<br>
+<span class=label>case</span>&nbsp;<span class=quotes>'info'</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;==&nbsp;Call&nbsp;standard&nbsp;Matlab&nbsp;info&nbsp;box&nbsp;=========================================</span><br>
+&nbsp;&nbsp;&nbsp;helpwin(mfilename);<br>
+<br>
+<br>
+<span class=keyword>end</span><br>
+<br>
+<br>
+<span class=comment>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span><br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[h,text,play,solution]</span>=<span class=defun_name>callalgo</span>(<span class=defun_in>h,sets</span>)<br>
+<br>
+<span class=comment>%&nbsp;get&nbsp;arguments&nbsp;from&nbsp;dialog</span><br>
+precision=str2num(<span class=graph>get</span>(h.edprec,<span class=quotes>'String'</span>));<br>
+iter=max([1,fix(str2num(<span class=graph>get</span>(h.editer,<span class=quotes>'String'</span>)))]);<br>
+<br>
+<span class=comment>%&nbsp;get&nbsp;parameters</span><br>
+t=h.<span class=graph>line</span>.t;<br>
+alpha=h.<span class=graph>line</span>.alpha;<br>
+alpha1=h.<span class=graph>line</span>.alpha1;<br>
+alpha2=h.<span class=graph>line</span>.alpha2;<br>
+lambda=h.<span class=graph>line</span>.lambda;<br>
+theta=h.<span class=graph>line</span>.theta;<br>
+<br>
+<span class=comment>%&nbsp;perform&nbsp;algorithm</span><br>
+<span class=keyword>switch</span>&nbsp;<span class=graph>get</span>(h.pualgo,<span class=quotes>'Value'</span>)<br>
+<span class=label>case</span>&nbsp;4<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;General&nbsp;solution</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;distr&nbsp;=&nbsp;sets;<br>
+&nbsp;&nbsp;&nbsp;options.eps&nbsp;=&nbsp;precision;<br>
+&nbsp;&nbsp;&nbsp;options.tmax&nbsp;=&nbsp;t+iter;<br>
+&nbsp;&nbsp;&nbsp;init_model.W=alpha;<br>
+&nbsp;&nbsp;&nbsp;init_model.b=-theta;<br>
+&nbsp;&nbsp;&nbsp;init_model.t&nbsp;=&nbsp;t;<br>
+&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;[nalpha,ntheta,solution,minr,nt,maxerr]=...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ganders(sets.MI,sets.SIGMA,sets.I,iter,precision,t,alpha,theta);</span><br>
+&nbsp;&nbsp;&nbsp;model&nbsp;=&nbsp;ganders(&nbsp;distr,&nbsp;options,&nbsp;init_model);<br>
+<br>
+&nbsp;&nbsp;&nbsp;nalpha&nbsp;=&nbsp;model.W;<br>
+&nbsp;&nbsp;&nbsp;ntheta&nbsp;=&nbsp;-model.b;<br>
+&nbsp;&nbsp;&nbsp;solution&nbsp;=&nbsp;model.exitflag;<br>
+&nbsp;&nbsp;&nbsp;minr&nbsp;=&nbsp;model.r;<br>
+&nbsp;&nbsp;&nbsp;nt&nbsp;=&nbsp;model.t;<br>
+&nbsp;&nbsp;&nbsp;maxerr&nbsp;=&nbsp;model.err;<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;text=<span class=io>sprintf</span>([<span class=quotes>'Interation(s)&nbsp;t=%d\nLinear&nbsp;rule&nbsp;q(x)=sgn([%f&nbsp;,&nbsp;%f]*x&nbsp;%+f)\n'</span>...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Minimal&nbsp;r&nbsp;=&nbsp;%.8f\nClassification&nbsp;error&nbsp;=&nbsp;%.4f%%'</span>],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nt,nalpha(1),nalpha(2),-ntheta,minr,maxerr*100);<br>
+<span class=label>case</span>&nbsp;1<br>
+<br>
+&nbsp;&nbsp;&nbsp;distr&nbsp;=&nbsp;sets;<br>
+&nbsp;&nbsp;&nbsp;options.err&nbsp;=&nbsp;precision/100;<br>
+&nbsp;&nbsp;&nbsp;options.tmax&nbsp;=&nbsp;t+iter;<br>
+&nbsp;&nbsp;&nbsp;init_model.W1=alpha1;<br>
+&nbsp;&nbsp;&nbsp;init_model.W2=alpha2;<br>
+&nbsp;&nbsp;&nbsp;init_model.t&nbsp;=&nbsp;t;<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;e-Optimal&nbsp;solution</span><br>
+&nbsp;&nbsp;&nbsp;model&nbsp;=&nbsp;eanders(&nbsp;distr,&nbsp;options,&nbsp;init_model&nbsp;);<br>
+<br>
+&nbsp;&nbsp;&nbsp;nalpha&nbsp;=&nbsp;model.W;<br>
+&nbsp;&nbsp;&nbsp;ntheta&nbsp;=&nbsp;-model.b;<br>
+&nbsp;&nbsp;&nbsp;alpha1&nbsp;=&nbsp;model.W1;<br>
+&nbsp;&nbsp;&nbsp;alpha2&nbsp;=&nbsp;model.W2;<br>
+&nbsp;&nbsp;&nbsp;solution&nbsp;=&nbsp;model.exitflag;<br>
+&nbsp;&nbsp;&nbsp;minr&nbsp;=&nbsp;model.r;<br>
+&nbsp;&nbsp;&nbsp;nt&nbsp;=&nbsp;model.t;<br>
+&nbsp;&nbsp;&nbsp;maxerr&nbsp;=&nbsp;model.err;<br>
+&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;[nalpha,ntheta,solution,nt,alpha1,alpha2]=...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eanders(sets.MI,sets.SIGMA,sets.I,iter,precision/100,t,alpha1,alpha2);</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;sum(nalpha)==0,</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;solution=-1;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nalpha=alpha;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ntheta=theta;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;end</span><br>
+<span class=comment>%&nbsp;text=sprintf('Step&nbsp;t=%d\nLine&nbsp;[%f&nbsp;,&nbsp;%f]*x=%f',nt,nalpha(1),nalpha(2),ntheta);</span><br>
+&nbsp;&nbsp;text=<span class=io>sprintf</span>([<span class=quotes>'Interation(s)&nbsp;t=%d\nLinear&nbsp;rule&nbsp;q(x)=sgn([%f&nbsp;,&nbsp;%f]*x&nbsp;%+f)\n'</span>...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Minimal&nbsp;r&nbsp;=&nbsp;%.8f\nClassification&nbsp;error&nbsp;=&nbsp;%.4f%%'</span>],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nt,nalpha(1),nalpha(2),-ntheta,minr,maxerr*100);<br>
+<span class=label>case</span>&nbsp;2<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Original&nbsp;Anderson`s&nbsp;solution</span><br>
+&nbsp;&nbsp;&nbsp;distr.Mean&nbsp;=&nbsp;sets.MI;<br>
+&nbsp;&nbsp;&nbsp;distr.Cov&nbsp;=&nbsp;reshape(sets.SIGMA,2,2,2);<br>
+<br>
+&nbsp;&nbsp;&nbsp;options.eps&nbsp;=&nbsp;precision;<br>
+&nbsp;&nbsp;&nbsp;options.tmax&nbsp;=&nbsp;t+iter;<br>
+&nbsp;&nbsp;&nbsp;init_model.gamma=lambda;<br>
+&nbsp;&nbsp;&nbsp;init_model.t&nbsp;=&nbsp;t;<br>
+<br>
+&nbsp;&nbsp;&nbsp;model&nbsp;=&nbsp;androrig(&nbsp;distr,&nbsp;options,&nbsp;init_model);<br>
+<br>
+&nbsp;&nbsp;&nbsp;nalpha&nbsp;=&nbsp;model.W;<br>
+&nbsp;&nbsp;&nbsp;ntheta&nbsp;=&nbsp;-model.b;<br>
+&nbsp;&nbsp;&nbsp;solution&nbsp;=&nbsp;model.exitflag;<br>
+&nbsp;&nbsp;&nbsp;nt&nbsp;=&nbsp;model.t;<br>
+&nbsp;&nbsp;&nbsp;lambda&nbsp;=&nbsp;model.gamma;<br>
+&nbsp;&nbsp;&nbsp;maxerr&nbsp;=&nbsp;model.err;<br>
+&nbsp;&nbsp;&nbsp;minr&nbsp;=&nbsp;min([model.r1&nbsp;model.r2]);<br>
+&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;[nalpha,ntheta,solution,nt,lambda,ni,maxerr]=...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oanders(sets.MI,sets.SIGMA,sets.I,iter,precision,t,lambda);</span><br>
+<br>
+&nbsp;&nbsp;text=<span class=io>sprintf</span>([<span class=quotes>'Interation(s)&nbsp;t=%d\nLinear&nbsp;rule&nbsp;q(x)=sgn([%f&nbsp;,&nbsp;%f]*x&nbsp;%+f)\n'</span>...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Minimal&nbsp;r&nbsp;=&nbsp;%.8f\nClassification&nbsp;error&nbsp;=&nbsp;%.4f%%'</span>],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nt,nalpha(1),nalpha(2),-ntheta,minr,maxerr*100);<br>
+<br>
+<span class=comment>%&nbsp;&nbsp;text=sprintf(...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Step&nbsp;t=%d\nLine&nbsp;[%f&nbsp;,&nbsp;%f]*x=%f\nNi&nbsp;=&nbsp;%f,&nbsp;(1-Lambda)/Lambda&nbsp;=&nbsp;%f,&nbsp;Max&nbsp;error&nbsp;=&nbsp;%f%%',...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nt,nalpha(1),nalpha(2),ntheta,ni,(1-lambda)/lambda,maxerr*100);</span><br>
+<span class=label>case</span>&nbsp;3<br>
+&nbsp;&nbsp;&nbsp;distr&nbsp;=&nbsp;sets;<br>
+&nbsp;&nbsp;&nbsp;options.eps&nbsp;=&nbsp;precision;<br>
+&nbsp;&nbsp;&nbsp;options.tmax&nbsp;=&nbsp;t+iter;<br>
+&nbsp;&nbsp;&nbsp;init_model.W=alpha;<br>
+&nbsp;&nbsp;&nbsp;init_model.b=-theta;<br>
+&nbsp;&nbsp;&nbsp;init_model.t&nbsp;=&nbsp;t;<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;e-Optimal&nbsp;solution</span><br>
+&nbsp;&nbsp;&nbsp;model&nbsp;=&nbsp;ggradandr(&nbsp;distr,&nbsp;options,&nbsp;init_model&nbsp;);<br>
+<br>
+&nbsp;&nbsp;&nbsp;nalpha&nbsp;=&nbsp;model.W;<br>
+&nbsp;&nbsp;&nbsp;ntheta&nbsp;=&nbsp;-model.b;<br>
+&nbsp;&nbsp;&nbsp;solution&nbsp;=&nbsp;model.exitflag;<br>
+&nbsp;&nbsp;&nbsp;minr&nbsp;=&nbsp;model.r;<br>
+&nbsp;&nbsp;&nbsp;nt&nbsp;=&nbsp;model.t;<br>
+&nbsp;&nbsp;&nbsp;maxerr&nbsp;=&nbsp;model.err;<br>
+&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;[nalpha,ntheta,solution,nt,alpha1,alpha2]=...</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eanders(sets.MI,sets.SIGMA,sets.I,iter,precision/100,t,alpha1,alpha2);</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;sum(nalpha)==0,</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;solution=-1;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nalpha=alpha;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ntheta=theta;</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;end</span><br>
+<span class=comment>%&nbsp;text=sprintf('Step&nbsp;t=%d\nLine&nbsp;[%f&nbsp;,&nbsp;%f]*x=%f',nt,nalpha(1),nalpha(2),ntheta);</span><br>
+&nbsp;&nbsp;text=<span class=io>sprintf</span>([<span class=quotes>'Interation(s)&nbsp;t=%d\nLinear&nbsp;rule&nbsp;q(x)=sgn([%f&nbsp;,&nbsp;%f]*x&nbsp;%+f)\n'</span>...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Minimal&nbsp;r&nbsp;=&nbsp;%.8f\nClassification&nbsp;error&nbsp;=&nbsp;%.4f%%'</span>],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nt,nalpha(1),nalpha(2),-ntheta,minr,maxerr*100);<br>
+&nbsp;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;solution==-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;text=<span class=io>sprintf</span>(<span class=quotes>'Solution&nbsp;does&nbsp;not&nbsp;exist.\n'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;play=-1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class=jump>return</span>;<br>
+<span class=keyword>elseif</span>&nbsp;solution==1,<br>
+&nbsp;&nbsp;&nbsp;text=strvcat(text,<span class=io>sprintf</span>(<span class=quotes>'Solution&nbsp;was&nbsp;found&nbsp;in&nbsp;%d&nbsp;step(s)'</span>,nt));<br>
+&nbsp;&nbsp;&nbsp;play=0;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;play=1;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;store&nbsp;new&nbsp;values</span><br>
+h.<span class=graph>line</span>.t&nbsp;=&nbsp;nt;<br>
+h.<span class=graph>line</span>.alpha&nbsp;=&nbsp;nalpha;<br>
+h.<span class=graph>line</span>.alpha1&nbsp;=&nbsp;alpha1;<br>
+h.<span class=graph>line</span>.alpha2&nbsp;=&nbsp;alpha2;<br>
+h.<span class=graph>line</span>.lambda&nbsp;=&nbsp;lambda;<br>
+h.<span class=graph>line</span>.theta&nbsp;=&nbsp;ntheta;<br>
+<br>
+<span class=jump>return</span><br>
+<br>
+<span class=comment>%==============================================================</span><br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[handler]</span>=<span class=defun_name>pandr2d</span>(<span class=defun_in>MI,SIGMA,I,alpha1,theta1,handler,anim,alpha2,theta2</span>)<br>
+<span class=comment>%&nbsp;PANDR2D&nbsp;displays&nbsp;solution&nbsp;of&nbsp;Generalized&nbsp;Anderson's&nbsp;task&nbsp;in&nbsp;2D.</span><br>
+<span class=comment>%&nbsp;[handler]=pandr2d(MI,SIGMA,I,alpha1,theta1,handler,anim,alpha2,theta2)</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;PANDR2D&nbsp;plots&nbsp;given&nbsp;solution&nbsp;of&nbsp;the&nbsp;Generalized&nbsp;Anderson`s&nbsp;task&nbsp;(GAT)&nbsp;in</span><br>
+<span class=comment>%&nbsp;&nbsp;2-dimensional&nbsp;feature&nbsp;space.&nbsp;This&nbsp;function&nbsp;plots&nbsp;separation&nbsp;line&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;(2D&nbsp;case&nbsp;of&nbsp;the&nbsp;GAT)&nbsp;and&nbsp;input&nbsp;classes&nbsp;which&nbsp;are&nbsp;symbolized&nbsp;by&nbsp;sets&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;of&nbsp;ellipsoids.</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;&nbsp;Input&nbsp;arguments&nbsp;MI,&nbsp;SIGMA&nbsp;and&nbsp;I&nbsp;describe&nbsp;input&nbsp;mixture&nbsp;of&nbsp;normal&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;distributions.&nbsp;The&nbsp;pair&nbsp;of&nbsp;input&nbsp;arguments&nbsp;{alpha,theta}&nbsp;describes&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;separation&nbsp;line&nbsp;which&nbsp;is&nbsp;particular&nbsp;solution&nbsp;of&nbsp;the&nbsp;GAT.&nbsp;</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;&nbsp;For&nbsp;information&nbsp;on&nbsp;the&nbsp;meaning&nbsp;of&nbsp;the&nbsp;arguments&nbsp;refer&nbsp;to&nbsp;help&nbsp;of&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;functions&nbsp;solving&nbsp;the&nbsp;GAT&nbsp;(ganders,ganders2,eanders&nbsp;etc.).</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;&nbsp;When&nbsp;the&nbsp;quadruple&nbsp;of&nbsp;input&nbsp;parameters&nbsp;handler,&nbsp;anim,&nbsp;alpha2&nbsp;and&nbsp;theta2</span><br>
+<span class=comment>%&nbsp;&nbsp;enter&nbsp;function&nbsp;then&nbsp;a&nbsp;change&nbsp;of&nbsp;the&nbsp;solution&nbsp;is&nbsp;depicted&nbsp;too.&nbsp;The&nbsp;pair</span><br>
+<span class=comment>%&nbsp;&nbsp;alpha1,&nbsp;theta1&nbsp;is&nbsp;old&nbsp;solution&nbsp;and&nbsp;alpha2,&nbsp;theta2&nbsp;is&nbsp;new&nbsp;solution.&nbsp;The</span><br>
+<span class=comment>%&nbsp;&nbsp;argument&nbsp;handler&nbsp;contains&nbsp;information&nbsp;about&nbsp;graphics&nbsp;abjects&nbsp;used&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;in&nbsp;the&nbsp;last&nbsp;call&nbsp;of&nbsp;the&nbsp;function&nbsp;and&nbsp;returned&nbsp;in&nbsp;output&nbsp;variable&nbsp;handle.&nbsp;</span><br>
+<span class=comment>%&nbsp;&nbsp;When&nbsp;the&nbsp;argument&nbsp;anim=1&nbsp;then&nbsp;the&nbsp;change&nbsp;is&nbsp;animated.</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;See&nbsp;also&nbsp;PANDR2D,&nbsp;DEMO_ANDERSON,&nbsp;GANDERS,&nbsp;GANDERS2,&nbsp;EANDERS,&nbsp;OANDERS.</span><br>
+<span class=comment>%</span><br>
+<br>
+<span class=comment>%&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox,&nbsp;Vojtech&nbsp;Franc,&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=comment>%&nbsp;(c)&nbsp;Czech&nbsp;Technical&nbsp;University&nbsp;Prague,&nbsp;http://cmp.felk.cvut.cz</span><br>
+<span class=comment>%&nbsp;Written&nbsp;Vojtech&nbsp;Franc&nbsp;(diploma&nbsp;thesis)&nbsp;23.11.1999,&nbsp;11.5.2000</span><br>
+<span class=comment>%&nbsp;Modifications</span><br>
+<span class=comment>%&nbsp;24.&nbsp;6.00&nbsp;V.&nbsp;Hlavac,&nbsp;comments&nbsp;polished.</span><br>
+<span class=comment>%&nbsp;2.8.00&nbsp;V.Franc,&nbsp;comments&nbsp;changed</span><br>
+<br>
+<span class=comment>%&nbsp;constants</span><br>
+BORDER=0.95;<br>
+POINT_SIZE=8;<br>
+POINT_COLOR=<span class=quotes>'k'</span>;<br>
+POINT_WIDTH=2;<br>
+LINE_WIDTH=1;<br>
+LINE_COLOR=<span class=quotes>'k'</span>;<br>
+ELLIPSE_WIDTH=1;<br>
+INTERPOL=50;<br>
+ANIM_DIF=20;<br>
+<br>
+<br>
+<span class=comment>%&nbsp;handles&nbsp;input&nbsp;arguments</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;7,<br>
+&nbsp;&nbsp;&nbsp;anim=0;<br>
+<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;6,<br>
+&nbsp;&nbsp;&nbsp;handler=-1;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%%handler</span><br>
+<br>
+<br>
+alpha1=alpha1(:);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;alpha1&nbsp;will&nbsp;column</span><br>
+<br>
+<span class=comment>%&nbsp;number&nbsp;of&nbsp;ellipses</span><br>
+N=size(MI,2);<br>
+<span class=comment>%&nbsp;dimension,&nbsp;must&nbsp;be&nbsp;equal&nbsp;to&nbsp;2</span><br>
+DIM=size(MI,1);<br>
+<br>
+<span class=keyword>if</span>&nbsp;handler==-1,<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;proportions&nbsp;of&nbsp;a&nbsp;separation&nbsp;line</span><br>
+&nbsp;&nbsp;&nbsp;window=<span class=graph>axis</span>*BORDER;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;proportions&nbsp;of&nbsp;a&nbsp;separation&nbsp;line</span><br>
+&nbsp;&nbsp;&nbsp;window=getaxis(handler(2*N+3))*BORDER;<br>
+<span class=keyword>end</span>;<br>
+<br>
+<span class=keyword>if</span>&nbsp;anim==0,<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;computes&nbsp;minimal&nbsp;distance&nbsp;among&nbsp;the&nbsp;line&nbsp;alpha*x=theta&nbsp;and</span><br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;the&nbsp;elipses&nbsp;(x-MI)'*inv(SIGMA)*(x-MI)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;[R,inx]=min(&nbsp;abs(alpha1'*MI-theta1)...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;./sqrt(&nbsp;reshape(alpha1<span class=quotes>'*SIGMA,DIM,N)'</span>*alpha1&nbsp;)'&nbsp;);<br>
+<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;handler==-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;first&nbsp;painting</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;ellipses</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i=1:N,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mi=MI(:,i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sigma=SIGMA(:,(i-1)*DIM+1:i*DIM);<br>
+<span class=comment>%%%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;isg=inv(sigma);</span><br>
+<br>
+<span class=comment>%%%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[x,y]=ellipse(isg,INTERPOL,R,mi);</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[x,y]=ellips(mi,inv(sigma),R,INTERPOL);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;handler(i)=<span class=graph>plot</span>(x,y,<span class=quotes>'Color'</span>,marker_color(I(i)),...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'EraseMode'</span>,<span class=quotes>'xor'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'LineWidth'</span>,ELLIPSE_WIDTH,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'UserData'</span>,sigma);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;line</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[x1,y1,x2,y2]=cliplin1(alpha1,theta1,window);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;handler(N*2+1)=<span class=graph>line</span>([x1&nbsp;x2],[y1&nbsp;y2],...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'LineWidth'</span>,LINE_WIDTH,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Color'</span>,LINE_COLOR,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'EraseMode'</span>,<span class=quotes>'xor'</span>);<br>
+<br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get(handler(N*2+1))</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;pull&nbsp;point</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mi=MI(:,inx);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sigma=SIGMA(:,(inx-1)*DIM+1:inx*DIM);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x0=mi-(alpha1<span class=quotes>'*mi-theta1)*sigma*alpha1/(alpha1'</span>*sigma*alpha1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;handler(N*2+2)=<span class=graph>line</span>(x0(1),x0(2),...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'LineStyle'</span>,<span class=quotes>'none'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Color'</span>,POINT_COLOR,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'MarkerSize'</span>,POINT_SIZE,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'LineWidth'</span>,POINT_WIDTH,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'Marker'</span>,<span class=quotes>'x'</span>,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=quotes>'EraseMode'</span>,<span class=quotes>'xor'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;handler(N*2+3)=<span class=graph>gca</span>;<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span>&nbsp;<span class=comment>%&nbsp;if&nbsp;handler==-1,</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;at&nbsp;least&nbsp;second&nbsp;painting</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;hide&nbsp;all&nbsp;objects</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set(handler,'Visible','off');</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;ellipses</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i=1:N,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mi=MI(:,i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sigma=<span class=graph>get</span>(handler(i),<span class=quotes>'UserData'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[x,y]=ellips(mi,inv(sigma),R,INTERPOL);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(handler(i),<span class=quotes>'XData'</span>,x,<span class=quotes>'YData'</span>,y,<span class=quotes>'Visible'</span>,<span class=quotes>'on'</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;line</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[x1,y1,x2,y2]=cliplin1(alpha1,theta1,window);<br>
+<span class=comment>%%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;N*2+1</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get(handler(N*2+1))</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;handler</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;N</span><br>
+&nbsp;<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x2</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(handler(N*2+1),<span class=quotes>'XData'</span>,[x1&nbsp;x2],<span class=quotes>'YData'</span>,[y1&nbsp;y2],<span class=quotes>'Visible'</span>,<span class=quotes>'on'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;pull&nbsp;point</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mi=MI(:,inx);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sigma=SIGMA(:,(inx-1)*2+1:inx*2);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x0=mi-(alpha1<span class=quotes>'*mi-theta1)*sigma*alpha1/(alpha1'</span>*sigma*alpha1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(handler(N*2+2),<span class=quotes>'XData'</span>,x0(1),<span class=quotes>'YData'</span>,x0(2),<span class=quotes>'Visible'</span>,<span class=quotes>'on'</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span>&nbsp;<span class=comment>%&nbsp;if&nbsp;handler==-1,</span><br>
+<br>
+<span class=keyword>else</span>&nbsp;<span class=comment>%&nbsp;if&nbsp;anim==0,</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;alpha2=alpha2(:);&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;alpha2&nbsp;will&nbsp;column</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;computes&nbsp;number&nbsp;of&nbsp;the&nbsp;animation&nbsp;steps</span><br>
+&nbsp;&nbsp;&nbsp;[x11,y11,x12,y12]=cliplin1(alpha1,theta1,window);<br>
+&nbsp;&nbsp;&nbsp;[x21,y21,x22,y22]=cliplin1(alpha2,theta2,window);<br>
+<br>
+&nbsp;&nbsp;&nbsp;difa=max([sqrt((x11-x21)^2+(y11-y21)^2),sqrt((x11-x21)^2+(y11-y21)^2)]);<br>
+&nbsp;&nbsp;&nbsp;difw=min([window(4)-window(3),&nbsp;window(2)-window(1)]);<br>
+&nbsp;&nbsp;&nbsp;nsteps=max([1,ceil(ANIM_DIF*(difa/difw))]);<br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;play</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i=1:nsteps,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k=i/nsteps;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alpha=(1-k)*alpha2+k*alpha1;&nbsp;&nbsp;<span class=comment>%&nbsp;smooth&nbsp;transition&nbsp;of&nbsp;alpha</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;theta=(1-k)*theta2+k*theta1;&nbsp;&nbsp;<span class=comment>%&nbsp;--//--&nbsp;theta</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;recursion</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;handler=pandr2d(MI,SIGMA,I,alpha,theta,handler,0);<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=keyword>end</span>&nbsp;<span class=comment>%&nbsp;if&nbsp;anim==0,</span><br>
+<br>
+<br>
+<span class=comment>%=========================================================</span><br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[x1,y1,x2,y2,in]</span>=<span class=defun_name>cliplin1</span>(<span class=defun_in>alpha,theta,window</span>)<br>
+<span class=comment>%&nbsp;[x1,y1,x2,y2,in]=cliplin1(alpha,theta,window)</span><br>
+<span class=comment>%</span><br>
+<span class=comment>%&nbsp;CLIPLIN1&nbsp;clips&nbsp;the&nbsp;line&nbsp;given&nbsp;by&nbsp;the&nbsp;equation&nbsp;alpha*x=theta&nbsp;along</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;the&nbsp;window.&nbsp;It&nbsp;returns&nbsp;two&nbsp;points&nbsp;on&nbsp;the&nbsp;border&nbsp;of&nbsp;the&nbsp;window.</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;If&nbsp;the&nbsp;line&nbsp;is&nbsp;in&nbsp;the&nbsp;window&nbsp;then&nbsp;the&nbsp;argument&nbsp;is&nbsp;equal&nbsp;to&nbsp;1</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;else&nbsp;it&nbsp;returns&nbsp;0.</span><br>
+<span class=comment>%</span><br>
+<br>
+minx=window(1);<br>
+maxx=window(2);<br>
+miny=window(3);<br>
+maxy=window(4);<br>
+<br>
+x=zeros(4,1);<br>
+y=zeros(4,1);<br>
+<br>
+<span class=keyword>if</span>&nbsp;alpha(1)==0,<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;alpha(2)~=0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1=minx;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y1=theta/alpha(2);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x2=maxx;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y2=y1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in=1;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;if&nbsp;alpha&nbsp;==&nbsp;0&nbsp;then&nbsp;it&nbsp;means&nbsp;the&nbsp;bad&nbsp;input.</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y1=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x2=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y2=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in=0;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>elseif</span>&nbsp;alpha(2)==0,<br>
+&nbsp;&nbsp;&nbsp;x1=theta/alpha(1);<br>
+&nbsp;&nbsp;&nbsp;y1=miny;<br>
+&nbsp;&nbsp;&nbsp;x2=x1;<br>
+&nbsp;&nbsp;&nbsp;y2=maxy;<br>
+&nbsp;&nbsp;&nbsp;in=1;<br>
+<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;y(1)=maxy;<br>
+&nbsp;&nbsp;&nbsp;x(1)=(theta-alpha(2)*y(1))/alpha(1);<br>
+&nbsp;&nbsp;&nbsp;y(2)=miny;<br>
+&nbsp;&nbsp;&nbsp;x(2)=(theta-alpha(2)*y(2))/alpha(1);<br>
+<br>
+&nbsp;&nbsp;&nbsp;x(3)=maxx;<br>
+&nbsp;&nbsp;&nbsp;y(3)=(theta-alpha(1)*x(3))/alpha(2);<br>
+&nbsp;&nbsp;&nbsp;x(4)=minx;<br>
+&nbsp;&nbsp;&nbsp;y(4)=(theta-alpha(1)*x(4))/alpha(2);<br>
+<br>
+&nbsp;&nbsp;&nbsp;j=0;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>for</span>&nbsp;i=1:4,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;x(i)&nbsp;&lt;=&nbsp;maxx&nbsp;&&nbsp;x(i)&nbsp;&gt;=&nbsp;minx&nbsp;&&nbsp;y(i)&nbsp;&lt;=&nbsp;maxy&nbsp;&&nbsp;y(i)&nbsp;&gt;=&nbsp;miny,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;j==0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;j=j+1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1=x(i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y1=y(i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>elseif</span>&nbsp;j==1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;j=j+1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x2=x(i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y2=y(i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>if</span>&nbsp;j&lt;2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y1=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x2=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y2=0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in=0;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in=1;<br>
+&nbsp;&nbsp;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>end</span>&nbsp;<span class=comment>%&nbsp;elseif&nbsp;alpha(2)==0</span><br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[]</span>=<span class=defun_name>clrchild</span>(<span class=defun_in>handle</span>)<br>
+<br>
+delete(<span class=graph>get</span>(handle,<span class=quotes>'Children'</span>));<br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[win]</span>=<span class=defun_name>cmpwin</span>(<span class=defun_in>mins,maxs,xborder,yborder</span>)<br>
+<br>
+dx=max(&nbsp;(maxs(1)-mins(1)),&nbsp;1&nbsp;)*xborder;<br>
+dy=max(&nbsp;(maxs(2)-mins(2)),&nbsp;1&nbsp;)*yborder;<br>
+x1=(mins(1)-dx);<br>
+x2=(maxs(1)+dx);<br>
+y1=(mins(2)-dy);<br>
+y2=(maxs(2)+dx);<br>
+win=[x1&nbsp;x2&nbsp;y1&nbsp;y2];<br>
+<br>
+<span class=comment>%========================================</span><br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[rect]</span>=<span class=defun_name>getaxis</span>(<span class=defun_in>handle</span>)<br>
+<br>
+rect=[<span class=graph>get</span>(handle,<span class=quotes>'XLim'</span>),<span class=graph>get</span>(handle,<span class=quotes>'YLim'</span>),<span class=graph>get</span>(handle,<span class=quotes>'ZLim'</span>)];<br>
+<br>
+<span class=jump>return</span>;<br>
+<br>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>[]</span>=<span class=defun_name>setaxis</span>(<span class=defun_in>handle,rect</span>)<br>
+<br>
+<span class=graph>set</span>(handle,<span class=quotes>'XLim'</span>,rect(1:2));<br>
+<span class=graph>set</span>(handle,<span class=quotes>'YLim'</span>,rect(3:4));<br>
+<br>
+<span class=keyword>if</span>&nbsp;size(rect,2)&gt;=6,<br>
+&nbsp;&nbsp;&nbsp;<span class=graph>set</span>(handle,<span class=quotes>'ZLim'</span>,rect(5:6));<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

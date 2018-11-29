@@ -1,0 +1,157 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>gda.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>model&nbsp;</span>=&nbsp;<span class=defun_name>gda</span>(<span class=defun_in>data,options</span>)<br>
+<span class=h1>%&nbsp;GDA&nbsp;Generalized&nbsp;Discriminant&nbsp;Analysis.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;gda(data)</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;gda(data,options)</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;is&nbsp;implimentation&nbsp;of&nbsp;the&nbsp;Generalized&nbsp;Discriminant</span><br>
+<span class=help>%&nbsp;&nbsp;Analysis&nbsp;(GDA)&nbsp;[Baudat01].&nbsp;The&nbsp;GDA&nbsp;is&nbsp;kernelized&nbsp;version&nbsp;of</span><br>
+<span class=help>%&nbsp;&nbsp;the&nbsp;Linear&nbsp;Discriminant&nbsp;Analysis&nbsp;(LDA).&nbsp;It&nbsp;produce&nbsp;the&nbsp;kernel&nbsp;data</span><br>
+<span class=help>%&nbsp;&nbsp;projection&nbsp;which&nbsp;increases&nbsp;class&nbsp;separability&nbsp;of&nbsp;the&nbsp;projected&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;training&nbsp;data.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;[struct]&nbsp;Labeled&nbsp;training&nbsp;data:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.y&nbsp;[1&nbsp;x&nbsp;num_data]&nbsp;Labels&nbsp;(1,2,..,mclass).</span><br>
+<span class=help>%&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;options&nbsp;[struct]&nbsp;Defines&nbsp;kernel&nbsp;and&nbsp;a&nbsp;output&nbsp;dimension:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.ker&nbsp;[string]&nbsp;Kernel&nbsp;identifier&nbsp;(default&nbsp;'linear');&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;see&nbsp;'help&nbsp;kernel'&nbsp;for&nbsp;more&nbsp;info.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.arg&nbsp;[1&nbsp;x&nbsp;nargs]&nbsp;Kernel&nbsp;arguments&nbsp;(default&nbsp;1).</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.new_dim&nbsp;[1x1]&nbsp;Output&nbsp;dimension&nbsp;(default&nbsp;dim).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Kernel&nbsp;projection:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[num_data&nbsp;x&nbsp;new_dim]&nbsp;Multipliers.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[new_dim&nbsp;x&nbsp;1]&nbsp;Bias.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Training&nbsp;data.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options&nbsp;[struct]&nbsp;Copy&nbsp;of&nbsp;used&nbsp;options.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.rankK&nbsp;[int]&nbsp;Rank&nbsp;of&nbsp;centered&nbsp;kernel&nbsp;matrix.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.nsv&nbsp;[int]&nbsp;Number&nbsp;of&nbsp;training&nbsp;data.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;in_data&nbsp;=&nbsp;load('iris');</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;gda(in_data,struct('ker','rbf','arg',1));</span><br>
+<span class=help>%&nbsp;&nbsp;out_data&nbsp;=&nbsp;kernelproj(&nbsp;in_data,&nbsp;model&nbsp;);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;ppatterns(&nbsp;out_data&nbsp;);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;KERNELPROJ,&nbsp;KPCA.</span><br>
+<span class=help>%</span><br>
+<hr>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;24-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;4-may-2004,&nbsp;VF</span><br>
+<br>
+<br>
+<hr>
+<span class=comment>%&nbsp;process&nbsp;input&nbsp;arguments</span><br>
+<span class=comment>%-----------------------------</span><br>
+<br>
+<span class=comment>%&nbsp;allos&nbsp;data&nbsp;to&nbsp;be&nbsp;given&nbsp;as&nbsp;a&nbsp;cell</span><br>
+data=c2s(data);<br>
+<br>
+<span class=comment>%&nbsp;get&nbsp;dimensions</span><br>
+[dim,num_data]=size(data.X);<br>
+nclass&nbsp;=&nbsp;max(data.y);<br>
+<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;options=[];&nbsp;<span class=keyword>else</span>&nbsp;options=c2s(options);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,&nbsp;<span class=quotes>'ker'</span>),&nbsp;options.ker&nbsp;=&nbsp;<span class=quotes>'linear'</span>;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,&nbsp;<span class=quotes>'arg'</span>),&nbsp;options.arg&nbsp;=&nbsp;1;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,&nbsp;<span class=quotes>'new_dim'</span>),&nbsp;options.new_dim&nbsp;=&nbsp;dim;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;sort&nbsp;data&nbsp;according&nbsp;to&nbsp;labels</span><br>
+[tmp,inx]&nbsp;=&nbsp;sort(data.y);<br>
+data.y=data.y(inx);<br>
+data.X=data.X(:,inx);<br>
+<br>
+<span class=comment>%&nbsp;kernel&nbsp;matrix</span><br>
+K&nbsp;=&nbsp;kernel(&nbsp;data.X,&nbsp;options.ker,&nbsp;options.arg&nbsp;);<br>
+<br>
+<span class=comment>%&nbsp;centering&nbsp;matrix</span><br>
+J=ones(num_data,num_data)/num_data;<br>
+JK&nbsp;=&nbsp;J*K;<br>
+<br>
+<span class=comment>%&nbsp;centering&nbsp;data&nbsp;in&nbsp;non-linear&nbsp;space</span><br>
+Kc&nbsp;=&nbsp;K&nbsp;-&nbsp;JK'&nbsp;-&nbsp;JK&nbsp;+&nbsp;JK*J;<br>
+<br>
+<span class=comment>%&nbsp;Kc&nbsp;decomposition;&nbsp;Kc&nbsp;=&nbsp;P*Gamma*P'</span><br>
+[P,&nbsp;Gamma]=eig(&nbsp;Kc&nbsp;);<br>
+Gamma=diag(Gamma);<br>
+[tmp,inx]=sort(Gamma);&nbsp;<span class=comment>%&nbsp;sort&nbsp;eigenvalues&nbsp;in&nbsp;ascending&nbsp;order</span><br>
+inx=inx([num_data:-1:1]);&nbsp;<span class=comment>%&nbsp;swap&nbsp;indices</span><br>
+Gamma=Gamma(inx);<br>
+P=P(:,inx);<br>
+<br>
+<span class=comment>%&nbsp;removes&nbsp;eigenvectors&nbsp;with&nbsp;small&nbsp;value</span><br>
+minEigv&nbsp;=&nbsp;Gamma(1,1)/1000;<br>
+inx&nbsp;=&nbsp;find(&nbsp;Gamma&nbsp;&gt;=&nbsp;minEigv&nbsp;);<br>
+P=P(:,inx);<br>
+Gamma=Gamma(inx);<br>
+rankKc&nbsp;=&nbsp;length(inx);<br>
+<br>
+Kc&nbsp;=&nbsp;P*diag(Gamma)*P';<br>
+<br>
+<span class=comment>%&nbsp;make&nbsp;diagonal&nbsp;block&nbsp;matrix&nbsp;W</span><br>
+W=[];<br>
+<span class=keyword>for</span>&nbsp;i=1:nclass,<br>
+&nbsp;&nbsp;num_data_class=length(find(data.y==i));<br>
+&nbsp;&nbsp;W=blkdiag(W,ones(num_data_class)/num_data_class);<br>
+<span class=keyword>end</span>&nbsp;&nbsp;<br>
+<br>
+<span class=comment>%&nbsp;new&nbsp;dimension&nbsp;of&nbsp;data</span><br>
+model.new_dim=min([options.new_dim,&nbsp;rankKc,&nbsp;nclass-1]);<br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;vector&nbsp;alpha&nbsp;and&nbsp;its&nbsp;normalization&nbsp;</span><br>
+[Beta,&nbsp;Lambda]&nbsp;=&nbsp;eig(&nbsp;P'*W*P&nbsp;);<br>
+Lambda=diag(Lambda);<br>
+[tmp,inx]=sort(Lambda);&nbsp;&nbsp;<span class=comment>%&nbsp;sort&nbsp;eigenvalues&nbsp;in&nbsp;ascending&nbsp;order</span><br>
+inx=inx([length(Lambda):-1:1]);&nbsp;&nbsp;<span class=comment>%&nbsp;swap&nbsp;indices</span><br>
+Lambda=Lambda(inx);<br>
+Beta=Beta(:,inx(1:model.new_dim));<br>
+<br>
+<span class=comment>%model.Alpha=P*inv(diag(Gamma))*Beta;</span><br>
+model.Alpha=P*diag(1./Gamma)*Beta;<br>
+<br>
+<span class=comment>%&nbsp;normalization&nbsp;of&nbsp;vectors&nbsp;Alpha</span><br>
+<span class=keyword>for</span>&nbsp;i=1:model.new_dim,<br>
+&nbsp;&nbsp;model.Alpha(:,i)&nbsp;=&nbsp;model.Alpha(:,i)/...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sqrt(model.Alpha(:,i)'*&nbsp;Kc&nbsp;*&nbsp;model.Alpha(:,i));<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;centering&nbsp;Alpha&nbsp;and&nbsp;computing&nbsp;Bias</span><br>
+sumK=sum(K);<br>
+model.b=(-sumK*model.Alpha/num_data+...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sum(model.Alpha)*sum(sumK)/num_data^2)';&nbsp;<br>
+<br>
+<span class=keyword>for</span>&nbsp;i=1:size(model.Alpha,2),<br>
+&nbsp;&nbsp;model.Alpha(:,i)&nbsp;=&nbsp;model.Alpha(:,i)-sum(model.Alpha(:,i))/num_data;<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;fill&nbsp;model</span><br>
+model.options&nbsp;=&nbsp;options;<br>
+model.sv&nbsp;=&nbsp;data;<br>
+model.rankK&nbsp;=&nbsp;rankKc;<br>
+model.nsv&nbsp;=&nbsp;num_data;<br>
+model.fun&nbsp;=&nbsp;<span class=quotes>'kernelproj'</span>;<br>
+<br>
+<span class=jump>return</span>;<br>
+</code>

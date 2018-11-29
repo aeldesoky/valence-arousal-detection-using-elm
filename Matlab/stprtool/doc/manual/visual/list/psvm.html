@@ -1,0 +1,151 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>psvm.m</title>
+<link rel="stylesheet" type="text/css" href="../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>varargout</span>=<span class=defun_name>psvm</span>(<span class=defun_in>model,options</span>)<br>
+<span class=h1>%&nbsp;PSVM&nbsp;Plots&nbsp;decision&nbsp;boundary&nbsp;of&nbsp;binary&nbsp;SVM&nbsp;classifier.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;h&nbsp;=&nbsp;psvm(...)</span><br>
+<span class=help>%&nbsp;&nbsp;psvm(model)</span><br>
+<span class=help>%&nbsp;&nbsp;psvm(model,options)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;This&nbsp;function&nbsp;samples&nbsp;the&nbsp;Support&nbsp;Vector&nbsp;Machiones&nbsp;(SVM)&nbsp;decision&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;function&nbsp;f(x)&nbsp;in&nbsp;2D&nbsp;feature&nbsp;space&nbsp;and&nbsp;interpolates&nbsp;isoline&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;width&nbsp;f(x)=0.&nbsp;The&nbsp;isolines&nbsp;f(x)=+1&nbsp;and&nbsp;f(x)=-1&nbsp;are&nbsp;plotted&nbsp;as&nbsp;well.&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Model&nbsp;of&nbsp;binary&nbsp;SVM&nbsp;classifier:</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.Alpha&nbsp;[1&nbsp;x&nbsp;nsv]&nbsp;Weights&nbsp;of&nbsp;training&nbsp;data.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.b&nbsp;[real]&nbsp;Bias&nbsp;of&nbsp;decision&nbsp;function.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.sv.X&nbsp;[dim&nbsp;x&nbsp;nsv]&nbsp;Support&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options.ker&nbsp;[string]&nbsp;Kernel&nbsp;function&nbsp;identifier.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;See&nbsp;'help&nbsp;kernel'&nbsp;for&nbsp;more&nbsp;info.</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;.options.arg&nbsp;[1&nbsp;x&nbsp;nargs]&nbsp;Kernel&nbsp;argument(s).</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;options&nbsp;[struct]&nbsp;Controls&nbsp;apperance:</span><br>
+<span class=help>%&nbsp;&nbsp;.background&nbsp;[1x1]&nbsp;If&nbsp;1&nbsp;then&nbsp;backgroud&nbsp;is&nbsp;colored&nbsp;according&nbsp;to&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;value&nbsp;of&nbsp;decision&nbsp;function&nbsp;(default&nbsp;0).</span><br>
+<span class=help>%&nbsp;&nbsp;.sv&nbsp;[1x1]&nbsp;If&nbsp;1&nbsp;then&nbsp;the&nbsp;support&nbsp;vectors&nbsp;are&nbsp;marked&nbsp;(default&nbsp;1).</span><br>
+<span class=help>%&nbsp;&nbsp;.sv_size&nbsp;[1x1]&nbsp;Marker&nbsp;size&nbsp;of&nbsp;the&nbsp;support&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;.margin&nbsp;[1x1]&nbsp;If&nbsp;1&nbsp;then&nbsp;margin&nbsp;is&nbsp;displayed&nbsp;(default&nbsp;1).</span><br>
+<span class=help>%&nbsp;&nbsp;.gridx&nbsp;[1x1]&nbsp;Sampling&nbsp;in&nbsp;x-axis&nbsp;(default&nbsp;25).</span><br>
+<span class=help>%&nbsp;&nbsp;.gridy&nbsp;[1x1]&nbsp;Sampling&nbsp;in&nbsp;y-axis&nbsp;(default&nbsp;25).</span><br>
+<span class=help>%&nbsp;&nbsp;.color&nbsp;[int]&nbsp;Color&nbsp;of&nbsp;decision&nbsp;boundary&nbsp;(default&nbsp;'k').</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;h&nbsp;[struct]&nbsp;Handles&nbsp;of&nbsp;used&nbsp;graphical&nbsp;objects.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Example:</span></span><br>
+<span class=help>%&nbsp;&nbsp;data&nbsp;=&nbsp;load('riply_trn');&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;=&nbsp;smo(&nbsp;data,&nbsp;struct('ker','rbf','arg',1,'C',10)&nbsp;);</span><br>
+<span class=help>%&nbsp;&nbsp;figure;&nbsp;&nbsp;ppatterns(data);&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;psvm(&nbsp;model,&nbsp;struct('background',1)&nbsp;);</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;25-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;10-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;5-oct-2003,&nbsp;VF,&nbsp;returns&nbsp;handles</span><br>
+<span class=help1>%&nbsp;14-Jan-2003,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;21-oct-2001,&nbsp;V.Franc</span><br>
+<span class=help1>%&nbsp;16-april-2001,&nbsp;V.&nbsp;Franc,&nbsp;created</span><br>
+<br>
+<hr>
+<span class=comment>%&nbsp;Process&nbsp;input&nbsp;arguments&nbsp;</span><br>
+<span class=comment>%------------------------------------------------</span><br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargin</span>&nbsp;&lt;&nbsp;2,&nbsp;options=[];&nbsp;<span class=keyword>else</span>&nbsp;options=c2s(options);&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'background'</span>),&nbsp;options.background&nbsp;=&nbsp;0;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'sv'</span>),&nbsp;options.sv&nbsp;=&nbsp;1;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'margin'</span>),&nbsp;options.margin&nbsp;=&nbsp;1;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'gridx'</span>),&nbsp;options.gridx&nbsp;=&nbsp;25;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'gridy'</span>),&nbsp;options.gridy&nbsp;=&nbsp;25;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'sv_size'</span>),&nbsp;options.sv_size&nbsp;=&nbsp;12;&nbsp;<span class=keyword>end</span><br>
+<span class=keyword>if</span>&nbsp;~isfield(options,<span class=quotes>'color'</span>),&nbsp;options.color&nbsp;=&nbsp;<span class=quotes>'k'</span>;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;variable&nbsp;for&nbsp;handles</span><br>
+h&nbsp;=&nbsp;[];<br>
+<br>
+<span class=comment>%&nbsp;get&nbsp;axis</span><br>
+a&nbsp;=&nbsp;<span class=graph>axis</span>;<br>
+old_hold&nbsp;=&nbsp;ishold;<br>
+hold&nbsp;on;<br>
+<br>
+<span class=comment>%&nbsp;plot&nbsp;Support&nbsp;Vectos</span><br>
+<span class=keyword>if</span>&nbsp;options.sv,<br>
+&nbsp;&nbsp;h.sv&nbsp;=&nbsp;ppatterns(model.sv.X,<span class=quotes>'ok'</span>&nbsp;,options.sv_size);<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;limits&nbsp;of&nbsp;current&nbsp;figure</span><br>
+xmin=a(1);<br>
+xmax=a(2);<br>
+ymin=a(3);<br>
+ymax=a(4);<br>
+&nbsp;&nbsp;<br>
+<span class=comment>%&nbsp;makes&nbsp;grid&nbsp;</span><br>
+[X,Y]&nbsp;=&nbsp;meshgrid(xmin:(xmax-xmin)/options.gridx:xmax,...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ymin:(ymax-ymin)/options.gridy:ymax);<br>
+<br>
+<span class=comment>%&nbsp;generate&nbsp;samples</span><br>
+tst_data=[reshape(X<span class=quotes>',1,prod(size(X)));reshape(Y'</span>,1,prod(size(Y)))];<br>
+<br>
+<span class=comment>%&nbsp;classify&nbsp;points</span><br>
+[pred_labels,&nbsp;dec_fun]&nbsp;=&nbsp;svmclass(tst_data,model);<br>
+<br>
+<span class=comment>%&nbsp;compute&nbsp;color&nbsp;limits</span><br>
+l=(-min(dec_fun)+max(dec_fun))/2;<br>
+<br>
+<span class=comment>%&nbsp;reshape&nbsp;dec_fun</span><br>
+Z&nbsp;=&nbsp;reshape(dec_fun,size(X,1),size(X,2))';<br>
+<br>
+<span class=comment>%&nbsp;colors&nbsp;background&nbsp;</span><br>
+<span class=keyword>if</span>&nbsp;options.background,<br>
+&nbsp;&nbsp;h.background&nbsp;=&nbsp;pcolor(X,Y,Z);<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;smooth&nbsp;shading</span><br>
+shading&nbsp;interp;<br>
+<br>
+<span class=comment>%&nbsp;plots&nbsp;decision&nbsp;boundary</span><br>
+[dummy,h.boundary]&nbsp;=&nbsp;contour(X,Y,Z,[0,0],options.color);<br>
+<br>
+<span class=comment>%&nbsp;plots&nbsp;margins</span><br>
+<span class=keyword>if</span>&nbsp;options.margin,<br>
+&nbsp;&nbsp;&nbsp;[dummy,h.margin_plus]&nbsp;=&nbsp;contour(X,Y,Z,[1,1],[options.color,<span class=quotes>'--'</span>]);<br>
+&nbsp;&nbsp;&nbsp;[dummy,h.margin_minus]&nbsp;=&nbsp;contour(X,Y,Z,[-1,-1],[options.color,<span class=quotes>'--'</span>]);<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=comment>%&nbsp;set&nbsp;color&nbsp;limits&nbsp;and&nbsp;colormap</span><br>
+<span class=keyword>if</span>&nbsp;options.background,<br>
+&nbsp;&nbsp;<span class=graph>set</span>(h.background,&nbsp;<span class=quotes>'LineStyle'</span>,<span class=quotes>'none'</span>&nbsp;);<br>
+&nbsp;&nbsp;<span class=graph>set</span>(<span class=graph>gca</span>,<span class=quotes>'Clim'</span>,[-l&nbsp;l]);<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;<span class=comment>%&nbsp;creates&nbsp;colormap&nbsp;</span><br>
+&nbsp;&nbsp;g=gray(64);<br>
+&nbsp;&nbsp;cmp=[g(33:<span class=keyword>end</span>,:);flipud(g(33:<span class=keyword>end</span>,:))];<br>
+&nbsp;&nbsp;cmp(1:32,1)=cmp(1:32,1)/2;<br>
+&nbsp;&nbsp;cmp(1:32,3)=cmp(1:32,3)/2;<br>
+&nbsp;&nbsp;cmp(33:<span class=keyword>end</span>,3)=cmp(33:<span class=keyword>end</span>,3)/2;<br>
+&nbsp;&nbsp;<span class=graph>colormap</span>(cmp)<br>
+<span class=keyword>end</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;~old_hold,&nbsp;hold&nbsp;off;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=keyword>if</span>&nbsp;<span class=stack>nargout</span>&nbsp;&gt;=&nbsp;1,&nbsp;<span class=stack>varargout</span>{1}&nbsp;=&nbsp;h;&nbsp;<span class=keyword>end</span><br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>

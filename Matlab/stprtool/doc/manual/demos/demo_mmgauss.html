@@ -1,0 +1,70 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>Contents.m</title>
+<link rel="stylesheet" type="text/css" href="../stpr.css">
+</head>
+<body>
+<table  border=0 width="100%" cellpadding=0 cellspacing=0><tr valign="baseline">
+<td valign="baseline" class="function"><b class="function">DEMO_MMGAUSS</b>
+<td valign="baseline" align="right" class="function"><a href="../demos/index.html" target="mdsdir"><img border = 0 src="../up.gif"></a></table>
+  <p><b>Demo on minimax estimation for Gaussian.</b></p>
+  <hr>
+<div class='code'><code>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>&nbsp;&nbsp;demo_mmgauss</span><br>
+<span class=help>&nbsp;</span><br>
+<span class=help>&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>&nbsp;&nbsp;demo_mmgauss&nbsp;demonstrates&nbsp;the&nbsp;minimax&nbsp;estimation&nbsp;algorithm&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;[<a href="../references.html#SH10" title = "M.I.Schlesinger and V.Hlavac. Ten lectures on statistical and structural pattern recognition. Kluwer Academic Publishers, 2002." >SH10</a>]&nbsp;for&nbsp;bivariate&nbsp;Gaussian&nbsp;distribution.&nbsp;The&nbsp;training&nbsp;data&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;is&nbsp;supposed&nbsp;to&nbsp;contain&nbsp;samples&nbsp;which&nbsp;well&nbsp;describing&nbsp;the&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;probability&nbsp;distribution&nbsp;function&nbsp;(pdf),&nbsp;i.e.,&nbsp;which&nbsp;have&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;high&nbsp;value&nbsp;of&nbsp;pdf.&nbsp;The&nbsp;samples&nbsp;do&nbsp;not&nbsp;have&nbsp;to&nbsp;be&nbsp;i.i.d.&nbsp;in&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;contrast&nbsp;to&nbsp;the&nbsp;ML&nbsp;estimation.</span><br>
+<span class=help>&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;estimated&nbsp;model&nbsp;is&nbsp;visualized&nbsp;as&nbsp;an&nbsp;ellipsoid:</span><br>
+<span class=help>&nbsp;&nbsp;shape&nbsp;is&nbsp;influenced&nbsp;by&nbsp;the&nbsp;covariance&nbsp;matrix&nbsp;and&nbsp;the&nbsp;center</span><br>
+<span class=help>&nbsp;&nbsp;corresponds&nbsp;to&nbsp;the&nbsp;mean&nbsp;vector.</span><br>
+<span class=help>&nbsp;&nbsp;The&nbsp;lower&nbsp;(red)&nbsp;and&nbsp;upper&nbsp;(blue)&nbsp;bound&nbsp;on&nbsp;the&nbsp;optimal&nbsp;value&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;of&nbsp;the&nbsp;optimized&nbsp;minimax&nbsp;criterion&nbsp;is&nbsp;displayed&nbsp;at&nbsp;the&nbsp;bottom</span><br>
+<span class=help>&nbsp;&nbsp;part&nbsp;of&nbsp;the&nbsp;window.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=help_field>Control:</span></span><br>
+<span class=help>&nbsp;&nbsp;Epsilon&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Stopping&nbsp;condition.&nbsp;The&nbsp;algorithm&nbsp;stops&nbsp;if&nbsp;the&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;difference&nbsp;between&nbsp;lower&nbsp;and&nbsp;the&nbsp;upper&nbsp;bound</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;less&nbsp;then&nbsp;the&nbsp;epsilon.</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;Iterations&nbsp;&nbsp;-&nbsp;Number&nbsp;of&nbsp;iterations&nbsp;after&nbsp;which&nbsp;the&nbsp;model&nbsp;</span><br>
+<span class=help>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;re-displayed.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;&nbsp;FIG2EPS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Exports&nbsp;figure&nbsp;to&nbsp;the&nbsp;PostScript&nbsp;file.</span><br>
+<span class=help>&nbsp;&nbsp;Load&nbsp;data&nbsp;&nbsp;&nbsp;-&nbsp;Loads&nbsp;input&nbsp;data&nbsp;sample&nbsp;from&nbsp;file.</span><br>
+<span class=help>&nbsp;&nbsp;Create&nbsp;data&nbsp;-&nbsp;Invokes&nbsp;program&nbsp;for&nbsp;creating&nbsp;data&nbsp;sample.</span><br>
+<span class=help>&nbsp;&nbsp;Reset&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Resets&nbsp;the&nbsp;demo.</span><br>
+<span class=help>&nbsp;&nbsp;Play&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Runs&nbsp;the&nbsp;algorithm.</span><br>
+<span class=help>&nbsp;&nbsp;Stop&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Stops&nbsp;the&nbsp;running&nbsp;algorithm.</span><br>
+<span class=help>&nbsp;&nbsp;Step&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Performs&nbsp;one&nbsp;iteration&nbsp;of&nbsp;the&nbsp;algorithm.</span><br>
+<span class=help>&nbsp;&nbsp;Info&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Invokes&nbsp;the&nbsp;info&nbsp;box.</span><br>
+<span class=help>&nbsp;&nbsp;Close&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Closes&nbsp;the&nbsp;program.</span><br>
+<span class=help></span><br>
+<span class=help>&nbsp;<span class=also_field>See also </span><span class=also><a href = "../probab/estimation/mmgauss.html" target="mdsbody">MMGAUSS</a>.</span><br>
+<span class=help></span><br>
+</code></div>
+  <hr>
+  <b>Source:</b> <a href= "../demos/list/demo_mmgauss.html">demo_mmgauss.m</a>
+  <p><b class="info_field">About: </b>  Statistical Pattern Recognition Toolbox<br>
+ (C) 1999-2003, Written by Vojtech Franc and Vaclav Hlavac<br>
+ <a href="http://www.cvut.cz">Czech Technical University Prague</a><br>
+ <a href="http://www.feld.cvut.cz">Faculty of Electrical Engineering</a><br>
+ <a href="http://cmp.felk.cvut.cz">Center for Machine Perception</a><br>
+
+  <p><b class="info_field">Modifications: </b> <br>
+ 2-may-2004, VF<br>
+ 19-sep-2003, VF<br>
+ 3-mar-2003, VF<br>
+ 11-june-2001, V.Franc, comments added.<br>
+ 24. 6.00 V. Hlavac, comments polished.<br>
+
+</body>
+</html>

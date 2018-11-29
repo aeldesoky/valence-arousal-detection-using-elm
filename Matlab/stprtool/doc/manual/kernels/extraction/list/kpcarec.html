@@ -1,0 +1,74 @@
+<html>
+<head>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=ISO-8859-1">
+  <title>kpcarec.m</title>
+<link rel="stylesheet" type="text/css" href="../../../m-syntax.css">
+</head>
+<body>
+<code>
+<span class=defun_kw>function</span>&nbsp;<span class=defun_out>Y&nbsp;</span>=&nbsp;<span class=defun_name>kpcarec</span>(<span class=defun_in>X,model</span>)<br>
+<span class=h1>%&nbsp;KPCAREC&nbsp;Reconstructs&nbsp;image&nbsp;after&nbsp;kernel&nbsp;PCA.</span><br>
+<span class=help>%&nbsp;</span><br>
+<span class=help>%&nbsp;<span class=help_field>Synopsis:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Y&nbsp;=&nbsp;kpcarec(X,model)</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Description:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Input&nbsp;data&nbsp;X&nbsp;are&nbsp;projected&nbsp;using&nbsp;kernel&nbsp;projection&nbsp;trained</span><br>
+<span class=help>%&nbsp;&nbsp;the&nbsp;by&nbsp;Kernel&nbsp;PCA&nbsp;[Mika99b].&nbsp;The&nbsp;RBF&nbsp;kernel&nbsp;is&nbsp;assumed.&nbsp;This&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;function&nbsp;computes&nbsp;the&nbsp;preimages&nbsp;Y&nbsp;from&nbsp;the&nbsp;input&nbsp;space&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;corresponding&nbsp;to&nbsp;the&nbsp;projected&nbsp;data&nbsp;are.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;X&nbsp;-&gt;&nbsp;projection&nbsp;to&nbsp;-&gt;&nbsp;preimage&nbsp;-&gt;&nbsp;Y</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kernel&nbsp;space&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;problem</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;by&nbsp;Kernel&nbsp;PCA</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Input:</span></span><br>
+<span class=help>%&nbsp;&nbsp;X&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Input&nbsp;vectors.</span><br>
+<span class=help>%&nbsp;&nbsp;model&nbsp;[struct]&nbsp;Kernel&nbsp;projection&nbsp;with&nbsp;RBF&nbsp;kernel;</span><br>
+<span class=help>%&nbsp;&nbsp;&nbsp;see&nbsp;'help&nbsp;kernelproj'.&nbsp;</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;<span class=help_field>Output:</span></span><br>
+<span class=help>%&nbsp;&nbsp;Y&nbsp;[dim&nbsp;x&nbsp;num_data]&nbsp;Output&nbsp;data.</span><br>
+<span class=help>%</span><br>
+<span class=help>%&nbsp;See&nbsp;also&nbsp;&nbsp;</span><br>
+<span class=help>%&nbsp;&nbsp;KPCA,&nbsp;PCAREC.</span><br>
+<span class=help>%</span><br>
+<hr>
+<span class=help1>%&nbsp;<span class=help1_field>About:</span>&nbsp;Statistical&nbsp;Pattern&nbsp;Recognition&nbsp;Toolbox</span><br>
+<span class=help1>%&nbsp;(C)&nbsp;1999-2003,&nbsp;Written&nbsp;by&nbsp;Vojtech&nbsp;Franc&nbsp;and&nbsp;Vaclav&nbsp;Hlavac</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.cvut.cz"&gt;Czech&nbsp;Technical&nbsp;University&nbsp;Prague&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://www.feld.cvut.cz"&gt;Faculty&nbsp;of&nbsp;Electrical&nbsp;Engineering&lt;/a&gt;</span><br>
+<span class=help1>%&nbsp;&lt;a&nbsp;href="http://cmp.felk.cvut.cz"&gt;Center&nbsp;for&nbsp;Machine&nbsp;Perception&lt;/a&gt;</span><br>
+<br>
+<span class=help1>%&nbsp;<span class=help1_field>Modifications:</span></span><br>
+<span class=help1>%&nbsp;17-may-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;22-apr-2004,&nbsp;VF</span><br>
+<span class=help1>%&nbsp;17-mar-2004,&nbsp;VF,&nbsp;created.</span><br>
+<br>
+<hr>
+[dim,&nbsp;num_data]&nbsp;=&nbsp;size(X);<br>
+<br>
+<span class=io>fprintf</span>(<span class=quotes>'Projection&nbsp;data...'</span>);<br>
+Z&nbsp;=&nbsp;kernelproj(X,&nbsp;model&nbsp;);<br>
+<span class=io>fprintf</span>(<span class=quotes>'done.\n'</span>);<br>
+<br>
+<span class=comment>%&nbsp;allocate&nbsp;memory</span><br>
+Y&nbsp;=&nbsp;zeros(dim,num_data);<br>
+img&nbsp;=&nbsp;model;<br>
+<br>
+<span class=io>fprintf</span>(<span class=quotes>'Computing&nbsp;preimages'</span>);<br>
+<span class=keyword>for</span>&nbsp;i=1:num_data,<br>
+&nbsp;&nbsp;&nbsp;<span class=io>fprintf</span>(<span class=quotes>'.'</span>);<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;img.Alpha&nbsp;=&nbsp;model.Alpha*(Z(:,i)&nbsp;-&nbsp;model.b);<br>
+<br>
+&nbsp;&nbsp;&nbsp;Y(:,i)&nbsp;=&nbsp;rbfpreimg(img);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=comment>%&nbsp;Schoelkopf's&nbsp;fix-point&nbsp;algorithm</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;Y(:,i)&nbsp;=&nbsp;rbfpreimg2(img);&nbsp;&nbsp;%&nbsp;Gradient&nbsp;method</span><br>
+<span class=comment>%&nbsp;&nbsp;&nbsp;&nbsp;Y(:,i)&nbsp;=&nbsp;rbfpreimg3(img,7);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%&nbsp;Kwok&nbsp;&&nbsp;Tsang</span><br>
+<br>
+<span class=keyword>end</span><br>
+<span class=io>fprintf</span>(<span class=quotes>'done\n'</span>);<br>
+<br>
+<span class=jump>return</span>;<br>
+<span class=comment>%&nbsp;EOF</span><br>
+</code>
