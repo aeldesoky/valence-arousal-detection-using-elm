@@ -12,14 +12,19 @@ addpath(genpath('Matlab/TEAP-master'));
 matt_data_path = 'C:\Users\mjad9\Desktop\DEAP\MATLAB_data_preprocessed\';
 amir_data_path = '~/Desktop/DEAP/MATLAB_data_preprocessed/';
 
-data_path = amir_data_path;
+data_path = matt_data_path;
 
 if ~exist([data_path '/s30_eeglab.mat'],'file')
     loading_DEAP(data_path);
 end 
 
+<<<<<<< HEAD
 feedbacks = readtable('~/Desktop/DEAP/participant_ratings.csv');
 nn_features = [];
+=======
+feedbacks = readtable('C:\Users\mjad9\Desktop\DEAP\participant_ratings.csv');
+
+>>>>>>> fc8e2a3cf5fbdad25639459195faf949c2bfd7ab
 %% Extracting Features
 good_channels = [1 3 8 11 17 20 26 29];
 
@@ -34,6 +39,7 @@ for participant = 1:PARTICIPANTS_NUM
     skewness_array = [];
     entropy_array =[];
     energy_array =[];
+    katz_array = [];
     
     for epoch = 1:VIDEOS_NUM
         %extracting EMG features
@@ -57,6 +63,7 @@ for participant = 1:PARTICIPANTS_NUM
         
         video_signal   = Bulk_get_signal(bulk(epoch), 'EEG');
         video_raw_data = cell2mat(struct2cell(video_signal.raw));
+<<<<<<< HEAD
         
         level = 4;
         wname = 'db4';
@@ -68,13 +75,28 @@ for participant = 1:PARTICIPANTS_NUM
         [mean, std, kurtosis, skewness] = Signal_feat_stat_moments(x_sim, 'Skip');
         energy = Signal_feat_energy(x_sim, 'Skip');
 
+=======
+        [mean, std, kurtosis, skewness] = Signal_feat_stat_moments(video_raw_data, 'Skip');
+        energy = Signal_feat_energy(video_raw_data, 'Skip');
+        for i=1:32
+            katz(i) = Katz_FD(video_raw_data(i,:));
+        end
+>>>>>>> fc8e2a3cf5fbdad25639459195faf949c2bfd7ab
         means_array = [means_array, mean];
         std_array = [std_array, std];
         kurtosis_array = [kurtosis_array, kurtosis];
         skewness_array = [skewness_array, skewness];
+<<<<<<< HEAD
         entropy_array = [entropy_array, entropy(x_sim)'];
         energy_array = [energy_array, energy'];
         nn_features = [nn_features;video_raw_data];
+=======
+        entropy_array = [entropy_array, entropy(video_raw_data)'];
+        energy_array = [energy_array, energy'];       
+        katz_array = [katz_array, katz];
+        
+        
+>>>>>>> fc8e2a3cf5fbdad25639459195faf949c2bfd7ab
         fprintf('extracted all the features for subject %d epoch %d\n',participant, epoch);
     end
     
@@ -84,6 +106,7 @@ for participant = 1:PARTICIPANTS_NUM
     skewness_matrix{participant} = skewness_array;
     entropy_matrix{participant} =  entropy_array;
     energy_matrix{participant} = energy_array;
+    katz_matrix{participant} = katz_array;
 end
 
 save([data_path 'deap_features.mat'],'features');
@@ -138,7 +161,8 @@ kurtosis_features = cell2mat(kurtosis_matrix');
 skewness_features = cell2mat(skewness_matrix');
 entropy_features = cell2mat(entropy_matrix');
 energy_features = cell2mat(energy_matrix');
-features_array = [delta' theta' slow_alpha' alpha' beta' gamma' means_features(:) std_features(:) kurtosis_features(:) skewness_features(:) entropy_features(:) energy_features(:)];
+katz_features = cell2mat(katz_matrix');
+features_array = [delta' theta' slow_alpha' alpha' beta' gamma' means_features(:) std_features(:) kurtosis_features(:) skewness_features(:) entropy_features(:) energy_features(:) katz_features(:)];
 features_array = zscore(features_array);
 labels         = [valence_labels' arousal_labels' dominance_labels' liking_labels'];
 
@@ -156,7 +180,7 @@ end
 
 %% Visualizing Features
 figure(5);
-varnames = {'Delta' 'Theta' 'Slow Alpha' 'Alpha' 'Beta' 'Gamma' 'mean' 'std' 'kurtosis' 'skewness' 'entropy' 'energy'};
+varnames = {'Delta' 'Theta' 'Slow Alpha' 'Alpha' 'Beta' 'Gamma' 'mean' 'std' 'kurtosis' 'skewness' 'entropy' 'energy' 'fractal dimension'};
 gplotmatrix(features_array,[],labels_2',['b' 'r' 'g' 'k'],[],[],'on','grpbars',varnames, varnames);
 %gplotmatrix(features_array,[],labels(:,2),['k' 'r'],[],[],'on','grpbars',varnames, varnames);
 
@@ -173,6 +197,7 @@ criterion = @(XT,yT,Xt,yt) ...
 training_indices = training(partition,1);
 testing_indices  = test(partition,1);
 elm_features = [labels(:, 1), features_pca];
+elm_features = [labels(:,1) features_array];
 testing_set = elm_features(testing_indices,:);
 training_set = elm_features(training_indices,:);
 
@@ -208,3 +233,7 @@ h1 = ppatterns(X);
 h2 = ppatterns(XR, '+r');
 legend([h1 h2],'Input vectors','Reconstructed');
 
+[TrainingTime, TestingTime, TrainingAccuracy, TestingAccuracy] = ELM('training_set.txt', 'testing_set.txt', 1, 20, 'sig')
+
+%% PCA
+pca1 = pca(features_array');
