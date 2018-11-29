@@ -18,13 +18,9 @@ if ~exist([data_path '/s30_eeglab.mat'],'file')
     loading_DEAP(data_path);
 end 
 
-<<<<<<< HEAD
 feedbacks = readtable('~/Desktop/DEAP/participant_ratings.csv');
 nn_features = [];
-=======
-feedbacks = readtable('C:\Users\mjad9\Desktop\DEAP\participant_ratings.csv');
 
->>>>>>> fc8e2a3cf5fbdad25639459195faf949c2bfd7ab
 %% Extracting Features
 good_channels = [1 3 8 11 17 20 26 29];
 
@@ -63,40 +59,21 @@ for participant = 1:PARTICIPANTS_NUM
         
         video_signal   = Bulk_get_signal(bulk(epoch), 'EEG');
         video_raw_data = cell2mat(struct2cell(video_signal.raw));
-<<<<<<< HEAD
-        
-        level = 4;
-        wname = 'db4';
-        npc = 'heur';
-        [x_sim, qual, npc] = wmspca(video_raw_data(good_channels, :)',level,wname,npc);
-        npc(1:3) = zeros(1,3);
-        [x_sim, qual, npc] = wmspca(video_raw_data',level,wname,npc);
-        x_sim = x_sim';
-        [mean, std, kurtosis, skewness] = Signal_feat_stat_moments(x_sim, 'Skip');
-        energy = Signal_feat_energy(x_sim, 'Skip');
 
-=======
         [mean, std, kurtosis, skewness] = Signal_feat_stat_moments(video_raw_data, 'Skip');
         energy = Signal_feat_energy(video_raw_data, 'Skip');
         for i=1:32
             katz(i) = Katz_FD(video_raw_data(i,:));
         end
->>>>>>> fc8e2a3cf5fbdad25639459195faf949c2bfd7ab
         means_array = [means_array, mean];
         std_array = [std_array, std];
         kurtosis_array = [kurtosis_array, kurtosis];
         skewness_array = [skewness_array, skewness];
-<<<<<<< HEAD
-        entropy_array = [entropy_array, entropy(x_sim)'];
         energy_array = [energy_array, energy'];
         nn_features = [nn_features;video_raw_data];
-=======
         entropy_array = [entropy_array, entropy(video_raw_data)'];
-        energy_array = [energy_array, energy'];       
-        katz_array = [katz_array, katz];
+        %katz_array = [katz_array, katz];
         
-        
->>>>>>> fc8e2a3cf5fbdad25639459195faf949c2bfd7ab
         fprintf('extracted all the features for subject %d epoch %d\n',participant, epoch);
     end
     
@@ -196,7 +173,6 @@ criterion = @(XT,yT,Xt,yt) ...
 %% ELM
 training_indices = training(partition,1);
 testing_indices  = test(partition,1);
-elm_features = [labels(:, 1), features_pca];
 elm_features = [labels(:,1) features_array];
 testing_set = elm_features(testing_indices,:);
 training_set = elm_features(training_indices,:);
