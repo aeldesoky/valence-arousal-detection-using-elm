@@ -8,19 +8,21 @@ PARTICIPANTS_NUM = 32;
 VIDEOS_NUM       = 40;
 %% Load Data
 addpath(genpath('Matlab/TEAP-master'));
+user = 'amir';
 
-matt_data_path = 'C:\Users\mjad9\Desktop\DEAP\MATLAB_data_preprocessed\';
-amir_data_path = '~/Desktop/DEAP/MATLAB_data_preprocessed/';
-
-data_path = amir_data_path;
+if(strcmp(user, 'amir'))
+    data_path = '~/Desktop/DEAP/MATLAB_data_preprocessed/';
+    feedback_path = '~/Desktop/DEAP/participant_ratings.csv';
+else
+    data_path = 'C:\Users\mjad9\Desktop\DEAP\MATLAB_data_preprocessed\';
+    feedback_path = '~/Desktop/DEAP/participant_ratings.csv';
+end
 
 if ~exist([data_path '/s30_eeglab.mat'],'file')
     loading_DEAP(data_path);
 end 
 
-feedbacks = readtable('~/Desktop/DEAP/participant_ratings.csv');
-nn_features = [];
-
+feedbacks = readtable(feedback_path);
 %% Extracting Features
 for participant = 1:PARTICIPANTS_NUM
     eeglab_file = sprintf('%ss%0.2d_eeglab.mat', data_path, participant);
@@ -33,7 +35,7 @@ for participant = 1:PARTICIPANTS_NUM
     skewness_array = [];
     entropy_array =[];
     energy_array =[];
-    katz_array = [];
+    %katz_array = [];
     
     for epoch = 1:VIDEOS_NUM
         %extracting EMG features
@@ -67,7 +69,6 @@ for participant = 1:PARTICIPANTS_NUM
         kurtosis_array = [kurtosis_array, kurtosis];
         skewness_array = [skewness_array, skewness];
         energy_array = [energy_array, energy'];
-        nn_features = [nn_features;video_raw_data];
         entropy_array = [entropy_array, entropy(video_raw_data)'];
         %katz_array = [katz_array, katz];
         
@@ -83,9 +84,6 @@ for participant = 1:PARTICIPANTS_NUM
     katz_matrix{participant} = katz_array;
 end
 
-save([data_path 'deap_features.mat'],'features');
-
-
 %% Exploring the data
 delta      = [];
 theta      = [];
@@ -97,7 +95,6 @@ valence_labels   = [];
 arousal_labels   = [];
 dominance_labels = [];
 liking_labels    = [];
-participant = 1;
 video       = 1;
 
 for participant = 1:PARTICIPANTS_NUM
@@ -117,15 +114,7 @@ for participant = 1:PARTICIPANTS_NUM
         valence_labels   = [valence_labels, repmat(valence > 5, 1, 32)];
         arousal_labels   = [arousal_labels, repmat(arousal > 5, 1, 32)];
         dominance_labels = [dominance_labels, repmat(dominance > 5, 1, 32)];
-        liking_labels    = [liking_labels, repmat(liking > 5, 1, 32)];
-
-%         delta_array(participant,video) = mean(features(participant,video).EEG_feats(1,:)); 
-%         theta_array(participant,video) = mean(features(participant,video).EEG_feats(2,:)); 
-%         slowalpha_array(participant,video) = mean(features(participant,video).EEG_feats(3,:)); 
-%         alpha_array(participant,video) = mean(features(participant,video).EEG_feats(4,:)); 
-%         beta_array(participant,video) = mean(features(participant,video).EEG_feats(5,:)); 
-%         gamma_array(participant,video) = mean(features(participant,video).EEG_feats(6,:)); 
-        
+        liking_labels    = [liking_labels, repmat(liking > 5, 1, 32)];       
     end
 end
 
@@ -135,8 +124,8 @@ kurtosis_features = cell2mat(kurtosis_matrix');
 skewness_features = cell2mat(skewness_matrix');
 entropy_features = cell2mat(entropy_matrix');
 energy_features = cell2mat(energy_matrix');
-katz_features = cell2mat(katz_matrix');
-features_array = [delta' theta' slow_alpha' alpha' beta' gamma' means_features(:) std_features(:) kurtosis_features(:) skewness_features(:) entropy_features(:) energy_features(:) katz_features(:)];
+%katz_features = cell2mat(katz_matrix');
+features_array = [delta' theta' slow_alpha' alpha' beta' gamma' means_features(:) std_features(:) kurtosis_features(:) skewness_features(:) entropy_features(:) energy_features(:)];
 features_array = zscore(features_array);
 labels         = [valence_labels' arousal_labels' dominance_labels' liking_labels'];
 
