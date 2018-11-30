@@ -11,12 +11,10 @@ tqdm = "*"
 tensorflow = "*"
 scipy = "*"
 mne = "*"
-<<<<<<< HEAD
 sklearn = "*"
 ipykernel = "*"
 elm = "*"
-=======
->>>>>>> fc8e2a3cf5fbdad25639459195faf949c2bfd7ab
+prettytable = "*"
 
 [dev-packages]
 

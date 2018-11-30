@@ -147,27 +147,40 @@ varnames = {'Delta' 'Theta' 'Slow Alpha' 'Alpha' 'Beta' 'Gamma' 'mean' 'std' 'ku
 gplotmatrix(features_array,[],labels_2',['b' 'r' 'g' 'k'],[],[],'on','grpbars',varnames, varnames);
 %gplotmatrix(features_array,[],labels(:,2),['k' 'r'],[],[],'on','grpbars',varnames, varnames);
 
+%% Filterling channels
+Fp1=1;AF3=2;F3=3;F7=4;FC5=5;FC1=6;C3=7;T7=8;CP5=9;CP1=10;P3=11;P7=12;PO3=13;
+O1=14;OZ=15;Pz=16;Fp2=17;AF4=18;Fz=19;F4=20;F8=21;FC6=22;FC2=23;Cz=24;C4=25;
+T8=26;CP6=27;CP2=28;P4=29;P8=30;PO4=31;O2=32;
+chosen_channels = zeros(32,1);
+chosen_channels([Fp1 Fp2 F3 F4 F7 F8 FC5 FC6 FC1 FC2 AF3 AF4 C3 C4 T7 T8 Fz Cz]) = 1;
+chosen_channels = repmat(chosen_channels, 32*40, 1);
+filtered_features = features_array(chosen_channels==1, :);
+filtered_labels = labels_2(1, chosen_channels==1)';
 %% Feature Selection
-partition = cvpartition(labels(:,1), 'KFold', 10);
+partition = cvpartition(filtered_labels, 'KFold', 10);
 options   = statset('display', 'iter');
 
 criterion = @(XT,yT,Xt,yt) ...
       (sum(yt ~= classify(Xt,XT,yT, 'quadratic')));
 
-[fs,history] = sequentialfs(criterion,features_array,labels(:,1),'direction', 'forward', 'cv',partition,'options',options);
+[fs,history] = sequentialfs(criterion,filtered_features,filtered_labels,'direction', 'backward', 'cv',partition,'options',options);
+
+%% Selected Features
+selected_features = filtered_features(:, [1 2 3 4 6 11]);
+selected_labels = filtered_labels;
 
 %% ELM
 training_indices = training(partition,1);
 testing_indices  = test(partition,1);
-elm_features = [labels(:,1) features_array];
+elm_features = [selected_labels selected_features];
 testing_set = elm_features(testing_indices,:);
 training_set = elm_features(training_indices,:);
 
 dlmwrite('training_set.txt', training_set);
 dlmwrite('testing_set.txt', testing_set);
 
-[TrainingTime, TestingTime, TrainingAccuracy, TestingAccuracy] = ELM('training_set.txt', 'testing_set.txt',  1, 2000, 'sig')
-
+%[TrainingTime, TestingTime, TrainingAccuracy, TestingAccuracy] = ELM('training_set.txt', 'testing_set.txt',  1, 200, 'sig')
+[TrainingTime, TestingTime, TrainingAccuracy, TestingAccuracy] = elm_kernel('training_set.txt', 'testing_set.txt', 1, 1, 'RBF_kernel',100)
 %% SVM
 svm_features = features_array(training_indices,:);
 v_labels   = labels(:,1);
