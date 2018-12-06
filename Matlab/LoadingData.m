@@ -142,12 +142,12 @@ for i = 1:size(valence_labels,2)
 end
 %% Visualizing Features
 figure();
-varnames = {'? PSD' '? PSD' 'Slow ? PSD' '? PSD' '? PSD' '? PSD' 'Mean' 'STD ' 'Kurtosis' 'Skewness' 'Entropy' 'Energy' 'FD'};
+varnames = {'\delta PSD' '\theta PSD' 'Slow \alpha PSD' '\alpha PSD' '\beta PSD' '\gamma PSD' 'Mean' 'STD ' 'Kurtosis' 'Skewness' 'Entropy' 'Energy' 'KFD'};
 gplotmatrix(features_array,[],labels(:,1)',['r' 'b'],[],[],'on','grpbars',varnames, varnames);
-title('Matrix of Feature Scatterplots - Valence')
+title('Matrix of Feature Scatterplots for Valence')
 figure();
 gplotmatrix(features_array,[],labels(:,2)',['r' 'b'],[],[],'on','grpbars',varnames, varnames);
-title('Matrix of Feature Scatterplots - Arousal')
+title('Matrix of Feature Scatterplots for Arousal')
 
 %% Filterling channels
 Fp1=1;AF3=2;F3=3;F7=4;FC5=5;FC1=6;C3=7;T7=8;CP5=9;CP1=10;P3=11;P7=12;PO3=13;
@@ -161,99 +161,238 @@ filtered_arousal_labels = arousal_labels(1, chosen_channels==1)';
 filtered_valence_labels = valence_labels(1, chosen_channels==1)';
 
 %% Feature Selection
-partition = cvpartition(filtered_labels, 'KFold', 10);
+valence_partition = cvpartition(filtered_valence_labels, 'KFold', 10);
+arousal_partition = cvpartition(filtered_arousal_labels, 'KFold', 10);
 options   = statset('display', 'iter');
 
 criterion = @(XT,yT,Xt,yt) ...
       (sum(yt ~= classify(Xt,XT,yT, 'quadratic')));
 
-[fs,history] = sequentialfs(criterion,filtered_features,filtered_labels,'direction', 'backward', 'cv',partition,'options',options);
+disp('**************** SFS & SBS  For Arousal ****************')
+[fs,history] = sequentialfs(criterion,filtered_features,filtered_arousal_labels,'direction', 'forward', 'cv',arousal_partition,'options',options);
+[fs,history] = sequentialfs(criterion,filtered_features,filtered_arousal_labels,'direction', 'backward', 'cv',arousal_partition,'options',options);
+disp('**************** SFS & SBS For Valence ****************')
+[fs,history] = sequentialfs(criterion,filtered_features,filtered_valence_labels,'direction', 'forward', 'cv',valence_partition,'options',options);
+[fs,history] = sequentialfs(criterion,filtered_features,filtered_valence_labels,'direction', 'backward', 'cv',valence_partition,'options',options);
 
 %% Selected Features
-selected_features = filtered_features(:, [1 2 3 4 6 11]);
+selected_arousal_features = filtered_features(:, [2 3 4 8 9 11]);
+selected_valence_features = filtered_features(:, [1 2 3 4 6 9 11]);
 selected_arousal_labels = filtered_arousal_labels;
 selected_valence_labels = filtered_valence_labels;
 
 %% ELM
 for fold=1:10
-    training_indices = training(partition,fold);
-    testing_indices  = test(partition,fold);
-    elm_arousal_features = [selected_valence_labels selected_features];
-    elm_valence_features = [selected_arousal_labels selected_features];
+    valence_training_indices = training(valence_partition,fold);
+    valence_testing_indices  = test(valence_partition,fold);
+    
+    arousal_training_indices = training(arousal_partition,fold);
+    arousal_testing_indices  = test(arousal_partition,fold);
+    
+    elm_arousal_features = [selected_valence_labels selected_arousal_features];
+    elm_valence_features = [selected_arousal_labels selected_valence_features];
 
-    testing_arousal_set = elm_arousal_features(testing_indices,:);
-    training_arousal_set = elm_arousal_features(training_indices,:);
-    testing_valence_set = elm_valence_features(testing_indices,:);
-    training_valence_set = elm_valence_features(training_indices,:);
+    testing_arousal_set = elm_arousal_features(arousal_testing_indices,:);
+    training_arousal_set = elm_arousal_features(arousal_training_indices,:);
+    testing_valence_set = elm_valence_features(valence_testing_indices,:);
+    training_valence_set = elm_valence_features(valence_training_indices,:);
 
     dlmwrite('training_arousal_set.txt', training_arousal_set);
     dlmwrite('testing_arousal_set.txt', testing_arousal_set);
     dlmwrite('training_valence_set.txt', training_valence_set);
     dlmwrite('testing_valence_set.txt', testing_valence_set);
 
-    %[ELMArousalTrainingTime(fold), ELMArousalTestingTime(fold), ELMArousalTrainingAccuracy(fold), ELMArousalTestingAccuracy(fold)] = ELM('training_arousal_set.txt', 'testing_arousal_set.txt',  1, 200, 'sig');
-    [ArousalTrainingTime2(fold), ArousalTestingTime2(fold), ArousalTrainingAccuracy2(fold), ArousalTestingAccuracy2(fold)] = elm_kernel('training_arousal_set.txt', 'testing_arousal_set.txt', 1, 1, 'RBF_kernel',100);
-    %[ELMValenceTrainingTime(fold), ELMValenceTestingTime(fold), ELMValenceTrainingAccuracy(fold), ELMValenceTestingAccuracy(fold)] = ELM('training_valence_set.txt', 'testing_valence_set.txt',  1, 200, 'sig');
-    [ValenceTrainingTime2(fold), ValenceTestingTime2(fold), ValenceTrainingAccuracy2(fold), ValenceTestingAccuracy2(fold)] = elm_kernel('training_valence_set.txt', 'testing_valence_set.txt', 1, 1, 'RBF_kernel',100);
+    [ELMArousalTrainingTime(fold), ELMArousalTestingTime(fold), ELMArousalTrainingAccuracy(fold), ELMArousalTestingAccuracy(fold)] = ELM('training_arousal_set.txt', 'testing_arousal_set.txt',  1, 200, 'sig');
+    [KELMArousalTrainingTime(fold), KELMArousalTestingTime(fold), KELMArousalTrainingAccuracy(fold), KELMArousalTestingAccuracy(fold)] = elm_kernel('training_arousal_set.txt', 'testing_arousal_set.txt', 1, 1, 'RBF_kernel',100);
+    [ELMValenceTrainingTime(fold), ELMValenceTestingTime(fold), ELMValenceTrainingAccuracy(fold), ELMValenceTestingAccuracy(fold)] = ELM('training_valence_set.txt', 'testing_valence_set.txt',  1, 200, 'sig');
+    [KELMValenceTrainingTime(fold), KELMValenceTestingTime(fold), KELMValenceTrainingAccuracy(fold), KELMValenceTestingAccuracy(fold)] = elm_kernel('training_valence_set.txt', 'testing_valence_set.txt', 1, 1, 'RBF_kernel',100);
 end
+
+%% ELM
+for fold=1:10
+    valence_training_indices = training(valence_partition,fold);
+    valence_testing_indices  = test(valence_partition,fold);
+    
+    arousal_training_indices = training(arousal_partition,fold);
+    arousal_testing_indices  = test(arousal_partition,fold);
+    
+    elm_arousal_features = [selected_valence_labels selected_arousal_features];
+    elm_valence_features = [selected_arousal_labels selected_valence_features];
+
+    testing_arousal_set = elm_arousal_features(arousal_testing_indices,:);
+    training_arousal_set = elm_arousal_features(arousal_training_indices,:);
+    testing_valence_set = elm_valence_features(valence_testing_indices,:);
+    training_valence_set = elm_valence_features(valence_training_indices,:);
+
+    dlmwrite('training_arousal_set.txt', training_arousal_set);
+    dlmwrite('testing_arousal_set.txt', testing_arousal_set);
+    dlmwrite('training_valence_set.txt', training_valence_set);
+    dlmwrite('testing_valence_set.txt', testing_valence_set);
+
+    [LinKELMArousalTrainingTime(fold), LinKELMArousalTestingTime(fold), LinKELMArousalTrainingAccuracy(fold), LinKELMArousalTestingAccuracy(fold)] = elm_kernel('training_arousal_set.txt', 'testing_arousal_set.txt', 1, 1, 'lin_kernel',100);
+    [LinKELMValenceTrainingTime(fold), LinKELMValenceTestingTime(fold), LinKELMValenceTrainingAccuracy(fold), LinKELMValenceTestingAccuracy(fold)] = elm_kernel('training_valence_set.txt', 'testing_valence_set.txt', 1, 1, 'lin_kernel',100);
+end
+
+
+
+
+
+
+
 %% SVM
 for fold=1:10
-    training_indices = training(partition,fold);
-    testing_indices  = test(partition,fold);
-    svm_features = filtered_features(training_indices,:);
-    v_labels   = filtered_valence_labels;
-    svm_v_labels = v_labels(training_indices, :);
-    a_labels   = filtered_arousal_labels(:,1);
-    svm_a_labels = a_labels(training_indices, :);
+    valence_training_indices = training(valence_partition,fold);
+    valence_testing_indices  = test(valence_partition,fold);
+    
+    arousal_training_indices = training(arousal_partition,fold);
+    arousal_testing_indices  = test(arousal_partition,fold);
+    
+    svm_arousal_features = selected_arousal_features(arousal_training_indices,:);
+    svm_valence_features = selected_valence_features(valence_training_indices,:);
+
+    v_labels   = selected_valence_labels;
+    svm_v_labels = v_labels(valence_training_indices, :);
+    a_labels   = selected_arousal_labels;
+    svm_a_labels = a_labels(arousal_training_indices, :);
+    
     %Valence
     tic
-    svm_valence_classifier = fitcsvm(svm_features, svm_v_labels, 'KernelFunction', 'rbf');
+    svm_valence_classifier = fitcsvm(svm_valence_features, svm_v_labels, 'KernelFunction', 'rbf');
     svm_valence_time(fold) = toc;
-    valence_prediction = predict(svm_valence_classifier, features_array(testing_indices,:));
-    svm_valence_accuracy(fold) = sum(valence_prediction == v_labels(testing_indices,1))/size(valence_prediction,1);
+    valence_prediction = predict(svm_valence_classifier, selected_valence_features(valence_testing_indices,:));
+    svm_valence_accuracy(fold) = sum(valence_prediction == v_labels(valence_testing_indices,1))/size(valence_prediction,1);
     %Arousal
     tic
-    svm_arousal_classifier = fitcsvm(svm_features, svm_a_labels, 'KernelFunction', 'rbf');
+    svm_arousal_classifier = fitcsvm(svm_arousal_features, svm_a_labels, 'KernelFunction', 'rbf');
     svm_arousal_time(fold) = toc;
-    arousal_prediction = predict(svm_arousal_classifier, features_array(testing_indices,:));
-    svm_arousal_accuracy(fold) = sum(arousal_prediction == a_labels(testing_indices,1))/size(arousal_prediction,1);
+    arousal_prediction = predict(svm_arousal_classifier, selected_arousal_features(arousal_testing_indices,:));
+    svm_arousal_accuracy(fold) = sum(arousal_prediction == a_labels(arousal_testing_indices,1))/size(arousal_prediction,1);
+
+    %Valence
+    tic
+    linsvm_valence_classifier = fitcsvm(svm_valence_features, svm_v_labels, 'KernelFunction', 'linear');
+    linsvm_valence_time(fold) = toc;
+    linvalence_prediction = predict(linsvm_valence_classifier, selected_valence_features(valence_testing_indices,:));
+    linsvm_valence_accuracy(fold) = sum(linvalence_prediction == v_labels(valence_testing_indices,1))/size(linvalence_prediction,1);
+    %Arousal
+    tic
+    linsvm_arousal_classifier = fitcsvm(svm_arousal_features, svm_a_labels, 'KernelFunction', 'linear');
+    linsvm_arousal_time(fold) = toc;
+    linarousal_prediction = predict(linsvm_arousal_classifier, selected_arousal_features(arousal_testing_indices,:));
+    linsvm_arousal_accuracy(fold) = sum(linarousal_prediction == a_labels(arousal_testing_indices,1))/size(linarousal_prediction,1);
+
 end
 %% KNN
-for fold=1:10
-    training_indices = training(partition,fold);
-    testing_indices  = test(partition,fold);
-    knn_features = filtered_features(training_indices,:);
-    v_labels   = filtered_valence_labels(:,1);
-    a_labels   = filtered_arousal_labels(:,1);
-    knn_valence_labels = v_labels(training_indices,:);
-    knn_arousal_labels = a_labels(training_indices,:);
-    % Valence
-    tic
-    knn_valence_classifier = fitcknn(knn_features, knn_valence_labels, 'NumNeighbors',5000); 
-    knn_valence_time(fold) = toc;
-    valence_prediction = predict(knn_valence_classifier, features_array(testing_indices,:));
-    knn_valence_accuracy(fold) = sum(valence_prediction == v_labels(testing_indices,1))/size(valence_prediction,1);
+i=0;
+for k=[1 1000:1000:9000 10000]
+    i=i+1;
+    for fold=1:10
+        valence_training_indices = training(valence_partition,fold);
+        valence_testing_indices  = test(valence_partition,fold);
 
-    % Arousal 
-    tic
-    knn_arousal_classifier = fitcknn(knn_features, knn_arousal_labels, 'NumNeighbors',5000); 
-    knn_arousal_time(fold) = toc;
-    arousal_prediction = predict(knn_arousal_classifier, features_array(testing_indices,:));
-    knn_arousal_accuracy(fold) = sum(arousal_prediction == v_labels(testing_indices,1))/size(arousal_prediction,1);
+        arousal_training_indices = training(arousal_partition,fold);
+        arousal_testing_indices  = test(arousal_partition,fold);
+
+        knn_features_valence = selected_valence_features(valence_training_indices, :);
+        knn_features_arousal = selected_arousal_features(arousal_training_indices, :);
+
+        v_labels   = selected_valence_labels;
+        a_labels   = selected_arousal_labels;
+
+        knn_valence_labels = v_labels(valence_training_indices,:);
+        knn_arousal_labels = a_labels(valence_training_indices,:);
+        % Valence
+        tic
+        knn_valence_classifier = fitcknn(knn_features_valence, knn_valence_labels, 'NumNeighbors',k); 
+        knn_valence_time(fold,i) = toc;
+        valence_prediction = predict(knn_valence_classifier, selected_valence_features(valence_testing_indices,:));
+        knn_valence_accuracy(fold,i) = sum(valence_prediction == v_labels(valence_testing_indices,1))/size(valence_prediction,1);
+
+        % Arousal 
+        tic
+        knn_arousal_classifier = fitcknn(knn_features_arousal, knn_arousal_labels, 'NumNeighbors',k); 
+        knn_arousal_time(fold,i) = toc;
+        arousal_prediction = predict(knn_arousal_classifier, selected_arousal_features(arousal_testing_indices,:));
+        knn_arousal_accuracy(fold,i) = sum(arousal_prediction == a_labels(arousal_testing_indices,1))/size(arousal_prediction,1);
+
+    end
 end
-%% KPCA
-% options.ker = 'rbf'; 
-% options.arg = 4; 
-% options.new_dim = 20; 
-% X = features_array';
-% model = kpca(X,options);
-% XR = kpcarec(X,model); 
-% figure;
-% h1 = ppatterns(X);
-% h2 = ppatterns(XR, '+r');
-% legend([h1 h2],'Input vectors','Reconstructed');
-% 
-% [TrainingTime, TestingTime, TrainingAccuracy, TestingAccuracy] = ELM('training_set.txt', 'testing_set.txt', 1, 20, 'sig')
+%% Averages
+average_elm_accuracy_valence = mean(ELMValenceTestingAccuracy);
+average_elm_accuracy_arousal = mean(ELMArousalTestingAccuracy);
+average_kelm_accuracy_arousal = mean(KELMArousalTestingAccuracy);
+average_kelm_accuracy_valence = mean(KELMValenceTestingAccuracy);
 
-%% PCA
-pca1 = pca(features_array');
+average_training_time_kelm_valence = mean(KELMValenceTrainingTime);
+average_training_time_elm_valence = mean(ELMValenceTrainingTime);
+average_training_time_elm_arousal = mean(ELMArousalTrainingTime);
+average_training_time_kelm_arousal = mean(KELMArousalTrainingTime);
+svm_accuracy_valence = mean(svm_valence_accuracy);
+svm_accuracy_arousal = mean(svm_arousal_accuracy);
+average_svm_arousal_time = mean(svm_arousal_time);
+average_svm_valence_time = mean(svm_valence_time);
+knn_average_arousal_time = mean(knn_arousal_time(6));
+knn_average_valence_time = mean(knn_valence_time(6));
+knn_average_valence_accuracy = mean(knn_valence_accuracy(6));
+knn_average_arousal_accuracy = mean(knn_arousal_accuracy(6));
+
+
+average_linkelm_accuracy_arousal = mean(LinKELMArousalTestingAccuracy);
+average_linkelm_accuracy_valence = mean(LinKELMValenceTestingAccuracy);
+average_training_time_linkelm_valence = mean(LinKELMValenceTrainingTime);
+average_training_time_linkelm_arousal = mean(LinKELMArousalTrainingTime);
+
+
+average_linsvm_accuracy_valence = mean(linsvm_valence_accuracy);
+average_linsvm_accuracy_arousal = mean(linsvm_arousal_accuracy);
+average_linsvm_arousal_time = mean(linsvm_arousal_time);
+average_linsvm_valence_time = mean(linsvm_valence_time);
+
+for i=1:11
+    average_knn_accuracy_arounsal(i) = mean(knn_arousal_accuracy(:,i));
+    average_knn_accuracy_valence(i) = mean(knn_valence_accuracy(:,i));
+    average_knn_time_arounsal(i) = mean(knn_arousal_time(:,i));
+    average_knn_time_valence(i) = mean(knn_valence_time(:,i));
+end
+
+%% Plot
+% Valence
+figure()
+scatter(knn_average_valence_time,knn_average_valence_accuracy*100,100,'k','x');
+hold on
+scatter(svm_vaelnce_time,svm_accuracy_valence*100,100,'b','*');
+scatter(average_training_time_kelm_valence,average_kelm_accuracy_valence*100,100,'r');
+scatter(average_training_time_elm_valence,average_elm_accuracy_valence*100,100,'g','s');
+xlabel('Training Time (sec)')
+ylabel('Classification Accuracy (%)')
+legend('KNN', 'SVM','KELM','ELM')
+title('Accuracy vs Time Scatter for Different Valence Classifiers')
+
+% Arousal
+figure()
+scatter(knn_average_arousal_time,knn_average_arousal_accuracy*100,100,'k','x');
+hold on
+scatter(average_svm_arousal_time,svm_accuracy_arousal*100,100,'b','*');
+scatter(average_training_time_kelm_arousal,average_kelm_accuracy_arousal*100,100,'r');
+scatter(average_training_time_elm_arousal,average_elm_accuracy_arousal*100,100,'g','s');
+xlabel('Training Time (sec)')
+ylabel('Classification Accuracy (%)')
+title('Accuracy vs Time Scatter for Different Arousal Classifiers')
+legend('KNN', 'SVM','KELM','ELM')
+
+% Barplot Valence
+ClassifierAccuracyValence = [knn_average_valence_accuracy,svm_accuracy_valence,average_linsvm_accuracy_valence,average_kelm_accuracy_valence,average_linkelm_accuracy_valence,average_elm_accuracy_valence];
+ClassifierLabels = categorical({'KNN', 'RBF SVM','LIN SVM','RBF KELM','LIN KELM','ELM'});
+ClassifierLabels = reordercats(ClassifierLabels,{'KNN', 'RBF SVM','LIN SVM','RBF KELM','LIN KELM','ELM'});
+figure()
+bar(ClassifierLabels,ClassifierAccuracyValence*100)
+xlabel('Classifiers')
+ylabel('Accuracy (%)')
+title('Classifiers vs Accuracy')
+% Barplot Arousal
+ClassifierAccuracyArousal = [knn_average_arousal_accuracy,svm_accuracy_arousal,average_linsvm_accuracy_arousal,average_kelm_accuracy_arousal,average_linkelm_accuracy_arousal,average_elm_accuracy_arousal];
+figure()
+bar(ClassifierLabels,ClassifierAccuracyArousal*100)
+xlabel('Classifiers')
+ylabel('Accuracy (%)')
+title('Classifiers vs Accuracy')
