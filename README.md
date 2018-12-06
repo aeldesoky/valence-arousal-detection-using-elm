@@ -1,4 +1,4 @@
-# EEG-valence-arousal-recognition
+# Objective Valence and Arousal Detection Using Extreme Learning Machines on EEG
 Machine learning models to recognize the four quartiles of the valence-arousal space using the DEAP database for EEG
 
 # Instructions
